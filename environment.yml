@@ -1,0 +1,17 @@
+name: fx_assistant
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.5
+  - pandas=2.2.2
+  - numpy=2.0.0
+  - pip
+  - pip:
+    - openai==1.35.7
+    - matplotlib==3.9.0
+    - requests==2.32.3
+    - beautifulsoup4==4.12.3
+    - asyncio==3.4.3
+    - aiohttp==3.9.5
+

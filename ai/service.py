@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
+import requests
 
 class TradingEconomicsScraper:
     def __init__(self):
@@ -32,6 +33,41 @@ class TradingEconomicsScraper:
                 results[name] = content
         return results
 
+class InvestingScraper:
+    def __init__(self):
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    }
+        
+    def fetch_hourly_moving_average(self):
+        url = 'https://www.investing.com/technical/moving-averages'
+
+        response = requests.get(url, headers=self.headers)
+
+        # Dictionary to hold the MA values
+        ma_values_dict = {}
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Find the row for EUR/USD
+            rows = soup.find('tbody').find_all('tr')
+            for row in rows:
+                name = row.find('td', class_='first left arial_14 noWrap').text.strip()
+                if name == 'EUR/USD':
+                    # Extracting each MA value and adding it to the dictionary
+                    ma_columns = row.find_all('td')[1:]  # Skip the first column with the name
+                    ma_labels = ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200']
+                    ma_values = [td.get_text(strip=True).split('\n')[0] for td in ma_columns]  # Split to remove 'Buy/Sell'
+                    
+                    # Creating dictionary from labels and values
+                    ma_values_dict = dict(zip(ma_labels, ma_values))
+                    break
+            return f"EUR/USD Moving Averages: {ma_values_dict}"
+        else:
+            return f"Failed to retrieve the page. Status code: {response.status_code}"
+
 # Example usage
 if __name__ == "__main__":
     websites = {
@@ -47,5 +83,8 @@ if __name__ == "__main__":
 }
     scraper = TradingEconomicsScraper()
     scraped_data = asyncio.run(scraper.scrape_websites(websites))
-    for name, content in scraped_data.items():
-        print(f'{name}: {content}...\n')  # Print the first 100 characters of each content for brevity
+    print(scraped_data)
+
+    scraper = InvestingScraper()
+    print(scraper.fetch_hourly_moving_average())
+

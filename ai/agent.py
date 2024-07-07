@@ -1,4 +1,7 @@
 from openai import OpenAI
+from service.web_scrapping import TradingEconomicsScraper
+from parameters import *
+import asyncio
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -77,3 +80,16 @@ class FXAgent():
         )
         return response.choices[0].message.content
 
+
+class KnowledgeBase:
+    def __init__(self):
+        pass
+
+    def get_economic_indicators(self, websites: dict = ECONOMIC_INDICATORS_WEBSITES):
+        te_scrapper = TradingEconomicsScraper()
+        scrapped_content = asyncio.run(te_scrapper.scrape_websites(websites))
+        return scrapped_content
+    
+    def get_technical_analysis(self, query: str, top_k : int = 10):
+
+        pass

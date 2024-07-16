@@ -85,18 +85,22 @@ class ArticlesExtraction(BaseModel):
     url: str = Field(description="The url of the article")
 
 class TechnicalAnalysisScrapper:
-    root_page_url = "https://www.tradingview.com/symbols/EURUSD/news/"
-    ai_scrape_prefix = "https://r.jina.ai/"
-    def __init__(self, root_url: str = None, ai_scrape_prefix: str = None):
-        if root_url:
-            self.root_url = root_url
-        if ai_scrape_prefix:
-            self.ai_scrape_prefix = ai_scrape_prefix
+
+    def __init__(self, root_page_url: str = None, ai_scrape_prefix: str = None, top_k: int = 5):
+        self.root_page_url = root_page_url if root_page_url else "https://www.tradingview.com/symbols/EURUSD/news/"
+        self.ai_scrape_prefix = ai_scrape_prefix if ai_scrape_prefix else "https://r.jina.ai/"
+        self.top_k = top_k
     
     def scrape_technical_analysis(self):
         try:
-            root_page_content = self.scrape_root_page()
-            sub_page_websites = self.parse_root_page(root_page_content)
+            for i in range(5):
+                root_page_content = self.scrape_root_page()
+                sub_page_websites = self.parse_root_page(root_page_content)
+                if sub_page_websites[0]["article"] is not None:
+                    break
+                else:
+                    time.sleep(5)
+                    continue
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
             sub_page_contents = self.summarize_sub_pages(sub_page_contents)
             return sub_page_contents
@@ -116,12 +120,17 @@ class TechnicalAnalysisScrapper:
 
         parser = PydanticOutputParser(pydantic_object=ArticlesExtraction)
 
+        system_prompt = """You are provided with the content scrapped from a website. Your task is to extract the first {article_number} appearing technical articles and their urls to the user.
+If you can find specific technical reports, Wrap the output in `json` tags
+{format_instructions}.
+If you can not find specific technical reports, set the 'article' and 'url' value to null.
+"""
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are provided with the content scrapped from a website. Your task is to extract the first 5 appearing articles and their urls to the user. Wrap the output in `json` tags\n{format_instructions}"),
+            ("system", system_prompt),
             ("user", "Below is the content. \n{content}")
         ]).partial(format_instructions=parser.get_format_instructions())
         chain = prompt | model | StrOutputParser()
-        response = chain.invoke({"content": scrapped_content}).strip("```json").strip("```").strip()
+        response = chain.invoke({"content": scrapped_content, "article_number": self.top_k}).strip("```json").strip("```").strip()
         websites = json.loads(response)
         return websites
     
@@ -139,7 +148,7 @@ class TechnicalAnalysisScrapper:
     def summarize_sub_pages(self, contents: List[Dict[str, str]]) -> List[Dict[str, str]]:
         model = Config(model_name="gpt-3.5-turbo-0125", temperature=0).get_model()
         prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are provided with the content scrapped from a website. Your task is to summarize the key information about EUR USD."),
+        ("system", "You are provided with the content scrapped from a website. Your task is to summarize the key information. The audience is financial experts in the fx trading of EUR/USD."),
         ("user", "{content}")
         ])
         chain = prompt | model | StrOutputParser()
@@ -156,22 +165,26 @@ class TechnicalAnalysisScrapper:
 
 if __name__ == "__main__":
     start_time = time.time()
-    websites = {
-    "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",
-    "GDP_EU": "https://tradingeconomics.com/euro-area/gdp-growth",
-    "Interest_Rate_US": "https://tradingeconomics.com/united-states/interest-rate",
-    "Interest_Rate_EU": "https://tradingeconomics.com/euro-area/interest-rate",
-    "Inflation_Rate_US": "https://tradingeconomics.com/united-states/inflation-cpi",
-    "Inflation_Rate_EU": "https://tradingeconomics.com/euro-area/inflation-cpi",
-    "Unemployment_Rate_US": "https://tradingeconomics.com/united-states/unemployment-rate",
-    "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate"
+#     websites = {
+#     "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",
+#     "GDP_EU": "https://tradingeconomics.com/euro-area/gdp-growth",
+#     "Interest_Rate_US": "https://tradingeconomics.com/united-states/interest-rate",
+#     "Interest_Rate_EU": "https://tradingeconomics.com/euro-area/interest-rate",
+#     "Inflation_Rate_US": "https://tradingeconomics.com/united-states/inflation-cpi",
+#     "Inflation_Rate_EU": "https://tradingeconomics.com/euro-area/inflation-cpi",
+#     "Unemployment_Rate_US": "https://tradingeconomics.com/united-states/unemployment-rate",
+#     "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate"
 
-}
-    scraper = TradingEconomicsScraper()
-    scraped_data = asyncio.run(scraper.scrape_websites(websites))
-    print(scraped_data)
-    scrapper = TechnicalAnalysisScrapper()
-    print(scrapper.scrape_technical_analysis())
+# }
+    # scraper = TradingEconomicsScraper()
+    # scraped_data = asyncio.run(scraper.scrape_websites(websites))
+    # print(scraped_data)
+    scrapper = TechnicalAnalysisScrapper(root_page_url="https://www.dailyfx.com/eur-usd/news-and-analysis")
+    results = scrapper.scrape_technical_analysis()
+    for result in results:
+        print(result["article"])
+        print(result["summary"])
+        print("\n")
 
     end_time = time.time()
 

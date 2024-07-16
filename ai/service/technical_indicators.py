@@ -176,14 +176,14 @@ class FullRangeTechnicalIndicators:
         pass
 
     def get_1_hour_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='6mo')
+        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='1mo')
         ti.download_data()
         ti.calculate_indicators()
         ti.calculate_oscillators()
         return ti.output_to_json()
 
     def get_4_hour_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='6mo')
+        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='3mo')
         ti.download_data()
         df = ti.data.drop(columns=["Adj Close"]).copy()
         df_resampled = df.resample("4h").ohlc()
@@ -199,7 +199,7 @@ class FullRangeTechnicalIndicators:
         return ti.output_to_json()
     
     def get_1_day_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1d', period='1y')
+        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1d', period='6mo')
         ti.download_data()
         ti.calculate_indicators()
         ti.calculate_oscillators()

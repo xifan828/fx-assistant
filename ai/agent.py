@@ -1,7 +1,11 @@
 from openai import OpenAI
-from service.web_scrapping import TradingEconomicsScraper
-from parameters import *
+from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalAnalysisScrapper
+from ai.service.technical_indicators import FullRangeTechnicalIndicators
+from ai.service.ai_search import PerplexitySearch
+from ai.parameters import *
 import asyncio
+from typing import List, Dict
+import json
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -26,22 +30,22 @@ class FXAgent():
     """
 
     USER_MESSAGE_TEMPLATE = """
-    Economic Indicators:
+    - Economic Indicators:
     ###
     {economic_indicators}
     ###
 
-    Technical Analysis:
+    - Most recent news:
     ###
     {technical_analysis}
     ###
 
-    Technical Indicator:
+    - Technical Indicator:
     ###
     {technical_indicator}
     ###
 
-    central bank announcements:
+    - Central bank announcements:
     ###
     {central_bank}
     ###
@@ -82,14 +86,53 @@ class FXAgent():
 
 
 class KnowledgeBase:
-    def __init__(self):
-        pass
+    def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
+        self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
+        self.technical_analysis_root_website = technical_analysis_root_website if technical_analysis_root_website is not None else TECHNICAL_ANALYSIS_ROOT_WEBSITE
+        self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
 
-    def get_economic_indicators(self, websites: dict = ECONOMIC_INDICATORS_WEBSITES):
+    def get_economic_indicators(self) -> Dict:
         te_scrapper = TradingEconomicsScraper()
-        scrapped_content = asyncio.run(te_scrapper.scrape_websites(websites))
+        scrapped_content = asyncio.run(te_scrapper.scrape_websites(self.economic_indicators_websites))
         return scrapped_content
     
-    def get_technical_analysis(self, query: str, top_k : int = 10):
+    def get_technical_analysis(self) -> List[Dict]:
+        ta_scrapper = TechnicalAnalysisScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
+        results = ta_scrapper.scrape_technical_analysis()
+        return results
+    
+    def get_technical_indicators(self) -> str:
+        ti_scrapper = FullRangeTechnicalIndicators()
+        results = ti_scrapper.get_full_indicators()
+        return results
+    
+    def get_central_bank(self) -> List[str]:
+        ai_search = PerplexitySearch()
+        results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
+        return results
 
-        pass
+if __name__ == "__main__":
+    kb = KnowledgeBase()
+    print("Getting economic indicators")
+    economic_indicators = json.dumps(kb.get_economic_indicators())
+    print("Getting technical analysis")
+    technical_analysis = json.dumps(kb.get_technical_analysis())
+    print(technical_analysis)
+    # print("Getting technical indicators")
+    # technical_indicators = kb.get_technical_indicators()
+    # print("Getting central bank")
+    # central_bank = json.dumps(kb.get_central_bank())
+
+    # print("Agent starts answering.")
+    # agent = FXAgent()
+    # query = "How shall I set up my EUR USD trading strategy?"
+    # messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_indicator=technical_indicators, central_bank=central_bank, question=query)
+    # answer = agent.run(messages=messages)
+    # print(f"Answer: \n{answer}")
+
+
+
+    
+
+
+    

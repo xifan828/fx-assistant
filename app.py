@@ -4,7 +4,8 @@ import json
 
 kb = KnowledgeBase()
 agent = FXAgent()
-st.title("EUR USD trading assistant")
+#st.title("EUR USD trading assistant")
+st.markdown("# :euro: EUR / :dollar: USD trading assistant")
 st.caption("An assistant developed by Xifan Wang")
 
 with st.sidebar:

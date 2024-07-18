@@ -1,16 +1,6 @@
-import openai
+from ai.service.web_scrapping import TechnicalAnalysisScrapper
 
-from openai import OpenAI
-
-client = OpenAI()
-
-response = client.chat.completions.create(
-  model="gpt-4o",
-  messages=[
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "What is the most important factor which affect euro/dollar price?"},
-  ],
-  temperature=0
-)
-
-print(response.choices[0].message.content)
+scrapper = TechnicalAnalysisScrapper()
+text = scrapper.scrape_root_page()
+print(text, "\n")
+print(scrapper.parse_root_page(text))

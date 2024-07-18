@@ -21,6 +21,8 @@ dependencies:
     - langchain-openai==0.1.14
     - selenium==4.22.0
     - webdriver-manager==4.0.1
+    - streamlit==1.36.0
+
 
 
 

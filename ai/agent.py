@@ -49,8 +49,7 @@ class FXAgent():
     ###
     {central_bank}
     ###
-
-    {question}"""
+    """
 
     def __init__(self, model_name: str = "gpt-4o", temperature: float = 0):
         self.client = OpenAI()
@@ -60,14 +59,13 @@ class FXAgent():
     def run(self, messages):
         return self.chat_completions(messages)
 
-    def formulate_first_round_messages(self, economic_indicators, technical_analysis, technical_indicator, central_bank, question):
+    def formulate_first_round_messages(self, economic_indicators, technical_analysis, technical_indicator, central_bank):
         system_message = self.SYSTEM_MESSAGE
         user_message = self.USER_MESSAGE_TEMPLATE.format(
             economic_indicators = economic_indicators,
             technical_analysis = technical_analysis,
             technical_indicator = technical_indicator,
             central_bank = central_bank,
-            question = question
         )
         messages = [
             {"role": "system", "content": system_message},
@@ -118,17 +116,17 @@ if __name__ == "__main__":
     print("Getting technical analysis")
     technical_analysis = json.dumps(kb.get_technical_analysis())
     print(technical_analysis)
-    # print("Getting technical indicators")
-    # technical_indicators = kb.get_technical_indicators()
-    # print("Getting central bank")
-    # central_bank = json.dumps(kb.get_central_bank())
+    print("Getting technical indicators")
+    technical_indicators = kb.get_technical_indicators()
+    print("Getting central bank")
+    central_bank = json.dumps(kb.get_central_bank())
 
-    # print("Agent starts answering.")
-    # agent = FXAgent()
-    # query = "How shall I set up my EUR USD trading strategy?"
-    # messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_indicator=technical_indicators, central_bank=central_bank, question=query)
-    # answer = agent.run(messages=messages)
-    # print(f"Answer: \n{answer}")
+    print("Agent starts answering.")
+    agent = FXAgent()
+    query = "How shall I set up my EUR USD trading strategy?"
+    messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_indicator=technical_indicators, central_bank=central_bank, question=query)
+    answer = agent.run(messages=messages)
+    print(f"Answer: \n{answer}")
 
 
 

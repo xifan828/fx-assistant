@@ -90,8 +90,9 @@ class TechnicalAnalysisScrapper:
         self.root_page_url = root_page_url if root_page_url else "https://www.tradingview.com/symbols/EURUSD/news/"
         self.ai_scrape_prefix = ai_scrape_prefix if ai_scrape_prefix else "https://r.jina.ai/"
         self.top_k = top_k
+        self.context_length = self.top_k * 1500
     
-    def scrape_technical_analysis(self):
+    def scrape_technical_analysis(self) -> str:
         try:
             for i in range(5):
                 root_page_content = self.scrape_root_page()
@@ -102,25 +103,26 @@ class TechnicalAnalysisScrapper:
                     time.sleep(5)
                     continue
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
-            sub_page_contents = self.summarize_sub_pages(sub_page_contents)
-            return sub_page_contents
+            sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
+            final_summary = self.create_final_summary(sub_page_summaries)
+            return final_summary
         except:
-            return {}
+            return ""
  
 
     def scrape_root_page(self) -> str:
         response = requests.get(self.ai_scrape_prefix + self.root_page_url)
         if response.status_code == 200:
-            return response.text
+            return response.text[:self.context_length]
         else:
             raise requests.HTTPError(f"Failed to retrieve {self.ai_scrape_prefix + self.root_page_url}: Status code {response.status_code}")
     
     def parse_root_page(self, scrapped_content: str) -> List[Dict[str, str]]:
-        model = Config().get_model()
+        model = Config(model_name="gpt-4o").get_model()
 
         parser = PydanticOutputParser(pydantic_object=ArticlesExtraction)
 
-        system_prompt = """You are provided with the content scrapped from a website. Your task is to extract the first {article_number} appearing technical articles and their urls to the user.
+        system_prompt = """You are provided with the content scrapped from a website. Your task is to extract the **FIRST** {article_number} appearing technical articles and their urls to the user.
 If you can find specific technical reports, Wrap the output in `json` tags
 {format_instructions}.
 If you can not find specific technical reports, set the 'article' and 'url' value to null.
@@ -132,6 +134,8 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
         chain = prompt | model | StrOutputParser()
         response = chain.invoke({"content": scrapped_content, "article_number": self.top_k}).strip("```json").strip("```").strip()
         websites = json.loads(response)
+        if isinstance(websites, dict):
+            websites = [websites]
         return websites
     
     def scrape_sub_pages(self, websites: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -146,9 +150,9 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
         return contents
     
     def summarize_sub_pages(self, contents: List[Dict[str, str]]) -> List[Dict[str, str]]:
-        model = Config(model_name="gpt-3.5-turbo-0125", temperature=0).get_model()
+        model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
         prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are provided with the content scrapped from a website. Your task is to summarize the key information. The audience is financial experts in the fx trading of EUR/USD."),
+        ("system", "You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of EUR/USD."),
         ("user", "{content}")
         ])
         chain = prompt | model | StrOutputParser()
@@ -157,6 +161,29 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
         for content, result in zip(contents, results):
             summaries.append({"article": content["article"], "summary": result})
         return summaries
+        
+    def create_final_summary(self, summaries: List[Dict[str, str]]):
+        model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
+        system_prompt = f"""You are an advanced Forex Market Analyst specializing in the EUR/USD currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
+You will be provided with the latest articles related to the EUR/USD forex market. Each article will include a title and a summary. 
+Your tasks are:
+1. Condense article information.
+2. Extract key insights impacting EUR/USD.
+3. Identify trends and potential market drivers.
+4. Highlight conflicting viewpoints.
+5. Quantify potential impacts when possible.
+6. Summarize analysis: key drivers, impacts, and risks.
+Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
+"""
+
+        prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", "{content}")
+                ])
+        chain = prompt | model | StrOutputParser()
+
+        final_summary = chain.invoke({"content": summaries})
+        return final_summary
 
     
         
@@ -179,13 +206,6 @@ if __name__ == "__main__":
     # scraper = TradingEconomicsScraper()
     # scraped_data = asyncio.run(scraper.scrape_websites(websites))
     # print(scraped_data)
-    scrapper = TechnicalAnalysisScrapper(root_page_url="https://www.dailyfx.com/eur-usd/news-and-analysis")
+    scrapper = TechnicalAnalysisScrapper(top_k=10)
     results = scrapper.scrape_technical_analysis()
-    for result in results:
-        print(result["article"])
-        print(result["summary"])
-        print("\n")
-
-    end_time = time.time()
-
-    print(f"{end_time - start_time}")
+    print(results)

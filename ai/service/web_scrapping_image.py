@@ -12,7 +12,7 @@ import os
 
 
 # Set up Chrome options
-def scrape_pair_overview():
+def scrape_pair_overview(is_local):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -21,11 +21,15 @@ def scrape_pair_overview():
     chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
     # Set up the Chrome driver
-    chrome_path = '/usr/bin/chromium'
-    chromedriver_path = '/usr/bin/chromedriver'
-    chrome_options.binary_location = chrome_path
-    service = Service(chromedriver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    if is_local:
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    else:
+        chrome_path = '/usr/bin/chromium'
+        chromedriver_path = '/usr/bin/chromedriver'
+        chrome_options.binary_location = chrome_path
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # Navigate to the website
     url = "https://www.google.com/finance/quote/EUR-USD?sa=X&ved=2ahUKEwiYxI_g9L2HAxWaa0EAHb1zGVIQmY0JegQIGRAw"  # Replace with the website you want to scrape
@@ -115,5 +119,5 @@ def scrape_pair_overview():
 
 
 if __name__ == "__main__":
-    scrape_pair_overview()
+    scrape_pair_overview(is_local=True)
     #test()

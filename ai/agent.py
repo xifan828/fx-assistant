@@ -4,9 +4,13 @@ from ai.service.web_scrapping_image import scrape_pair_overview
 from ai.service.technical_analysis import TechnicalAnalysis
 from ai.service.ai_search import PerplexitySearch
 from ai.parameters import *
+from ai.config import Config
 import asyncio
 from typing import List, Dict
 import json
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -83,6 +87,65 @@ class FXAgent():
         )
         return response.choices[0].message.content
 
+class TradingStrategy(BaseModel):
+    """Trading strategy output format"""
+
+    strtegy: str = Field(description="Shall be either long, short or hold. If hold, leave the Fields `entry_point`, `exit_point`, `stop_loss_point` as 0.")
+    entry_point: float = Field()
+    exit_point: float = Field()
+    stop_loss_point: float = Field()
+    rationale: str = Field(description="The rationale behind this trade strategy.")
+
+class StrtegyAgent:
+    SYSTEM_MESSAGE = """You are an experienced Forex trader specializing in the EUR/USD currency pair. Your expertise lies in analyzing diverse information sources and developing profitable trading strategies. Your role is to:
+1. Read information from multiple sources
+2. Analyze the collected information to identify potential trading opportunities.
+3. Develop and propose trading strategies based on your analysis. These strategies should include: 
+    - Entry and exit points
+    - Stop-loss and take-profit levels
+    - Rationale 
+Your goal is to provide actionable trading advice that, if implemented, would result in profitable trades. And you will be rewarded with half of the profits generated.
+Wrap your output in `json` tags
+{format_instructions}
+Output nothing except the json tags.
+"""
+
+    USER_MESSAGE_TEMPLATE = """Below are collected information. Make a trading strategy the best you can. 
+    - Economic Indicators:
+    ###
+    {economic_indicators}
+    ###
+
+    - Most recent news:
+    ###
+    {technical_news}
+    ###
+
+    - Technical Indicator:
+    ###
+    {technical_analysis}
+    ###
+
+    - Central bank announcements:
+    ###
+    {central_bank}
+    ###"""
+    def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 1.0):
+        self.model_name = model_name
+        self.temperature = temperature
+    
+    def generate_strategy(self, economic_indicators, technical_analysis, technical_news, central_bank):
+        model = Config(model_name=self.model_name, temperature=self.temperature).get_model()
+        parser = PydanticOutputParser(pydantic_object=TradingStrategy)
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", self.SYSTEM_MESSAGE),
+            ("user", self.USER_MESSAGE_TEMPLATE)
+        ]).partial(format_instructions=parser.get_format_instructions())
+        chain = prompt | model | StrOutputParser()
+        response = chain.invoke({"economic_indicators": economic_indicators, "technical_news": technical_news, "technical_analysis": technical_analysis, "central_bank": central_bank}).strip("```json").strip("```").strip()
+        return response
+    
 
 class KnowledgeBase:
     def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
@@ -100,8 +163,8 @@ class KnowledgeBase:
         results = te_scrapper.scrape_technical_analysis()
         return results
     
-    def get_technical_analysis(self) -> str:
-        scrape_pair_overview()
+    def get_technical_analysis(self, is_local: bool = False) -> str:
+        scrape_pair_overview(is_local)
         ta_scrapper = TechnicalAnalysis()
         results = ta_scrapper.run()
         return results
@@ -117,18 +180,15 @@ if __name__ == "__main__":
     economic_indicators = kb.get_economic_indicators()
     print("Getting technical news")
     technical_news = kb.get_technical_news()
-    print(technical_news)
+    #print(technical_news)
     print("Getting technical analysis")
-    technical_analysis = kb.get_technical_analysis()
+    technical_analysis = kb.get_technical_analysis(is_local=True)
     print("Getting central bank")
     central_bank = kb.get_central_bank()
 
     print("Agent starts answering.")
-    agent = FXAgent()
-    query = "How shall I set up my EUR USD trading strategy?"
-    messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_news=technical_news, central_bank=central_bank, question=query)
-    answer = agent.run(messages=messages)
-    print(f"Answer: \n{answer}")
+    agent = StrtegyAgent(model_name="gpt-4o")
+    print(agent.generate_strategy(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_news=technical_news, central_bank=central_bank))
 
 
 

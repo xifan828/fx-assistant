@@ -1,15 +1,13 @@
 import streamlit as st
 from ai.agent import FXAgent, KnowledgeBase
-import json
+
 import os
 from dotenv import load_dotenv
-import subprocess
+
 
 
 load_dotenv()
 def check_email(email):
-    # Replace this with your actual email verification logic
-    # For example, you might check against a database or an allowed list
     allowed_emails = os.getenv("ALLOWED_EMAILS", "").split(',')
     return email.strip().lower() in [e.strip().lower() for e in allowed_emails]
 

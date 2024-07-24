@@ -13,7 +13,6 @@ import os
 
 # Set up Chrome options
 def scrape_pair_overview(chromedriver_version):
-    time_begin = time.time()
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -23,8 +22,9 @@ def scrape_pair_overview(chromedriver_version):
 
     # Set up the Chrome driver
     chrome_path = '/usr/bin/chromium'
+    chromedriver_path = '/usr/bin/chromedriver'
     chrome_options.binary_location = chrome_path
-    service = Service(ChromeDriverManager(version=chromedriver_version).install())
+    service = Service(chromedriver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # Navigate to the website

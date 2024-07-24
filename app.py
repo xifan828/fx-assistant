@@ -3,6 +3,35 @@ from ai.agent import FXAgent, KnowledgeBase
 import json
 import os
 from dotenv import load_dotenv
+import subprocess
+
+def get_chromium_version():
+    try:
+        result = subprocess.run(['chromium', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        version = result.stdout.strip()
+        if version:
+            st.write(f"Chromium version: {version}")
+            return version
+        else:
+            st.write("Failed to determine Chromium version")
+            return None
+    except Exception as e:
+        st.write(f"Error occurred: {e}")
+        return None
+
+def get_chromedriver_version():
+    try:
+        result = subprocess.run(['chromedriver', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        version = result.stdout.strip()
+        if version:
+            st.write(f"Chromedriver version: {version}")
+            return version
+        else:
+            st.write("Failed to determine Chromedriver version")
+            return None
+    except Exception as e:
+        st.write(f"Error occurred: {e}")
+        return None
 
 load_dotenv()
 def check_email(email):
@@ -12,6 +41,10 @@ def check_email(email):
     return email.strip().lower() in [e.strip().lower() for e in allowed_emails]
 
 def main():
+
+    chromium_version = get_chromium_version()
+    chromedriver_version = get_chromedriver_version()
+
     st.markdown("# :euro: EUR / :dollar: USD trading assistant")
     st.caption("An assistant developed by Xifan Wang")
 

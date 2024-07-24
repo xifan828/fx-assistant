@@ -72,7 +72,7 @@ def main():
         if "technical_news" not in st.session_state:
             st.session_state["technical_news"] = kb.get_technical_news()
         if "technical_analysis" not in st.session_state:
-            st.session_state["technical_analysis"] = kb.get_technical_analysis()
+            st.session_state["technical_analysis"] = kb.get_technical_analysis(chromedriver_version)
         if "central_bank" not in st.session_state:
             st.session_state["central_bank"] = kb.get_central_bank()
         

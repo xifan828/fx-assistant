@@ -100,8 +100,8 @@ class KnowledgeBase:
         results = te_scrapper.scrape_technical_analysis()
         return results
     
-    def get_technical_analysis(self) -> str:
-        scrape_pair_overview()
+    def get_technical_analysis(self, chromedriver_version) -> str:
+        scrape_pair_overview(chromedriver_version)
         ta_scrapper = TechnicalAnalysis()
         results = ta_scrapper.run()
         return results

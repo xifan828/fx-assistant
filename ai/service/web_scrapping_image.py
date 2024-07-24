@@ -12,7 +12,7 @@ import os
 
 
 # Set up Chrome options
-def scrape_pair_overview(chromedriver_version):
+def scrape_pair_overview():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")

@@ -84,7 +84,7 @@ class ArticlesExtraction(BaseModel):
     article: str = Field(description="The name of the article")
     url: str = Field(description="The url of the article")
 
-class TechnicalAnalysisScrapper:
+class TechnicalNewsScrapper:
 
     def __init__(self, root_page_url: str = None, ai_scrape_prefix: str = None, top_k: int = 5):
         self.root_page_url = root_page_url if root_page_url else "https://www.tradingview.com/symbols/EURUSD/news/"

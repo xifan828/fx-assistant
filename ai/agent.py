@@ -1,6 +1,7 @@
 from openai import OpenAI
-from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalAnalysisScrapper
-from ai.service.technical_indicators import FullRangeTechnicalIndicators
+from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
+from ai.service.web_scrapping_image import scrape_pair_overview
+from ai.service.technical_analysis import TechnicalAnalysis
 from ai.service.ai_search import PerplexitySearch
 from ai.parameters import *
 import asyncio
@@ -37,12 +38,12 @@ class FXAgent():
 
     - Most recent news:
     ###
-    {technical_analysis}
+    {technical_news}
     ###
 
     - Technical Indicator:
     ###
-    {technical_indicator}
+    {technical_analysis}
     ###
 
     - Central bank announcements:
@@ -51,7 +52,7 @@ class FXAgent():
     ###
     """
 
-    def __init__(self, model_name: str = "gpt-4o", temperature: float = 0):
+    def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 1.0):
         self.client = OpenAI()
         self.model_name = model_name
         self.temperature = temperature
@@ -59,12 +60,12 @@ class FXAgent():
     def run(self, messages):
         return self.chat_completions(messages)
 
-    def formulate_first_round_messages(self, economic_indicators, technical_analysis, technical_indicator, central_bank):
+    def formulate_first_round_messages(self, economic_indicators, technical_news, technical_analysis, central_bank):
         system_message = self.SYSTEM_MESSAGE
         user_message = self.USER_MESSAGE_TEMPLATE.format(
             economic_indicators = economic_indicators,
+            technical_news = technical_news,
             technical_analysis = technical_analysis,
-            technical_indicator = technical_indicator,
             central_bank = central_bank,
         )
         messages = [
@@ -94,14 +95,15 @@ class KnowledgeBase:
         scrapped_content = asyncio.run(te_scrapper.scrape_websites(self.economic_indicators_websites))
         return scrapped_content
     
-    def get_technical_analysis(self) -> List[Dict]:
-        ta_scrapper = TechnicalAnalysisScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
-        results = ta_scrapper.scrape_technical_analysis()
+    def get_technical_news(self) -> List[Dict]:
+        te_scrapper = TechnicalNewsScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
+        results = te_scrapper.scrape_technical_analysis()
         return results
     
-    def get_technical_indicators(self) -> str:
-        ti_scrapper = FullRangeTechnicalIndicators()
-        results = ti_scrapper.get_full_indicators()
+    def get_technical_analysis(self) -> str:
+        scrape_pair_overview()
+        ta_scrapper = TechnicalAnalysis()
+        results = ta_scrapper.run()
         return results
     
     def get_central_bank(self) -> List[str]:
@@ -112,19 +114,19 @@ class KnowledgeBase:
 if __name__ == "__main__":
     kb = KnowledgeBase()
     print("Getting economic indicators")
-    economic_indicators = json.dumps(kb.get_economic_indicators())
+    economic_indicators = kb.get_economic_indicators()
+    print("Getting technical news")
+    technical_news = kb.get_technical_news()
+    print(technical_news)
     print("Getting technical analysis")
-    technical_analysis = json.dumps(kb.get_technical_analysis())
-    print(technical_analysis)
-    print("Getting technical indicators")
-    technical_indicators = kb.get_technical_indicators()
+    technical_analysis = kb.get_technical_analysis()
     print("Getting central bank")
-    central_bank = json.dumps(kb.get_central_bank())
+    central_bank = kb.get_central_bank()
 
     print("Agent starts answering.")
     agent = FXAgent()
     query = "How shall I set up my EUR USD trading strategy?"
-    messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_indicator=technical_indicators, central_bank=central_bank, question=query)
+    messages = agent.formulate_first_round_messages(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_news=technical_news, central_bank=central_bank, question=query)
     answer = agent.run(messages=messages)
     print(f"Answer: \n{answer}")
 

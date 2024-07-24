@@ -35,28 +35,28 @@ def main():
         agent = FXAgent()
 
         if "economic_indicators" not in st.session_state:
-            st.session_state["economic_indicators"] = json.dumps(kb.get_economic_indicators())
+            st.session_state["economic_indicators"] = kb.get_economic_indicators()
+        if "technical_news" not in st.session_state:
+            st.session_state["technical_news"] = kb.get_technical_news()
         if "technical_analysis" not in st.session_state:
-            st.session_state["technical_analysis"] = json.dumps(kb.get_technical_analysis())
-        if "technical_indicator" not in st.session_state:
-            st.session_state["technical_indicator"] = kb.get_technical_indicators()
+            st.session_state["technical_analysis"] = kb.get_technical_analysis()
         if "central_bank" not in st.session_state:
-            st.session_state["central_bank"] = json.dumps(kb.get_central_bank())
+            st.session_state["central_bank"] = kb.get_central_bank()
         
         with st.expander("Economic Indicators"):
-            st.json(json.loads(st.session_state["economic_indicators"]))
+            st.write(st.session_state["economic_indicators"])
         with st.expander("Technical Analysis"):
-            st.json(json.loads(st.session_state["technical_analysis"]))
-        with st.expander("Technical Indicators"):
-            st.write(st.session_state["technical_indicator"])
+            st.write(st.session_state["technical_analysis"])
+        with st.expander("Technical News"):
+            st.write(st.session_state["technical_news"])
         with st.expander("Central Bank"):
-            st.json(json.loads(st.session_state["central_bank"]))
+            st.write(st.session_state["central_bank"])
 
         if "prefix_messages" not in st.session_state:
             st.session_state["prefix_messages"] = agent.formulate_first_round_messages(
                 st.session_state["economic_indicators"], 
                 st.session_state["technical_analysis"],
-                st.session_state["technical_indicator"],
+                st.session_state["technical_news"],
                 st.session_state["central_bank"]
             )
         if "messages" not in st.session_state:

@@ -12,15 +12,19 @@ import os
 
 
 # Set up Chrome options
-def scrape_pair_overview():
+def scrape_pair_overview(chromedriver_version):
     time_begin = time.time()
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
     chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
     # Set up the Chrome driver
-    service = Service(ChromeDriverManager().install())
+    chrome_path = '/usr/bin/chromium'
+    chrome_options.binary_location = chrome_path
+    service = Service(ChromeDriverManager(version=chromedriver_version).install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # Navigate to the website

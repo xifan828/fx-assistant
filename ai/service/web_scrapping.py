@@ -100,7 +100,7 @@ class TechnicalNewsScrapper:
                 if sub_page_websites[0]["article"] is not None:
                     break
                 else:
-                    time.sleep(5)
+                    time.sleep(1)
                     continue
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
@@ -123,7 +123,7 @@ class TechnicalNewsScrapper:
         parser = PydanticOutputParser(pydantic_object=ArticlesExtraction)
 
         system_prompt = """You are provided with the content scrapped from a website. Your task is to extract the **FIRST** {article_number} appearing technical articles and their urls to the user.
-If you can find specific technical reports, Wrap the output in `json` tags
+You must wrap the output in `json` tags
 {format_instructions}.
 If you can not find specific technical reports, set the 'article' and 'url' value to null.
 """
@@ -167,12 +167,11 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
         system_prompt = f"""You are an advanced Forex Market Analyst specializing in the EUR/USD currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
 You will be provided with the latest articles related to the EUR/USD forex market. Each article will include a title and a summary. 
 Your tasks are:
-1. Condense article information.
-2. Extract key insights impacting EUR/USD.
-3. Identify trends and potential market drivers.
-4. Highlight conflicting viewpoints.
-5. Quantify potential impacts when possible.
-6. Summarize analysis: key drivers, impacts, and risks.
+1. Extract key insights impacting EUR/USD.
+2. Identify trends and potential market drivers.
+3. Highlight conflicting viewpoints.
+4. Quantify potential impacts when possible.
+5. Summarize analysis: key drivers, impacts, and risks.
 Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
 """
 

@@ -5,40 +5,38 @@ from langchain_core.output_parsers import StrOutputParser
 import base64
 from langchain_core.messages import HumanMessage, SystemMessage
 from ai.service.technical_indicators import TechnicalIndicators
+from datetime import datetime
+
 
 class TechnicalAnalysis:
     def __init__(self, analysis_model = None, synthesis_model = None):
-        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=1.0, max_tokens=512).get_model()
-        self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=1.0, max_tokens=1024).get_model()
+        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
+        self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
 
-        self.system_prompt_chart = """You are an expert forex analyst specializing in EUR/USD pair technical analysis. You will analyze the user's EUR/USD price chart images. Retail Forex traders will use your analysis to make informed trading decisions and manage risk.
-For the chart:
-- Recognize significant chart patterns.
+        self.system_prompt_analysis = """As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with data of EUR/USD rates and technical indicators.
+ You taks is to:
+- Recognize significant price patterns. 
 - Determine overall trend direction.
 - Provide short-term price outlook
-Provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID making forex trading risks and the importance of personal research."""
+You should provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID making forex trading risks and the importance of personal research.
+Retail Forex traders will use your analysis to make informed trading decisions and manage risk. 
+Start you output with `### EUR/USD Technical Analysis within <period>`"""
 
-        self.system_prompt_technicals = """You are an expert forex analyst specializing in EUR/USD pair technical indicators analysis. You will analyze the user's EUR/USD technical indicator images. Retail Forex traders will use your analysis to make informed trading decisions and manage risk.
-For the technical indicators:
-- Interpret moving averages (e.g., Simple, Exponential) and their crossovers.
-- Analyze oscillators (e.g., RSI, MACD, Stochastic) for overbought/oversold conditions and divergences.
-- Evaluate trend strength indicators (e.g., ADX).
-- Provide short-term trading sentiment based on indicator readings.
-Provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID discussing forex trading risks and the importance of personal research."""
+        self.system_prompt_technicals = """You are an expert forex analyst specializing in EUR/USD pair technical indicators analysis. You will be provided with an image of the EUR/USD technical indicators. 
+Your task is ONLY to extract the key indicators, their value, and their signal. 
+Your output should look like this.
+### Oscillators
+Relative Strength Index (14), <actual value>, <actual signal>
+...
 
-        self.system_prompt_pivot = """You are an expert forex analyst specializing in EUR/USD pair technical analysis, with a focus on pivot points. You will analyze the user's EUR/USD pivot point chart images. Retail Forex traders will use your analysis to make informed trading decisions and manage risk. 
-For the pivot point chart:
-- Identify the standard pivot point (P) and key support/resistance levels (S1, S2, S3, R1, R2, R3).
-- Determine how current price relates to these pivot levels.
-- Recognize potential breakouts or reversals near pivot levels.
-- Assess overall trend direction based on price action around pivot points.
-- Provide short-term price outlook considering pivot level interactions. 
-Provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID making forex trading risks and the importance of personal research."""
+### Moving Averages
+Exponential Moving Average (10), <actual value>, <actual signal>
+...
+"""
 
-        self.system_prompt_synthesis = """You are an advanced forex analysis synthesizer specializing in the EUR/USD pair. Your role is to integrate and interpret multiple analyses across various timeframes and technical indicators. Retail Forex traders will use your synthesized insights to make informed trading decisions and manage risk.
+        self.system_prompt_synthesis = """You are an advanced forex analysis synthesizer specializing in the EUR/USD pair. Your role is to integrate and interpret multiple analyses across various timeframes. Retail Forex traders will use your synthesized insights to make informed trading decisions and manage risk.
 For the synthesized analysis:
-- Compile and evaluate chart analyses from 1-day, 5-day, and 1-month timeframes.
-- Integrate technical indicator readings from 1-hour, 4-hour, and 1-day intervals.
+- Compile and evaluate analyses from 1-day, 5-day, and 1-month timeframes.
 - Identify consistent patterns or conflicting signals across timeframes.
 - Determine the overall market sentiment and potential trend direction.
 - Highlight key support and resistance levels that align across multiple analyses.
@@ -51,11 +49,11 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
         with open(image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
     
-    def create_analysis_chain(self):
-        system_message = SystemMessage(content="{system_prompt}")
+    def create_technicals_extraction_chain(self):
+        system_message = SystemMessage(content=self.system_prompt_technicals)
         user_message = HumanMessage(
             content=[
-                {"type": "text", "text": "{file_name} is uploaded. The current EUR/USD price is {price_now}. In today, open price is {price_open}, daily highest is {daily_high}, daily lowest is {daily_low}"},
+                {"type": "text", "text": "{file_name} is uploaded"},
                 {"type": "image_url", "image_url": {"url": "{encoded_image}"}},  # Use base64 string here
             ]
         )
@@ -66,52 +64,80 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
         chain = prompt | self.analysis_model | StrOutputParser()
         return chain
     
-    def create_analysis_tasks(self):
+    def create_technicals_extraction_tasks(self):
         encoded_images = {}
         for file_name in os.listdir("data/"):
             if file_name.endswith("png"):
                 encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/{file_name}"))
-
-        ti = TechnicalIndicators(interval="1m", period="1d")
-        ti.download_data()
-        data = ti.data
-        price_open = data.iloc[0, 0].round(4)
-        price_now = data.iloc[-1, 0].round(4)
-        daily_low = data["Close"].min().round(4)
-        daily_high = data["Close"].max().round(4)
-
-        tasks = []
-        for file_name, encoded_image in encoded_images.items():
-            if "eur_usd" in file_name:
-                input_dic = {
-                    "file_name": file_name, "price_now": price_now, "price_open": price_open, "daily_high": daily_high, "daily_low": daily_low, "system_prompt": self.system_prompt_chart, "encoded_image": encoded_image
-                }
-            if "technicals" in file_name:
-                input_dic = {
-                    "file_name": file_name, "price_now": price_now, "price_open": price_open, "daily_high": daily_high, "daily_low": daily_low, "system_prompt": self.system_prompt_technicals, "encoded_image": encoded_image
-                }
-            if "pivot" in file_name:
-                input_dic = {
-                    "file_name": file_name, "price_now": price_now, "price_open": price_open, "daily_high": daily_high, "daily_low": daily_low, "system_prompt": self.system_prompt_pivot, "encoded_image": encoded_image
-                }
-            tasks.append(input_dic)
+        
+        tasks = [{"file_name": k, "encoded_image": v} for k, v in encoded_images.items()]
         return tasks
     
-    def formulate_analysis_results(self, tasks, results):
-        results_formulated = ""
+    def extract_technical_indicators(self):
+        tasks = self.create_technicals_extraction_tasks()
+        extraction_chain = self.create_technicals_extraction_chain()
+        results = extraction_chain.batch(tasks)
+        technical_indicators = {"1_day": "", "1_hour": "", "15_min": ""}
+
         for task, result in zip(tasks, results):
-            image_name = task["file_name"]
-            if "eur_usd" in image_name:
-                chart_range = " ".join(image_name.split("_")[-2:])
-                temp_str = f"```\nAnalysis on the EUR USD chart within {chart_range}\n{result}\n```\n"
-            if "technicals" in image_name:
-                technical_interval = " ".join(image_name.split("_")[-3:])
-                temp_str = f"```\nAnalysis on the EUR USD technical indicators with {technical_interval}\n{result}\n```\n"
-            if "pivot" in image_name:
-                technical_interval = " ".join(image_name.split("_")[-3:])
-                temp_str = f"```\nAnalysis on the EUR USD pivot points with {technical_interval}\n{result}\n```\n"
-            results_formulated += temp_str
-        return results_formulated
+            if "1_day" in task["file_name"]:
+                technical_indicators["1_day"] += result
+            elif "1_hour" in task["file_name"]:
+                technical_indicators["1_hour"] += result
+            else:
+                technical_indicators["15_min"] += result
+        return technical_indicators
+    
+    def extract_eur_usd_rate(self):
+        ti = TechnicalIndicators()
+        def transform(data):
+            data['Close_str'] = data['Close'].map(lambda x: f'{x:.4f}')
+            data = data["Close_str"].to_dict()
+            new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
+            return new_data
+        rate_1_day = transform(ti.download_data(period="1d", interval="15m"))
+        rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
+        rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
+        rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month}
+        return rates
+
+        
+    def create_analysis_chain(self):
+        user_message_template = """{date}. Below are the latest data of EUR/USD rates with a period of {rates_period} and interval of {rates_interval}.
+{rates}
+Below are the technical indicators with an interval of {ti_interval}.
+{technical_indicators}
+"""
+        prompt_analysis = ChatPromptTemplate.from_messages([
+            ("system", self.system_prompt_analysis),
+            ("user", user_message_template)
+        ])
+
+        chain = prompt_analysis | self.analysis_model | StrOutputParser()
+        return chain
+    
+    def create_analysis_tasks(self, rates, technical_indicators):
+        now = datetime.now()
+        formatted_date = now.strftime("Today is %A, %d %B, %Y")
+
+        tasks = []
+        tasks.append({
+            "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"]
+        })
+        tasks.append({
+            "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"]
+        })
+        tasks.append({
+            "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"]
+        })
+        return tasks
+
+    def create_analysis(self, rates, technical_indicators):
+        tasks = self.create_analysis_tasks(rates, technical_indicators)
+        analysis_chain = self.create_analysis_chain()
+        results = analysis_chain.batch(tasks)
+        analysis = "\n".join(results)
+        return analysis
     
     def create_synthesis_chain(self):
         prompt_synthesis = ChatPromptTemplate.from_messages([
@@ -122,17 +148,24 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
         synthesis_chain = prompt_synthesis | self.synthesis_model | StrOutputParser()
         return synthesis_chain
     
-    def run(self):
-        analysis_chain = self.create_analysis_chain()
-        analysis_tasks = self.create_analysis_tasks()
-        analysis_results = analysis_chain.batch(analysis_tasks)
-        analysis_results_formulated = self.formulate_analysis_results(analysis_tasks ,analysis_results)
+    def create_synthesis(self, analysis):
         synthesis_chain = self.create_synthesis_chain()
-        synthesis_result = synthesis_chain.invoke({"results": analysis_results_formulated})
-        return synthesis_result
+        results = synthesis_chain.invoke({"results": analysis})
+        return results
+    
+    def run(self):
+        technical_indicators = self.extract_technical_indicators()
+        rates = self.extract_eur_usd_rate()
+        analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
+        synthesis = self.create_synthesis(analysis=analysis)
+        return synthesis
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis()
-    print(ta.run())
-
+    import time 
+    begin_time = time.time()
+    synthesis = ta.run()
+    end_time = time.time()
+    print(synthesis)
+    print(f"Used {end_time-begin_time:.2f}")
 

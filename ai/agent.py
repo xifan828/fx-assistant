@@ -7,10 +7,12 @@ from ai.parameters import *
 from ai.config import Config
 import asyncio
 from typing import List, Dict
-import json
+import time
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -147,6 +149,33 @@ Output nothing except the json tags.
         return response
     
 
+# class KnowledgeBase:
+#     def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
+#         self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
+#         self.technical_analysis_root_website = technical_analysis_root_website if technical_analysis_root_website is not None else TECHNICAL_ANALYSIS_ROOT_WEBSITE
+#         self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
+
+#     def get_economic_indicators(self) -> Dict:
+#         te_scrapper = TradingEconomicsScraper()
+#         scrapped_content = asyncio.run(te_scrapper.scrape_websites(self.economic_indicators_websites))
+#         return scrapped_content
+    
+#     def get_technical_news(self) -> List[Dict]:
+#         te_scrapper = TechnicalNewsScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
+#         results = te_scrapper.scrape_technical_analysis()
+#         return results
+    
+#     def get_technical_analysis(self, is_local: bool = False) -> str:
+#         scrape_pair_overview(is_local)
+#         ta_scrapper = TechnicalAnalysis()
+#         results = ta_scrapper.run()
+#         return results
+    
+#     def get_central_bank(self) -> List[str]:
+#         ai_search = PerplexitySearch()
+#         results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
+#         return results
+
 class KnowledgeBase:
     def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
         self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
@@ -174,22 +203,29 @@ class KnowledgeBase:
         results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
         return results
 
+    def get_all_data(self, is_local: bool = False):
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            future_to_data = {
+                executor.submit(self.get_economic_indicators): "Economic Indicators",
+                executor.submit(self.get_technical_news): "Technical News",
+                executor.submit(self.get_technical_analysis, is_local): "Technical Analysis",
+                executor.submit(self.get_central_bank): "Central Bank"
+            }
+            
+            results = {}
+            for future in as_completed(future_to_data):
+                data_name = future_to_data[future]
+                try:
+                    results[data_name] = future.result()
+                except Exception as exc:
+                    print(f'{data_name} generated an exception: {exc}')
+                    results[data_name] = None
+            
+            return results
+
 if __name__ == "__main__":
-    kb = KnowledgeBase()
-    print("Getting economic indicators")
-    economic_indicators = kb.get_economic_indicators()
-    print("Getting technical news")
-    technical_news = kb.get_technical_news()
-    #print(technical_news)
-    print("Getting technical analysis")
-    technical_analysis = kb.get_technical_analysis(is_local=True)
-    print("Getting central bank")
-    central_bank = kb.get_central_bank()
 
-    print("Agent starts answering.")
-    agent = StrtegyAgent(model_name="gpt-4o")
-    print(agent.generate_strategy(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_news=technical_news, central_bank=central_bank))
-
+    pass
 
 
     

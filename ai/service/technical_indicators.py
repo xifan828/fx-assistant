@@ -13,11 +13,14 @@ class TechnicalIndicators:
         self.indicators = {}
         self.oscillators = {}
 
-    def download_data(self):
+    def download_data(self, interval, period):
         try:
-            self.data = yf.download(self.ticker_symbol, period=self.period, interval=self.interval)
+            self.data = yf.download(self.ticker_symbol, period=period, interval=interval)
+            return self.data
         except Exception as e:
             print(f"Error while downloading. {e}")
+            return None
+    
 
     def calculate_indicators(self):
         if self.data is not None:

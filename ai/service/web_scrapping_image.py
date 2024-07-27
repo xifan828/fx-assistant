@@ -22,7 +22,9 @@ def scrape_pair_overview(is_local):
 
     # Set up the Chrome driver
     if is_local:
-        service = Service(ChromeDriverManager().install())
+        chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
+        service = Service(chrome_driver_path)
+        # Initialize Chrome driver with options
         driver = webdriver.Chrome(service=service, options=chrome_options)
     else:
         chrome_path = '/usr/bin/chromium'
@@ -32,52 +34,42 @@ def scrape_pair_overview(is_local):
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # Navigate to the website
-    url = "https://www.google.com/finance/quote/EUR-USD?sa=X&ved=2ahUKEwiYxI_g9L2HAxWaa0EAHb1zGVIQmY0JegQIGRAw"  # Replace with the website you want to scrape
-    driver.get(url)
+    # url = "https://www.google.com/finance/quote/EUR-USD?sa=X&ved=2ahUKEwiYxI_g9L2HAxWaa0EAHb1zGVIQmY0JegQIGRAw"  # Replace with the website you want to scrape
+    # driver.get(url)
 
-    time.sleep(2)
-    try:
-        consent_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all')]"))
-        )
-        consent_button.click()
-        print("Cookie consent accepted")
-        time.sleep(2)  # Wait for the page to reload after accepting cookies
-    except TimeoutException:
-        print("Cookie consent button not found or not needed")
+    # time.sleep(2)
+    # try:
+    #     consent_button = WebDriverWait(driver, 10).until(
+    #         EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all')]"))
+    #     )
+    #     consent_button.click()
+    #     print("Cookie consent accepted")
+    #     time.sleep(2)  # Wait for the page to reload after accepting cookies
+    # except TimeoutException:
+    #     print("Cookie consent button not found or not needed")
 
-    # Set window size to full page size
-    driver.set_window_size(1920, 1080)
-    driver.save_screenshot("data/eur_usd_chart_1_day.png")
+    # # Set window size to full page size
+    # driver.set_window_size(1920, 1080)
+    # driver.save_screenshot("data/eur_usd_chart_1_day.png")
 
-    second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="5dayTab"]'
-    second_button = driver.find_element("xpath", second_button_xpath)
-    driver.execute_script("arguments[0].click();", second_button)
-    time.sleep(1.5)
-    driver.save_screenshot("data/eur_usd_chart_5_days.png")
+    # second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="5dayTab"]'
+    # second_button = driver.find_element("xpath", second_button_xpath)
+    # driver.execute_script("arguments[0].click();", second_button)
+    # time.sleep(1.5)
+    # driver.save_screenshot("data/eur_usd_chart_5_days.png")
 
-    second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="1monthTab"]'
-    second_button = driver.find_element("xpath", second_button_xpath)
-    driver.execute_script("arguments[0].click();", second_button)
-    time.sleep(1.5)
-    driver.save_screenshot("data/eur_usd_chart_1_month.png")
+    # second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="1monthTab"]'
+    # second_button = driver.find_element("xpath", second_button_xpath)
+    # driver.execute_script("arguments[0].click();", second_button)
+    # time.sleep(1.5)
+    # driver.save_screenshot("data/eur_usd_chart_1_month.png")
 
     url = "https://www.tradingview.com/symbols/EURUSD/technicals/"
     driver.get(url)
     driver.execute_script("window.scrollBy(0, 550);")
-    time.sleep(5)
+    time.sleep(3)
     driver.set_window_size(1920, 1920)
     driver.save_screenshot("data/technicals_1_day_interval.png")
-
-    second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="4h"]'
-    second_button = driver.find_element("xpath", second_button_xpath)
-    driver.execute_script("arguments[0].scrollIntoView(true);", second_button)
-    time.sleep(1)  # wait a bit for scrolling
-    driver.execute_script("arguments[0].click();", second_button)
-    # Wait for any potential page changes to take effect
-    time.sleep(3)
-    driver.execute_script("window.scrollBy(0, -100);")
-    driver.save_screenshot("data/technicals_4_hours_interval.png")
 
     second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="1h"]'
     second_button = driver.find_element("xpath", second_button_xpath)
@@ -88,6 +80,16 @@ def scrape_pair_overview(is_local):
     time.sleep(3)
     driver.execute_script("window.scrollBy(0, -100);")
     driver.save_screenshot("data/technicals_1_hour_interval.png")
+
+    second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="15m"]'
+    second_button = driver.find_element("xpath", second_button_xpath)
+    driver.execute_script("arguments[0].scrollIntoView(true);", second_button)
+    time.sleep(1)  # wait a bit for scrolling
+    driver.execute_script("arguments[0].click();", second_button)
+    # Wait for any potential page changes to take effect
+    time.sleep(3)
+    driver.execute_script("window.scrollBy(0, -100);")
+    driver.save_screenshot("data/technicals_15_min_interval.png")
 
     driver.quit()
 

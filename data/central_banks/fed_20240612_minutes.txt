@@ -1,0 +1,17 @@
+The Federal Open Market Committee (FOMC) held its meeting on June 11-12, 2024, where it assessed the current economic conditions and monetary policy. Key points from the minutes include:
+
+1. **Economic Growth and Labor Market**: The U.S. economy is expanding at a solid pace, with strong job gains and a low unemployment rate. However, the unemployment rate has slightly increased to 4.0%. Labor market conditions are improving, with a better balance between labor demand and supply.
+
+2. **Inflation Trends**: Inflation remains elevated but has shown modest progress towards the FOMC's 2% target. The 12-month change in the Personal Consumption Expenditures (PCE) price index was 2.7% in April, with core inflation at 2.8%. Recent monthly readings indicate a slowdown in inflation pressures.
+
+3. **Financial Conditions**: Financial conditions have eased slightly, driven by rising equity prices and a consensus that the federal funds rate has peaked. Treasury yields have declined, particularly real yields, while inflation compensation has also decreased.
+
+4. **Monetary Policy Stance**: The FOMC decided to maintain the federal funds rate target range at 5.25% to 5.50%. Members expressed that they would not consider lowering rates until there is greater confidence that inflation is moving sustainably towards the 2% goal.
+
+5. **Future Outlook**: Participants noted that while the economic outlook is uncertain, risks to achieving employment and inflation goals have improved. They emphasized the need for patience in allowing the current restrictive policy stance to work through the economy.
+
+6. **International Developments**: Other central banks, including the European Central Bank and the Bank of Canada, have begun easing their monetary policies, which could influence U.S. economic conditions.
+
+7. **Next Steps**: The FOMC will continue to monitor incoming data and adjust its policy as necessary, with the next meeting scheduled for July 30-31, 2024.
+
+Overall, the FOMC remains committed to its dual mandate of maximum employment and stable prices, with a cautious approach to future monetary policy adjustments based on evolving economic conditions.

@@ -3,6 +3,7 @@ from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrap
 from ai.service.web_scrapping_image import scrape_pair_overview
 from ai.service.technical_analysis import TechnicalAnalysis
 from ai.service.ai_search import PerplexitySearch
+from ai.service.central_banks import ECB, FED
 from ai.parameters import *
 from ai.config import Config
 import asyncio
@@ -149,38 +150,11 @@ Output nothing except the json tags.
         return response
     
 
-# class KnowledgeBase:
-#     def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
-#         self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
-#         self.technical_analysis_root_website = technical_analysis_root_website if technical_analysis_root_website is not None else TECHNICAL_ANALYSIS_ROOT_WEBSITE
-#         self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
-
-#     def get_economic_indicators(self) -> Dict:
-#         te_scrapper = TradingEconomicsScraper()
-#         scrapped_content = asyncio.run(te_scrapper.scrape_websites(self.economic_indicators_websites))
-#         return scrapped_content
-    
-#     def get_technical_news(self) -> List[Dict]:
-#         te_scrapper = TechnicalNewsScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
-#         results = te_scrapper.scrape_technical_analysis()
-#         return results
-    
-#     def get_technical_analysis(self, is_local: bool = False) -> str:
-#         scrape_pair_overview(is_local)
-#         ta_scrapper = TechnicalAnalysis()
-#         results = ta_scrapper.run()
-#         return results
-    
-#     def get_central_bank(self) -> List[str]:
-#         ai_search = PerplexitySearch()
-#         results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
-#         return results
-
 class KnowledgeBase:
     def __init__(self, economic_indicators_websites: Dict = None, technical_analysis_root_website: str = None, ai_search_queries: List[str] = None):
         self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
         self.technical_analysis_root_website = technical_analysis_root_website if technical_analysis_root_website is not None else TECHNICAL_ANALYSIS_ROOT_WEBSITE
-        self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
+        #self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
 
     def get_economic_indicators(self) -> Dict:
         te_scrapper = TradingEconomicsScraper()
@@ -189,7 +163,7 @@ class KnowledgeBase:
     
     def get_technical_news(self) -> List[Dict]:
         te_scrapper = TechnicalNewsScrapper(root_page_url=self.technical_analysis_root_website, top_k=10)
-        results = te_scrapper.scrape_technical_analysis()
+        results = te_scrapper.scrape_news()
         return results
     
     def get_technical_analysis(self, is_local: bool = False) -> str:
@@ -199,8 +173,25 @@ class KnowledgeBase:
         return results
     
     def get_central_bank(self) -> List[str]:
-        ai_search = PerplexitySearch()
-        results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
+        # ai_search = PerplexitySearch()
+        # results = asyncio.run(ai_search.multiple_search(self.ai_search_queries))
+        ecb = ECB()
+        fed = FED()
+        ecb_results = ecb.run()
+        fed_results = fed.run()
+        results = f"""# European Central Bank
+{ecb_results['date']}
+## Statement
+{ecb_results['statement']}
+## Statement with Q & A
+{ecb_results['qa']}
+# Federal Reserve System US
+{fed_results['date']}
+## Statement
+{fed_results['statement']}
+## Minutes
+{fed_results['minutes']}
+"""
         return results
 
     def get_all_data(self, is_local: bool = False):
@@ -224,8 +215,8 @@ class KnowledgeBase:
             return results
 
 if __name__ == "__main__":
-
-    pass
+    kb = KnowledgeBase()
+    print(kb.get_all_data(is_local=True))
 
 
     

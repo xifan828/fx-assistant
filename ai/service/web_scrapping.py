@@ -91,10 +91,12 @@ class TechnicalNewsScrapper:
         self.ai_scrape_prefix = ai_scrape_prefix if ai_scrape_prefix else "https://r.jina.ai/"
         self.top_k = top_k
         self.context_length = self.top_k * 1500
+        self.headers = {'Authorization': 'Bearer jina_b37b7eba34a644cfa1f8160db31778d7laDb6g0DMobEA5ZGTtn9L9Ev1mcy'}
+
     
-    def scrape_technical_analysis(self) -> str:
+    def scrape_news(self) -> str:
         try:
-            for i in range(5):
+            for i in range(10):
                 root_page_content = self.scrape_root_page()
                 sub_page_websites = self.parse_root_page(root_page_content)
                 if sub_page_websites[0]["article"] is not None:
@@ -102,6 +104,7 @@ class TechnicalNewsScrapper:
                 else:
                     time.sleep(1)
                     continue
+            print(sub_page_websites)
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
             final_summary = self.create_final_summary(sub_page_summaries)
@@ -205,6 +208,7 @@ if __name__ == "__main__":
     # scraper = TradingEconomicsScraper()
     # scraped_data = asyncio.run(scraper.scrape_websites(websites))
     # print(scraped_data)
-    scrapper = TechnicalAnalysisScrapper(top_k=10)
-    results = scrapper.scrape_technical_analysis()
+    scrapper = TechnicalNewsScrapper(top_k=5)
+    print(scrapper.scrape_root_page())
+    results = scrapper.scrape_news()
     print(results)

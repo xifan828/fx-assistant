@@ -69,7 +69,7 @@ def scrape_pair_overview(is_local):
     driver.execute_script("window.scrollBy(0, 550);")
     time.sleep(3)
     driver.set_window_size(1920, 1920)
-    driver.save_screenshot("data/technicals_1_day_interval.png")
+    driver.save_screenshot("data/technical_indicators/technicals_1_day_interval.png")
 
     second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="1h"]'
     second_button = driver.find_element("xpath", second_button_xpath)
@@ -79,7 +79,7 @@ def scrape_pair_overview(is_local):
     # Wait for any potential page changes to take effect
     time.sleep(3)
     driver.execute_script("window.scrollBy(0, -100);")
-    driver.save_screenshot("data/technicals_1_hour_interval.png")
+    driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval.png")
 
     second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="15m"]'
     second_button = driver.find_element("xpath", second_button_xpath)
@@ -89,7 +89,7 @@ def scrape_pair_overview(is_local):
     # Wait for any potential page changes to take effect
     time.sleep(3)
     driver.execute_script("window.scrollBy(0, -100);")
-    driver.save_screenshot("data/technicals_15_min_interval.png")
+    driver.save_screenshot("data/technical_indicators/technicals_15_min_interval.png")
 
     driver.quit()
 
@@ -104,18 +104,18 @@ def scrape_pair_overview(is_local):
     pivot_bottom_crop = 300
     pivot_right_crop = 1350
 
-    for file_name in os.listdir("data/"):
+    for file_name in os.listdir("data/technical_indicators/"):
         if file_name.endswith(".png"):
-            with Image.open(f"data/{file_name}") as img:
+            with Image.open(f"data/technical_indicators/{file_name}") as img:
                 if "eur_usd" in file_name:
                     cropped_img = img.crop((pair_left_crop, pair_top_crop, width-pair_right_crop, height-pair_bottom_crop))
-                    cropped_img.save(f"data/{file_name}")
+                    cropped_img.save(f"data/technical_indicators/{file_name}")
                 if "technicals" in file_name:
                     cropped_img = img.crop((0, technicals_top_crop, width, width-technicals_bottom_crop))
-                    cropped_img.save(f"data/{file_name}")
+                    cropped_img.save(f"data/technical_indicators/{file_name}")
                     pivot_img = img.crop((0, pivot_top_crop, width-pivot_right_crop, width-pivot_bottom_crop))
                     pivot_file_name = file_name.replace("technicals", "pivot")
-                    pivot_img.save(f"data/{pivot_file_name}")
+                    pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
 
 
 

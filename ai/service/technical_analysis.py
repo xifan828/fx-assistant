@@ -66,9 +66,9 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
     
     def create_technicals_extraction_tasks(self):
         encoded_images = {}
-        for file_name in os.listdir("data/"):
+        for file_name in os.listdir("data/technical_indicators/"):
             if file_name.endswith("png"):
-                encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/{file_name}"))
+                encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/technical_indicators/{file_name}"))
         
         tasks = [{"file_name": k, "encoded_image": v} for k, v in encoded_images.items()]
         return tasks
@@ -165,11 +165,13 @@ if __name__ == "__main__":
     ta = TechnicalAnalysis()
     import time 
     begin_time = time.time()
-    rates = ta.extract_eur_usd_rate()
-    technical_indicators = ta.extract_technical_indicators()
-    analysis = ta.create_analysis(rates=rates, technical_indicators=technical_indicators)
+    #rates = ta.extract_eur_usd_rate()
+    #technical_indicators = ta.extract_technical_indicators()
+    #print(technical_indicators)
+    #analysis = ta.create_analysis(rates=rates, technical_indicators=technical_indicators)
     #synthesis = ta.run()
-    print(analysis)
+    #print(analysis)
+    print(ta.run())
     end_time = time.time()
 
     print(f"Used {end_time-begin_time:.2f}")

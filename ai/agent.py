@@ -216,7 +216,8 @@ class KnowledgeBase:
 
 if __name__ == "__main__":
     kb = KnowledgeBase()
-    print(kb.get_all_data(is_local=True))
+    kb.get_technical_analysis(is_local=True)
+    #print(kb.get_all_data(is_local=True))
 
 
     

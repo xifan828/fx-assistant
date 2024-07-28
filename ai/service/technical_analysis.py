@@ -157,15 +157,20 @@ Below are the technical indicators with an interval of {ti_interval}.
         technical_indicators = self.extract_technical_indicators()
         rates = self.extract_eur_usd_rate()
         analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
-        synthesis = self.create_synthesis(analysis=analysis)
+        #synthesis = self.create_synthesis(analysis=analysis)
+        synthesis = analysis
         return synthesis
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis()
     import time 
     begin_time = time.time()
-    synthesis = ta.run()
+    rates = ta.extract_eur_usd_rate()
+    technical_indicators = ta.extract_technical_indicators()
+    analysis = ta.create_analysis(rates=rates, technical_indicators=technical_indicators)
+    #synthesis = ta.run()
+    print(analysis)
     end_time = time.time()
-    print(synthesis)
+
     print(f"Used {end_time-begin_time:.2f}")
 

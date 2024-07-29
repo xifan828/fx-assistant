@@ -1,6 +1,6 @@
 import streamlit as st
 from ai.agent import FXAgent, KnowledgeBase
-
+from PIL import Image
 import os
 from dotenv import load_dotenv
 
@@ -58,7 +58,17 @@ def main():
             st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
         if "central_bank" not in st.session_state:
             st.session_state["central_bank"] = st.session_state["knowledge"]["Central Bank"]
-        
+
+        technical_indicators_directory = "data/technical_indicators"
+        files = list_files_in_directory(technical_indicators_directory)
+        for file_name in files:
+            file_path = technical_indicators_directory + "/" + file_name
+            if os.path.exists(file_path):
+                image = Image.open(file_path)
+                st.image(image, caption='Sample Image', use_column_width=True)
+            else:
+                st.sidebar.write("Image file not found.")
+            
         with st.expander("Economic Indicators"):
             st.write(st.session_state["economic_indicators"])
         with st.expander("Technical Analysis"):

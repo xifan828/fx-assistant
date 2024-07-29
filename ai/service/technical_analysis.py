@@ -71,6 +71,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
                 encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/technical_indicators/{file_name}"))
         
         tasks = [{"file_name": k, "encoded_image": v} for k, v in encoded_images.items()]
+        print(tasks)
         return tasks
     
     def extract_technical_indicators(self):
@@ -155,6 +156,7 @@ Below are the technical indicators with an interval of {ti_interval}.
     
     def run(self):
         technical_indicators = self.extract_technical_indicators()
+        print(type(technical_indicators))
         print(technical_indicators)
         rates = self.extract_eur_usd_rate()
         analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)

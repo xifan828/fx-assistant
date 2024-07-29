@@ -179,19 +179,7 @@ class KnowledgeBase:
         fed = FED()
         ecb_results = ecb.run()
         fed_results = fed.run()
-        results = f"""# European Central Bank
-{ecb_results['date']}
-## Statement
-{ecb_results['statement']}
-## Statement with Q & A
-{ecb_results['qa']}
-# Federal Reserve System US
-{fed_results['date']}
-## Statement
-{fed_results['statement']}
-## Minutes
-{fed_results['minutes']}
-"""
+        results = f"{ecb_results}\n{fed_results}"
         return results
 
     def get_all_data(self, is_local: bool = False):

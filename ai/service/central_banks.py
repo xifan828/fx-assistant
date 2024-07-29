@@ -21,10 +21,20 @@ class FED:
     def check_file_exist(self, date):
         files = []
         formated_date = date.strftime('%Y%m%d')
-        for file in os.listdir("data/central_banks"):
-            if "fed" in file and formated_date in file:
-                files.append(file)
+        for file_name in os.listdir("data/central_banks"):
+            if (file_name == f"fed_{formated_date}_statement.txt") or (file_name == f"fed_{formated_date}_minutes.txt"):
+                files.append(file_name)
         return files
+    
+    def summarize(self, statement, minutes):
+        model = Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with latest announcements from the Federal Open Market Committee US. You task is to summarize it. Start your output with ## Federal Open Market Committee US"),
+            ("user", "Below is the statement:\n{statement}\nBelow is the Minutes:\n{minutes}")
+        ])
+        chain = prompt | model | StrOutputParser()
+        summary = chain.invoke({"minutes": minutes, "statement": statement})
+        return summary
     
     def scrape_statement(self, date):
         formated_date = date.strftime('%Y%m%d')
@@ -72,6 +82,7 @@ class FED:
     def run(self):
         latest_fed_date = self.check_dates()
         existed_files = self.check_file_exist(latest_fed_date)
+        print(existed_files)
         if len(existed_files) == 0:
             fed_statement = self.scrape_statement(latest_fed_date)
             if fed_statement == "":
@@ -80,12 +91,22 @@ class FED:
                 existed_files = self.check_file_exist(latest_previous_fed_date)
             else:
                 existed_files = self.check_file_exist(latest_fed_date)
-        
+
+        date_str = existed_files[0].split("_")[1]
+
         if len(existed_files) == 1:
             fed_minutes = self.scrape_minutes(latest_fed_date)
             if fed_minutes == "":
                 with open("data/central_banks/"+existed_files[0], "r", encoding='utf-8') as file:
                     fed_statement = file.read()
+                summary_file_name = f"data/central_banks/fed_{date_str}_summary_single.txt"
+                if os.path.exists(summary_file_name):
+                    with open(summary_file_name, "r", encoding='utf-8') as file:
+                        summary = file.read()
+                else:
+                    summary = self.summarize(fed_statement, fed_minutes)
+                    with open(summary_file_name, "w", encoding='utf-8') as file:
+                        file.write(summary)
             else:
                 existed_files = self.check_file_exist(latest_fed_date)
 
@@ -97,8 +118,15 @@ class FED:
                 if "minutes" in file_name:
                     with open("data/central_banks/"+file_name, "r", encoding='utf-8') as file:
                         fed_minutes = file.read()
-        date_str = existed_files[0].split("_")[1]
-        return {"date": date_str, "statement": fed_statement, "minutes": fed_minutes}
+            summary_file_name = f"data/central_banks/fed_{date_str}_summary_complete.txt"
+            if os.path.exists(summary_file_name):
+                    with open(summary_file_name, "r", encoding='utf-8') as file:
+                        summary = file.read()
+            else:
+                summary = self.summarize(fed_statement, fed_minutes)
+                with open(summary_file_name, "w", encoding='utf-8') as file:
+                    file.write(summary)
+        return summary
 
 class ECB:
     root_page_url = "https://www.ecb.europa.eu/press/press_conference/html/index.en.html"
@@ -201,24 +229,35 @@ class ECB:
     def summarize_monetary_policy_statement(self, monetary_policy_statement):
         model = Config(temperature=0.2).get_model()
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with the MONETARY POLICY STATEMENT PRESS CONFERENCE from ECB. You task is to summarize it."),
+            ("system", "As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with the MONETARY POLICY STATEMENT PRESS CONFERENCE together with questions and answers from ECB officials. You task is to summarize it."),
             ("user", "{content}")
         ])
         chain = prompt | model | StrOutputParser()
         summary = chain.invoke({"content": monetary_policy_statement})
         return summary
     
+    def summarize(self, press_release, monetary_policy):
+        model = Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with latest announcements from the European Central Bank. You task is to summarize it. Start your output with ## European Central Bank"),
+            ("user", "Below is the Monetary policy decisions:\n{press_release}\nBelow is the monetary policy statement with Q&A:\n{monetary_policy}")
+        ])
+        chain = prompt | model | StrOutputParser()
+        summary = chain.invoke({"press_release": press_release, "monetary_policy": monetary_policy})
+        return summary
+    
     def check_file_exist(self, date):
         files = []
-        for file in os.listdir("data/central_banks"):
-            if "ecb" in file and date in file:
-                files.append(file)
+        for file_name in os.listdir("data/central_banks"):
+            if (file_name == f"ecb_{date}_statement.txt") or (file_name == f"ecb_{date}_qa.txt"):
+                files.append(file_name)
         return files
     
     def run(self):
         html_content = self.scrape_website(self.root_page_url)
         date = self.find_date(html_content)
         existed_files = self.check_file_exist(date)
+        print(existed_files)
         if len(existed_files) == 0:
             press_release_url = self.main_page_url + self.find_press_release_href(html_content)
             press_release_html_content = self.scrape_website(press_release_url)
@@ -233,8 +272,15 @@ class ECB:
             self.save_to_txt(presse_release, f"data/central_banks/ecb_{date}_statement.txt")
             if monetary_policy_summary != "":
                 self.save_to_txt(monetary_policy_summary, f"data/central_banks/ecb_{date}_qa.txt")
-            return {"date": date, "statement": presse_release, "qa": monetary_policy_summary}
+                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_complete.txt")
+            else:
+                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_single.txt")
+            return summary
+        
         if len(existed_files) == 1:
+            presse_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
             try:
                 monetary_policy_url = self.main_page_url + self.find_monetary_policy_statement_href(html_content)
                 monetary_policy_html_content = self.scrape_website(monetary_policy_url)
@@ -244,12 +290,27 @@ class ECB:
                 monetary_policy_summary = ""
             if monetary_policy_summary != "":
                 self.save_to_txt(monetary_policy_summary, f"data/central_banks/ecb_{date}_qa.txt")
-            presse_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
-            return {"date": date, "statement": presse_release, "qa": monetary_policy_summary}
+                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_complete.txt")
+            else:
+                summary_file_path = f"data/central_banks/ecb_{date}_summary_single.txt"
+                if os.path.exists(summary_file_path):
+                    summary = self.read_from_txt(summary_file_path)
+                else:
+                    summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                    self.save_to_txt(summary, summary_file_path)
+            return summary
+
         if len(existed_files) == 2:
             presse_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
             monetary_policy_summary = self.read_from_txt(f"data/central_banks/ecb_{date}_qa.txt")
-            return {"date": date, "statement": presse_release, "qa": monetary_policy_summary}
+            summary_file_path = f"data/central_banks/ecb_{date}_summary_complete.txt"
+            if os.path.exists(summary_file_path):
+                summary = self.read_from_txt(summary_file_path)
+            else:
+                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                self.save_to_txt(summary, summary_file_path)
+            return summary
 
     
 if __name__ == "__main__":

@@ -155,6 +155,7 @@ Below are the technical indicators with an interval of {ti_interval}.
     
     def run(self):
         technical_indicators = self.extract_technical_indicators()
+        print(technical_indicators)
         rates = self.extract_eur_usd_rate()
         analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
         #synthesis = self.create_synthesis(analysis=analysis)

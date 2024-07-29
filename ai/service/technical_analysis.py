@@ -155,6 +155,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         return results
     
     def run(self):
+        print("extracting ti")
         technical_indicators = self.extract_technical_indicators()
         print(type(technical_indicators))
         print(technical_indicators)

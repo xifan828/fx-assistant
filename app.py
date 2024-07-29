@@ -11,6 +11,12 @@ def check_email(email):
     allowed_emails = os.getenv("ALLOWED_EMAILS", "").split(',')
     return email.strip().lower() in [e.strip().lower() for e in allowed_emails]
 
+def list_files_in_directory(directory):
+    try:
+        return os.listdir(directory)
+    except FileNotFoundError:
+        return []
+
 def main():
 
     st.markdown("# :euro: EUR / :dollar: USD trading assistant")
@@ -28,6 +34,16 @@ def main():
             st.error("Authentication failed. Please check your email address.")
 
     if "authenticated" in st.session_state and st.session_state["authenticated"]:
+
+        technical_indicators_directory = "data/technical_indicators"
+        files = list_files_in_directory(technical_indicators_directory)
+        st.sidebar.markdown("### Technical Indicators Files")
+        if files:
+            for file in files:
+                st.sidebar.write(file)
+        else:
+            st.sidebar.write("No files found in the directory.")
+
         agent = FXAgent()
         if "knowledge" not in st.session_state:
             knowledge_base = KnowledgeBase()

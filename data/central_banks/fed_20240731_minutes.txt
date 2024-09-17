@@ -1,0 +1,36 @@
+**Summary of the Federal Open Market Committee Minutes (July 30-31, 2024)**
+
+**Financial Market Developments:**
+- Financial conditions eased slightly, with lower long-term interest rates and higher equity prices.
+- Nominal Treasury yields fell, particularly shorter-term yields, leading to a steepening yield curve.
+- Market expectations indicated a potential rate cut at the September FOMC meeting and further cuts later in the year.
+- Equity markets showed a notable appreciation in small and medium-cap stocks, while larger tech companies underperformed.
+- The effective federal funds rate remained unchanged, but repo rates increased due to higher demand for financing Treasury securities.
+
+**Economic Situation:**
+- U.S. economic activity grew solidly but at a slower pace compared to the second half of 2023.
+- Labor market conditions eased, with job gains moderating and the unemployment rate rising to 4.1%.
+- Consumer price inflation was at 2.5% in June, with core inflation slightly higher at 2.6%.
+- Real GDP growth was solid in Q2, but slower than the previous year, with private domestic final purchases showing resilience.
+- Foreign economic growth was subdued, particularly in China, while inflation pressures in advanced economies showed mixed signals.
+
+**Financial Situation:**
+- Market-implied paths for the federal funds rate declined, reflecting expectations for policy easing.
+- Stock prices rose slightly, and corporate bond yield spreads remained stable.
+- Credit availability for larger firms was solid, but tighter for smaller firms, with banks reporting tighter lending standards for commercial loans.
+
+**Economic Outlook:**
+- The staff's forecast indicated a lower growth rate for the second half of 2024, with inflation expected to decline further towards the 2% target by 2026.
+- Risks to inflation were seen as tilted to the upside, while risks to employment were viewed as increasing.
+- Participants noted that inflation had eased but remained elevated, with progress towards the 2% target.
+
+**Monetary Policy Considerations:**
+- The Committee agreed to maintain the federal funds rate target range at 5-1/4 to 5-1/2 percent.
+- Participants expressed the need for more data to confidently assess inflation's trajectory before considering rate cuts.
+- The Committee emphasized a data-dependent approach to monetary policy, with ongoing monitoring of economic indicators.
+
+**Policy Actions:**
+- The Committee directed the Federal Reserve Bank of New York to maintain the federal funds rate target range and continue reducing its securities holdings.
+- The next FOMC meeting was scheduled for September 17-18, 2024.
+
+Overall, the FOMC's discussions reflected a cautious approach to monetary policy amid signs of easing inflation and a moderating labor market, with a focus on maintaining stability and monitoring economic developments closely.

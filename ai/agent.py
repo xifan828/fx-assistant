@@ -4,6 +4,7 @@ from ai.service.web_scrapping_image import scrape_pair_overview
 from ai.service.technical_analysis import TechnicalAnalysis
 from ai.service.ai_search import PerplexitySearch
 from ai.service.central_banks import ECB, FED
+from ai.service.economic_calenders import EconomicCalenders
 from ai.parameters import *
 from ai.config import Config
 import asyncio
@@ -21,7 +22,7 @@ class FXAgent():
 
     Functionality:
     1. Data Input:
-    - The user will provide information from various categories such as economic indicators, market sentiment, political events, central bank announcements, and financial news. Each category of information is delimted with triple hashtags.
+    - The user will provide information from various categories such as economic indicators, recent financial news, technical analysis, central bank announcements, and economic events. Each category of information is delimted with triple hashtags.
     2. Individual Source Analysis
     - For each piece of information provided, the assistant will analyze its relevance and potential impact on the eur/usd exchange rate.
     - The assistant should assess the reliability of the source and the current relevance of the information based on its date and context.
@@ -57,6 +58,9 @@ class FXAgent():
     ###
     {central_bank}
     ###
+
+    - Economic Events:
+    {economic_events}
     """
 
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 1.0):
@@ -67,13 +71,14 @@ class FXAgent():
     def run(self, messages):
         return self.chat_completions(messages)
 
-    def formulate_first_round_messages(self, economic_indicators, technical_news, technical_analysis, central_bank):
+    def formulate_first_round_messages(self, economic_indicators, technical_news, technical_analysis, central_bank, economic_events):
         system_message = self.SYSTEM_MESSAGE
         user_message = self.USER_MESSAGE_TEMPLATE.format(
             economic_indicators = economic_indicators,
             technical_news = technical_news,
             technical_analysis = technical_analysis,
             central_bank = central_bank,
+            economic_events = economic_events
         )
         messages = [
             {"role": "system", "content": system_message},
@@ -181,14 +186,20 @@ class KnowledgeBase:
         fed_results = fed.run()
         results = f"{ecb_results}\n{fed_results}"
         return results
-
+    
+    def get_economic_events(self) -> str:
+        ec = EconomicCalenders()
+        results = ec.run()
+        return results
+    
     def get_all_data(self, is_local: bool = False):
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
                 executor.submit(self.get_economic_indicators): "Economic Indicators",
                 executor.submit(self.get_technical_news): "Technical News",
                 executor.submit(self.get_technical_analysis, is_local): "Technical Analysis",
-                executor.submit(self.get_central_bank): "Central Bank"
+                executor.submit(self.get_central_bank): "Central Bank",
+                executor.submit(self.get_economic_events): "Economic Events"
             }
             
             results = {}
@@ -204,8 +215,8 @@ class KnowledgeBase:
 
 if __name__ == "__main__":
     kb = KnowledgeBase()
-    kb.get_technical_analysis(is_local=True)
-    #print(kb.get_all_data(is_local=True))
+    #kb.get_technical_analysis(is_local=True)
+    print(kb.get_all_data(is_local=True))
 
 
     

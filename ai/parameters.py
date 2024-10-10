@@ -14,7 +14,8 @@ ECONOMIC_INDICATORS_WEBSITES = {
     "Inflation_Rate_US": "https://tradingeconomics.com/united-states/inflation-cpi",
     "Inflation_Rate_EU": "https://tradingeconomics.com/euro-area/inflation-cpi",
     "Unemployment_Rate_US": "https://tradingeconomics.com/united-states/unemployment-rate",
-    "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate"
+    "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate",
+    "Non_Farm_Payrolls_US": "https://tradingeconomics.com/united-states/non-farm-payrolls"
 }
 
 TECHNICAL_ANALYSIS_ROOT_WEBSITE = "https://www.tradingview.com/symbols/EURUSD/news/"

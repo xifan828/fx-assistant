@@ -91,8 +91,6 @@ def scrape_pair_overview(is_local):
     driver.execute_script("window.scrollBy(0, -100);")
     driver.save_screenshot("data/technical_indicators/technicals_15_min_interval.png")
 
-    driver.quit()
-
     width, height = 1920, 1080
     pair_left_crop = 400
     pair_right_crop = 800
@@ -118,6 +116,48 @@ def scrape_pair_overview(is_local):
                     pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
 
 
+    economics_calender_url = "https://www.tradingview.com/symbols/EURUSD/economic-calendar/"
+    driver.get(economics_calender_url)
+    driver.execute_script("window.scrollBy(0, 400);")
+    time.sleep(2)
+    
+    importance_button = driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
+    importance_button.click()
+    time.sleep(2)
+    driver.set_window_size(width, height)
+    driver.save_screenshot("data/calender/upcoming.png")
+
+    today_button = driver.find_element(By.ID, "Today")
+    today_button.click()
+    time.sleep(2)
+    driver.set_window_size(width, height)
+    driver.save_screenshot("data/calender/today.png")
+
+    # with Image.open("data/calender/today.png") as img:
+    #     cropped_img = img.crop((0, 0, width, height - 200))
+    #     cropped_img.save(f"data/calender/today.png")
+    # with Image.open("data/calender/upcoming.png") as img:
+    #     cropped_img = img.crop((0, 0, width, height - 200))
+    #     cropped_img.save(f"data/calender/upcoming.png")
+
+
+    # investing_url = "https://www.investing.com/currencies/eur-usd-technical"
+    # driver.get(investing_url)
+    # try:
+    #     accept_button = WebDriverWait(driver, 2).until(
+    #         EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'I Accept')]"))
+    #     )
+    #     accept_button.click()
+    #     print("Accepted cookie policy")
+    # except Exception as e:
+    #     print("No cookie consent popup found or issue with finding the button:", e)
+
+    # driver.execute_script("window.scrollBy(0, 400);")
+    # time.sleep(2)
+    # driver.set_window_size(1920, 1920)
+    # driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval_investing.png")
+
+    # driver.quit()
 
 
 if __name__ == "__main__":

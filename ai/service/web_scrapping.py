@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from ai.config import Config
+from ai.parameters import ECONOMIC_INDICATORS_WEBSITES
 import time
 
 # economic indicators
@@ -194,19 +195,8 @@ Your analysis will be used by forex traders of varying experience levels. Your a
 
 if __name__ == "__main__":
     start_time = time.time()
-#     websites = {
-#     "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",
-#     "GDP_EU": "https://tradingeconomics.com/euro-area/gdp-growth",
-#     "Interest_Rate_US": "https://tradingeconomics.com/united-states/interest-rate",
-#     "Interest_Rate_EU": "https://tradingeconomics.com/euro-area/interest-rate",
-#     "Inflation_Rate_US": "https://tradingeconomics.com/united-states/inflation-cpi",
-#     "Inflation_Rate_EU": "https://tradingeconomics.com/euro-area/inflation-cpi",
-#     "Unemployment_Rate_US": "https://tradingeconomics.com/united-states/unemployment-rate",
-#     "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate"
-
-# }
     # scraper = TradingEconomicsScraper()
-    # scraped_data = asyncio.run(scraper.scrape_websites(websites))
+    # scraped_data = asyncio.run(scraper.scrape_websites(ECONOMIC_INDICATORS_WEBSITES))
     # print(scraped_data)
     scrapper = TechnicalNewsScrapper(top_k=5)
     print(scrapper.scrape_root_page())

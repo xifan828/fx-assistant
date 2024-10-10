@@ -47,7 +47,7 @@ def main():
         agent = FXAgent()
         if "knowledge" not in st.session_state:
             knowledge_base = KnowledgeBase()
-            knowledge = knowledge_base.get_all_data(is_local=False)
+            knowledge = knowledge_base.get_all_data(is_local=True)
             st.session_state["knowledge"] = knowledge
    
         if "economic_indicators" not in st.session_state:
@@ -58,6 +58,8 @@ def main():
             st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
         if "central_bank" not in st.session_state:
             st.session_state["central_bank"] = st.session_state["knowledge"]["Central Bank"]
+        if "economic_events" not in st.session_state:
+            st.session_state["economic_events"] = st.session_state["knowledge"]["Economic Events"]
 
         # technical_indicators_directory = "data/technical_indicators"
         # files = list_files_in_directory(technical_indicators_directory)
@@ -77,13 +79,16 @@ def main():
             st.write(st.session_state["latest_news"])
         with st.expander("Central Bank"):
             st.write(st.session_state["central_bank"])
+        with st.expander("Economic Events"):
+            st.write(st.session_state["economic_events"])
 
         if "prefix_messages" not in st.session_state:
             st.session_state["prefix_messages"] = agent.formulate_first_round_messages(
                 st.session_state["economic_indicators"], 
                 st.session_state["technical_analysis"],
                 st.session_state["latest_news"],
-                st.session_state["central_bank"]
+                st.session_state["central_bank"],
+                st.session_state["economic_events"]
             )
         if "messages" not in st.session_state:
             st.session_state["messages"] = [

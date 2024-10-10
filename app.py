@@ -47,7 +47,7 @@ def main():
         agent = FXAgent()
         if "knowledge" not in st.session_state:
             knowledge_base = KnowledgeBase()
-            knowledge = knowledge_base.get_all_data(is_local=True)
+            knowledge = knowledge_base.get_all_data(is_local=False)
             st.session_state["knowledge"] = knowledge
    
         if "economic_indicators" not in st.session_state:

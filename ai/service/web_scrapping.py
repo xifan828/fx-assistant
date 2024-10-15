@@ -87,14 +87,14 @@ class ArticlesExtraction(BaseModel):
 
 class TechnicalNewsScrapper:
 
-    def __init__(self, root_page_url: str = None, ai_scrape_prefix: str = None, top_k: int = 5):
+    def __init__(self, root_page_url: str = None, ai_scrape_prefix: str = None, top_k: int = 5, currency_pair: str = "EUR/USD"):
         self.root_page_url = root_page_url if root_page_url else "https://www.tradingview.com/symbols/EURUSD/news/"
         self.ai_scrape_prefix = ai_scrape_prefix if ai_scrape_prefix else "https://r.jina.ai/"
         self.top_k = top_k
-        self.context_length = self.top_k * 1500
+        self.context_length = self.top_k * 1000
         self.headers = {'Authorization': 'Bearer jina_b37b7eba34a644cfa1f8160db31778d7laDb6g0DMobEA5ZGTtn9L9Ev1mcy'}
+        self.currency_pair = currency_pair
 
-    
     def scrape_news(self) -> str:
         try:
             for i in range(10):
@@ -105,6 +105,8 @@ class TechnicalNewsScrapper:
                 else:
                     time.sleep(1)
                     continue
+            print(root_page_content)
+            print("\n")
             print(sub_page_websites)
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
@@ -126,17 +128,17 @@ class TechnicalNewsScrapper:
 
         parser = PydanticOutputParser(pydantic_object=ArticlesExtraction)
 
-        system_prompt = """You are provided with the content scrapped from a website. Your task is to extract the **FIRST** {article_number} appearing technical articles and their urls to the user.
+        system_prompt = """You are provided with the content scrapped from a financial website with news regarding the {currency_pair} trading pair. Your task is to extract the **FIRST** {article_number} appearing news articles and their urls to the user.
 You must wrap the output in `json` tags
 {format_instructions}.
-If you can not find specific technical reports, set the 'article' and 'url' value to null.
+If you can not find specific news article, set the 'article' and 'url' value to null.
 """
         prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("user", "Below is the content. \n{content}")
         ]).partial(format_instructions=parser.get_format_instructions())
         chain = prompt | model | StrOutputParser()
-        response = chain.invoke({"content": scrapped_content, "article_number": self.top_k}).strip("```json").strip("```").strip()
+        response = chain.invoke({"content": scrapped_content, "article_number": self.top_k, "currency_pair": self.currency_pair}).strip("```json").strip("```").strip()
         websites = json.loads(response)
         if isinstance(websites, dict):
             websites = [websites]
@@ -156,11 +158,11 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
     def summarize_sub_pages(self, contents: List[Dict[str, str]]) -> List[Dict[str, str]]:
         model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
         prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of EUR/USD."),
+        ("system", "You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of {currency_pair}."),
         ("user", "{content}")
         ])
         chain = prompt | model | StrOutputParser()
-        results = chain.batch([{"content": content["content"]} for content in contents])
+        results = chain.batch([{"content": content["content"], "currency_pair": self.currency_pair} for content in contents])
         summaries = []
         for content, result in zip(contents, results):
             summaries.append({"article": content["article"], "summary": result})
@@ -168,10 +170,10 @@ If you can not find specific technical reports, set the 'article' and 'url' valu
         
     def create_final_summary(self, summaries: List[Dict[str, str]]):
         model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
-        system_prompt = f"""You are an advanced Forex Market Analyst specializing in the EUR/USD currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
-You will be provided with the latest articles related to the EUR/USD forex market. Each article will include a title and a summary. 
+        system_prompt = f"""You are an advanced Forex Market Analyst specializing in the {self.currency_pair} currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
+You will be provided with the latest articles related to the {self.currency_pair} forex market. Each article will include a title and a summary. 
 Your tasks are:
-1. Extract key insights impacting EUR/USD.
+1. Extract key insights impacting {self.currency_pair}.
 2. Identify trends and potential market drivers.
 3. Highlight conflicting viewpoints.
 4. Quantify potential impacts when possible.

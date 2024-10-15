@@ -18,16 +18,17 @@ class EconomicEvent(BaseModel):
     prior_value: str = Field(description="if not available, input none")
 
 class EconomicCalenders:
-    def __init__(self, analysis_model = None, synthesis_model = None):
-        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
-        self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
+    def __init__(self, analysis_model = None, extraction_model = None, currency_pair: str = "EUR/USD"):
+        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=1024).get_model()
+        self.extraction_model = extraction_model if extraction_model is not None else Config(model_name="gpt-4o", temperature=0, max_tokens=1024).get_model()
+        self.currency_pair = currency_pair
 
-        self.system_prompt_analysis = """You are an advanced AI agent specialized in analyzing EUR/USD economic calendars. Your primary function is to process economic calendars and provide concise, actionable summaries for traders. You will economic events happaned today, upcoming economic events and the current date and time as input.
+        self.system_prompt_analysis = f"""You are an advanced AI agent specialized in analyzing {self.currency_pair} economic calendars. Your primary function is to process economic calendars and provide concise, actionable summaries for traders. You will get economic events for today, upcoming economic events and the current date and time as input.
 
 ## Your tasks:
 1. Compare the events in the calendar with the provided current date and time.
 2. Generate a concise summary that includes:
-   a. A brief overview of significant past events and their outcomes.
+   a. If there is any events alreaqdy happened in today, a brief overview and their outcomes.
    b. Upcoming important events, focusing on high-impact indicators.
    c. Analysis of the time gap between past and future events.
 
@@ -41,35 +42,28 @@ class EconomicCalenders:
 
 ## Output format:
 
-1. Past Events Summary (2-3 sentences)
+1. If there is any past event, their Summary (2-3 sentences)
 2. Future Events Summary (2-3 sentences)
 3. Time Gap Analysis (1-2 sentences)
 4. Key Takeaway (1 sentence)
 
 Remember, your goal is to provide valuable, actionable insights that traders can quickly digest and use in their decision-making process."""
 
-        self.system_prompt_extraction = """You are an AI agent specialized in extracting structured data from EUR/USD economic calendar images. Your task is to analyze the provided image and extract specific information in a JSON format.
+        self.system_prompt_extraction = """You are an assistant specialized in extracting structured data from economic calendar images. Your task is to analyze the provided image and extract specific information in a JSON format.
 
 ## Your task:
-
-1. Analyze the provided economic calendar image.
-2. Extract the following information for each event in the calendar:
+ Extract the following information for each event in the calendar:
    - Time (date and time): MM-DD HH:MM
    - Area 
    - Event name
    - Actual value (if available)
-   - Forecast value
-   - Prior value
+   - Forecast value (if available)
+   - Prior value (if available)
 
 3. Output the extracted information in a JSON format.
 
-## Guidelines for data extraction:
-
-- Ensure accuracy in reading and transcribing the data from the image.
-- If a field is not available or not applicable for a particular event, use null as the value.
-- Maintain the chronological order of events as shown in the calendar.
-- Be consistent in formatting dates and times.
-- If the exact time of an event is not specified, use null for the time field.
+## Guidline
+Ensure accuracy, especially in the fields of Actual value and Forecast value
 
 ## Output format:
 
@@ -81,7 +75,7 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
     "time": "MM-DD HH:MM",
     "area": ,
     "event_name": "Name of the economic event",
-    "actual": "Actual value or null",
+    "actual": "Actual value or null or upcoming",
     "forecast": "Forecast value or null",
     "prior": "Prior value or null"
   }},
@@ -101,7 +95,7 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
         system_message = SystemMessage(content=self.system_prompt_extraction)
         user_message = HumanMessage(
             content=[
-                {"type": "text", "text": "{file_name} is uploaded"},
+                {"type": "text", "text": "{file_name} is uploaded. \n{comment}"},
                 {"type": "image_url", "image_url": {"url": "{encoded_image}"}},  # Use base64 string here
             ]
         )
@@ -109,7 +103,7 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
             ("system", system_message.content),
             ("user", user_message.content)
         ])
-        chain = prompt | self.analysis_model | StrOutputParser()
+        chain = prompt | self.extraction_model | StrOutputParser()
         return chain
     
     def create_event_extraction_tasks(self):
@@ -117,10 +111,17 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
         for file_name in os.listdir("data/calender/"):
             if file_name.endswith("png"):
                 encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/calender/{file_name}"))
-
+                
+        tasks = []
+        for k, v in encoded_images.items():
+            if "today" in k:
+                comment = "Provided economic calender image is for today. There could be no events, events happened or will happen."
+            elif "upcoming" in k:
+                comment = "Provided image is for upcoming calenders. All values in the field Actual value shall be null."
+            else:
+                comment = ""
+            tasks.append({"file_name": k, "encoded_image": v, "comment": comment})
         
-        tasks = [{"file_name": k, "encoded_image": v} for k, v in encoded_images.items()]
-        #print(tasks)
         return tasks
     
     def extract_economic_events(self):
@@ -129,10 +130,10 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
         results = extraction_chain.batch(tasks)
         for task in tasks:
             if task["file_name"] == "today":
-                events_today = f"Important events happaned today: \n {results[0]}"
+                events_today = f"Important events will happen or happaned today: \n {results[0]}"
                 events_upcoming = f"Upcoming important events : \n {results[1]}"
             else:
-                events_today = f"Important events happaned today: \n {results[1]}"
+                events_today = f"Important events will happen or happaned today: \n {results[1]}"
                 events_upcoming = f"Upcoming important events : \n {results[0]}"
             break
         results_str = events_today + "\n" + events_upcoming
@@ -162,56 +163,7 @@ Your output should be ONLY a valid JSON array of objects, where each object repr
         event_analysis = self.create_events_analysis(event_extraction)
         return event_analysis
 
-    
-#     def create_analysis_tasks(self, rates, technical_indicators):
-#         now = datetime.now()
-#         formatted_date = now.strftime("Today is %A, %d %B, %Y")
-
-#         tasks = []
-#         tasks.append({
-#             "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"]
-#         })
-#         tasks.append({
-#             "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"]
-#         })
-#         tasks.append({
-#             "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"]
-#         })
-#         return tasks
-
-#     def create_analysis(self, rates, technical_indicators):
-#         tasks = self.create_analysis_tasks(rates, technical_indicators)
-#         analysis_chain = self.create_analysis_chain()
-#         results = analysis_chain.batch(tasks)
-#         analysis = "\n".join(results)
-#         return analysis
-    
-#     def create_synthesis_chain(self):
-#         prompt_synthesis = ChatPromptTemplate.from_messages([
-#             ("system", self.system_prompt_synthesis),
-#             ("user", "{results}")
-#         ])
-
-#         synthesis_chain = prompt_synthesis | self.synthesis_model | StrOutputParser()
-#         return synthesis_chain
-    
-#     def create_synthesis(self, analysis):
-#         synthesis_chain = self.create_synthesis_chain()
-#         results = synthesis_chain.invoke({"results": analysis})
-#         return results
-    
-#     def run(self):
-#         print("extracting ti")
-#         technical_indicators = self.extract_technical_indicators()
-#         print(type(technical_indicators))
-#         print(technical_indicators)
-#         rates = self.extract_eur_usd_rate()
-#         analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
-#         #synthesis = self.create_synthesis(analysis=analysis)
-#         synthesis = analysis
-#         return synthesis
-
 if __name__ == "__main__":
-    ec = EconomicCalenders()
+    ec = EconomicCalenders(currency_pair="EUR/USD")
     results = ec.run()
     print(results)

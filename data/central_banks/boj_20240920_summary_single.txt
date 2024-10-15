@@ -1,0 +1,14 @@
+## Bank of Japan
+
+On September 20, 2024, the Bank of Japan's Policy Board unanimously decided to maintain the guideline for money market operations, aiming for the uncollateralized overnight call rate to remain around 0.25 percent. 
+
+The statement highlighted a moderate recovery in Japan's economy, with some areas showing weakness. Key points include:
+
+- **Economic Growth**: Japan's economy is expected to grow above its potential rate, supported by moderate growth in overseas economies and an improving cycle from income to spending.
+- **Consumer Prices**: The year-on-year increase in the consumer price index (CPI) is currently between 2.5-3.0 percent, driven by rising service prices and wage increases. However, the impact of past import price rises on consumer prices is diminishing.
+- **Investment Trends**: Business fixed investment is on a moderate upward trend, while housing investment remains weak. Public investment has stabilized.
+- **Financial Conditions**: Financial conditions are described as accommodative, supporting economic activity.
+- **Inflation Outlook**: Underlying inflation is expected to rise gradually due to an improving output gap and increasing medium- to long-term inflation expectations. The CPI is projected to align with the price stability target in the latter half of the projection period.
+- **Risks**: There are significant uncertainties regarding Japan's economic activity and prices, particularly related to overseas developments, commodity prices, and domestic wage and price-setting behaviors. The Bank emphasizes the need to monitor financial and foreign exchange market developments closely, as they are increasingly likely to influence prices.
+
+Overall, the Bank of Japan remains cautiously optimistic about the economic outlook while acknowledging potential risks that could impact inflation and growth.

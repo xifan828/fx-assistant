@@ -9,20 +9,22 @@ from datetime import datetime
 
 
 class TechnicalAnalysis:
-    def __init__(self, analysis_model = None, synthesis_model = None):
+    def __init__(self, analysis_model = None, synthesis_model = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
         self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
         self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
+        self.currency_pair = currency_pair
+        self.ticker = ticker
 
-        self.system_prompt_analysis = """As an expert forex analyst specializing in EUR/USD pair technical analysis. You will be provided with data of EUR/USD rates and technical indicators.
+        self.system_prompt_analysis = f"""As an expert forex analyst specializing in {self.currency_pair} pair technical analysis. You will be provided with data of {self.currency_pair} rates and technical indicators.
  You taks is to:
 - Recognize significant price patterns. 
 - Determine overall trend direction.
 - Provide short-term price outlook
 You should provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID making forex trading risks and the importance of personal research.
 Retail Forex traders will use your analysis to make informed trading decisions and manage risk. 
-Start you output with `### EUR/USD Technical Analysis within <period>`"""
+Start you output with `### {self.currency_pair} Technical Analysis within <period>`"""
 
-        self.system_prompt_technicals = """You are an expert forex analyst specializing in EUR/USD pair technical indicators analysis. You will be provided with an image of the EUR/USD technical indicators. 
+        self.system_prompt_technicals = f"""You are an expert forex analyst specializing in {self.currency_pair} pair technical indicators analysis. You will be provided with an image of the {self.currency_pair} technical indicators. 
 Your task is ONLY to extract the key indicators, their value, and their signal. 
 Your output should look like this.
 ### Oscillators
@@ -34,13 +36,13 @@ Exponential Moving Average (10), <actual value>, <actual signal>
 ...
 """
 
-        self.system_prompt_synthesis = """You are an advanced forex analysis synthesizer specializing in the EUR/USD pair. Your role is to integrate and interpret multiple analyses across various timeframes. Retail Forex traders will use your synthesized insights to make informed trading decisions and manage risk.
+        self.system_prompt_synthesis = f"""You are an advanced forex analysis synthesizer specializing in the {self.currency_pair} pair. Your role is to integrate and interpret multiple analyses across various timeframes. Retail Forex traders will use your synthesized insights to make informed trading decisions and manage risk.
 For the synthesized analysis:
 - Compile and evaluate analyses from 1-day, 5-day, and 1-month timeframes.
 - Identify consistent patterns or conflicting signals across timeframes.
 - Determine the overall market sentiment and potential trend direction.
 - Highlight key support and resistance levels that align across multiple analyses.
-- Provide a comprehensive short to medium-term outlook for EUR/USD.
+- Provide a comprehensive short to medium-term outlook for {self.currency_pair}.
 Deliver a clear, concise, and actionable synthesis. Prioritize the most significant insights that emerge from combining multiple analyses. Use professional terminology with brief explanations when necessary. AVOID discussing forex trading risks and the importance of personal research."""
 
         self.encoded_image_template = "data:image/png;base64,{base64_image}"
@@ -90,7 +92,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
         return technical_indicators
     
     def extract_eur_usd_rate(self):
-        ti = TechnicalIndicators()
+        ti = TechnicalIndicators(ticker_symbol=self.ticker)
         def transform(data):
             data['Close_str'] = data['Close'].map(lambda x: f'{x:.4f}')
             data = data["Close_str"].to_dict()
@@ -104,7 +106,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 
         
     def create_analysis_chain(self):
-        user_message_template = """{date}. Below are the latest data of EUR/USD rates with a period of {rates_period} and interval of {rates_interval}.
+        user_message_template = """{date}. Below are the latest data of {currency_pair} rates with a period of {rates_period} and interval of {rates_interval}.
 {rates}
 Below are the technical indicators with an interval of {ti_interval}.
 {technical_indicators}
@@ -123,13 +125,13 @@ Below are the technical indicators with an interval of {ti_interval}.
 
         tasks = []
         tasks.append({
-            "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"]
+            "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"], "currency_pair": self.currency_pair
         })
         tasks.append({
-            "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"]
+            "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"], "currency_pair": self.currency_pair
         })
         tasks.append({
-            "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"]
+            "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"], "currency_pair": self.currency_pair
         })
         return tasks
 

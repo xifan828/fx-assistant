@@ -5,6 +5,9 @@ from ai.config import Config
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
+import re
+import pdfplumber
+
 
 class FED:
     dates_fed = [date(2024, 6, 12), date(2024, 7, 31), date(2024, 9, 18), date(2024, 11, 7), date(2024, 12, 18)]
@@ -259,24 +262,31 @@ class ECB:
         existed_files = self.check_file_exist(date)
         print(existed_files)
         if len(existed_files) == 0:
-            press_release_url = self.main_page_url + self.find_press_release_href(html_content)
-            press_release_html_content = self.scrape_website(press_release_url)
-            presse_release = self.get_press_release(press_release_html_content)
+            try:
+                press_release_url = self.main_page_url + self.find_press_release_href(html_content)
+                press_release_html_content = self.scrape_website(press_release_url)
+                press_release = self.get_press_release(press_release_html_content)
+                self.save_to_txt(press_release, f"data/central_banks/ecb_{date}_statement.txt")
+            except:
+                press_release = ""
+
             try:
                 monetary_policy_url = self.main_page_url + self.find_monetary_policy_statement_href(html_content)
                 monetary_policy_html_content = self.scrape_website(monetary_policy_url)
                 monetary_policy = self.get_monetary_policy_statement(monetary_policy_html_content)
                 monetary_policy_summary = self.summarize_monetary_policy_statement(monetary_policy)
+                self.save_to_txt(monetary_policy_summary, f"data/central_banks/ecb_{date}_qa.txt")
             except:
                 monetary_policy_summary = ""
-            self.save_to_txt(presse_release, f"data/central_banks/ecb_{date}_statement.txt")
-            if monetary_policy_summary != "":
-                self.save_to_txt(monetary_policy_summary, f"data/central_banks/ecb_{date}_qa.txt")
+    
+            if monetary_policy_summary != "" and press_release != "":
                 summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_complete.txt")
-            else:
+            elif monetary_policy_summary != "" or press_release != "":
                 summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_single.txt")
+            else:
+                summary = f"## European Central Banks \n\nUpcoming ECB monetary policy dicisions on {date[:4]}-{date[4:6]}-{date[6:]}."
             return summary
         
         if len(existed_files) == 1:
@@ -312,10 +322,165 @@ class ECB:
                 self.save_to_txt(summary, summary_file_path)
             return summary
 
+
+class BOJ:
+    root_page_url = "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm"
+    prefix_url = "https://www.boj.or.jp/"
+    def __init__(self):
+        pass
+
+    def scrape_website(self, website):
+        response = requests.get(website)
+        if response.status_code == 200:
+            return response.text
+        else:
+            return None
+    
+    def save_to_txt(self, text, file_name):
+        with open(file_name, "w", encoding="utf-8") as file:
+                file.write(text)
+    
+    def read_from_txt(self, file_name):
+        with open(file_name, "r", encoding='utf-8') as file:
+            text = file.read()
+        return text
+    
+    def scrape_root_page(self):
+        year = datetime.today().year
+        html_content = self.scrape_website(self.root_page_url)
+        soup = BeautifulSoup(html_content, "html.parser")
+        
+        caption = soup.find("caption", {"class": "non-caption"}, string=f"Table : {year}")
+        table = caption.find_parent("table")
+        rows = table.find("tbody").find_all("tr")
+        for i in range(len(rows)):
+            cols = rows[-(i+1)].find_all("td")
+            statement_tag = cols[0].find("a")
+            outlook_tag = cols[1].find("a")
+            scrape_results = []
+            if statement_tag:
+                statement_url = self.prefix_url + statement_tag["href"]
+                scrape_results.append(statement_url)
+            if outlook_tag:
+                outlook_url = self.prefix_url + outlook_tag["href"]
+                scrape_results.append(outlook_url)
+            if statement_tag or outlook_tag:
+                break
+        return scrape_results
+    
+    def scrape_pdf_and_get_text(self, url: str):
+        response = requests.get(url)
+        if response.status_code == 200:
+            pdf_content = response.content
+            pdf_path = "data/central_banks/temp.pdf"
+            with open(pdf_path, "wb") as file:
+                file.write(pdf_content)
+            with pdfplumber.open(pdf_path) as pdf:
+                full_text = []
+                for page in pdf.pages:
+                    text = page.extract_text()
+                    full_text.append(text)
+
+            os.remove(pdf_path)
+            return "\n\n".join(full_text)
+        else:
+            print("Failed to retrieve the PDF")
+    
+    def summarize(self, content: dict):
+        model = Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
+        system_prompt = "As an expert forex analyst specializing in USD/JPY pair technical analysis. You will be provided with latest announcements from the Bank of Japan. You task is to summarize it. Start your output with ## Bank of Japan"
+        if len(content.keys()) == 2:
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", "Below is the statement on Monetary Policy:\n{statement}\nBelow is the Outlook for Economics Activity and Prices (JOB view):\n{outlook}")
+            ])
+            chain = prompt | model | StrOutputParser()
+            summary = chain.invoke({"statement": content["statement"], "outlook": content["outlook"]})
+        
+        else:
+            if "statement" in content:
+                prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", "Below is the statement on Monetary Policy:\n{statement}")
+                ])
+                chain = prompt | model | StrOutputParser()
+                summary = chain.invoke({"statement": content["statement"]})
+            if "outlook" in content:
+                prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", "Below is the Outlook for Economics Activity and Prices (JOB view):\n{outlook}")
+                ])
+                chain = prompt | model | StrOutputParser()
+                summary = chain.invoke({"outlook": content["outlook"]})
+        return summary
+
+    def check_file_exist(self, date: str):
+        files = []
+        for file_name in os.listdir("data/central_banks"):
+            if (file_name == f"boj_{date}_statement.txt") or (file_name == f"boj_{date}_outlook.txt"):
+                files.append(file_name)
+        return files
+
+    def run(self):
+        root_page_scrape_results = self.scrape_root_page()
+        latest_statement_date = "20" + re.findall(r"\d+", root_page_scrape_results[0].split("/")[-1].split(".pdf")[0])[0]
+        existed_files = self.check_file_exist(latest_statement_date)
+        summary_file_name_complete = f"data/central_banks/boj_{latest_statement_date}_summary_complete.txt"
+        summary_file_name_single = f"data/central_banks/boj_{latest_statement_date}_summary_single.txt"
+        statement_file_name = f"data/central_banks/boj_{latest_statement_date}_statement.txt"
+        outlook_file_name = f"data/central_banks/boj_{latest_statement_date}_outlook.txt"
+
+        if len(existed_files) == 2:
+            statement = self.read_from_txt(statement_file_name)
+            outlook = self.read_from_txt(outlook_file_name)
+            if os.path.exists(summary_file_name_complete):
+                summary = self.read_from_txt(summary_file_name_complete)
+            else:
+                summary = self.summarize({"statement": statement, "outlook": outlook})
+                self.save_to_txt(summary, summary_file_name_complete)
+        
+        if len(existed_files) == 1 and len(root_page_scrape_results) == 2:
+            statement = self.read_from_txt(statement_file_name)
+            outlook_txt = self.scrape_pdf_and_get_text(root_page_scrape_results[1])
+            outlook = self.summarize({"outlook": outlook_txt})
+            self.save_to_txt(outlook, outlook_file_name)
+            summary = self.summarize({"statement": statement, "outlook": outlook})
+            self.save_to_txt(summary, summary_file_name_complete)
+        
+        if len(existed_files) == 1 and len(root_page_scrape_results) == 1:
+            statement = self.read_from_txt(statement_file_name)
+            if os.path.exists(summary_file_name_single):
+                summary = self.read_from_txt(summary_file_name_single)
+            else:
+                summary = self.summarize({"statement": statement})
+                self.save_to_txt(summary, summary_file_name_single)
+        
+        if len(existed_files) == 0:
+            statement_txt = self.scrape_pdf_and_get_text(root_page_scrape_results[0])
+            self.save_to_txt(statement_txt, statement_file_name)
+            if len(root_page_scrape_results) == 1:
+                summary = self.summarize({"statement": statement_txt})
+                self.save_to_txt(summary, summary_file_name_single)
+            else:
+                outlook_txt = self.scrape_pdf_and_get_text(root_page_scrape_results[1])
+                outlook = self.summarize({"outlook": outlook_txt})
+                self.save_to_txt(outlook, outlook_file_name)
+                summary = self.summarize({"statement": statement_txt, "outlook": outlook})
+                self.save_to_txt(summary, summary_file_name_complete)
+
+        return summary
+
+
+
+
+
+
     
 if __name__ == "__main__":
-    fed = FED()
-    print(fed.run())
+    # fed = FED()
+    # print(fed.run())
 
     ecb = ECB()
     print(ecb.run())
+    # boj = BOJ()
+    # print(boj.run())

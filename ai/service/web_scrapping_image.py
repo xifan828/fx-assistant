@@ -7,12 +7,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 
 
 # Set up Chrome options
-def scrape_pair_overview(is_local):
+def scrape_technical_indicators(is_local: bool, indicator_url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -64,8 +64,7 @@ def scrape_pair_overview(is_local):
     # time.sleep(1.5)
     # driver.save_screenshot("data/eur_usd_chart_1_month.png")
 
-    url = "https://www.tradingview.com/symbols/EURUSD/technicals/"
-    driver.get(url)
+    driver.get(indicator_url)
     driver.execute_script("window.scrollBy(0, 550);")
     time.sleep(3)
     driver.set_window_size(1920, 1920)
@@ -116,23 +115,6 @@ def scrape_pair_overview(is_local):
                     pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
 
 
-    economics_calender_url = "https://www.tradingview.com/symbols/EURUSD/economic-calendar/"
-    driver.get(economics_calender_url)
-    driver.execute_script("window.scrollBy(0, 400);")
-    time.sleep(2)
-    
-    importance_button = driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
-    importance_button.click()
-    time.sleep(2)
-    driver.set_window_size(width, height)
-    driver.save_screenshot("data/calender/upcoming.png")
-
-    today_button = driver.find_element(By.ID, "Today")
-    today_button.click()
-    time.sleep(2)
-    driver.set_window_size(width, height)
-    driver.save_screenshot("data/calender/today.png")
-
     # with Image.open("data/calender/today.png") as img:
     #     cropped_img = img.crop((0, 0, width, height - 200))
     #     cropped_img.save(f"data/calender/today.png")
@@ -157,9 +139,66 @@ def scrape_pair_overview(is_local):
     # driver.set_window_size(1920, 1920)
     # driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval_investing.png")
 
-    # driver.quit()
+    driver.quit()
+
+def scrape_economic_calenders(is_local: bool, calender_url: str):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
+    chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
+
+    # Set up the Chrome driver
+    if is_local:
+        chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
+        service = Service(chrome_driver_path)
+        # Initialize Chrome driver with options
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    else:
+        chrome_path = '/usr/bin/chromium'
+        chromedriver_path = '/usr/bin/chromedriver'
+        chrome_options.binary_location = chrome_path
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    driver.get(calender_url)
+    driver.execute_script("window.scrollBy(0, 400);")
+    time.sleep(2)
+    
+    screen_shot_width = 900
+    normal_width = 1920
+    normal_height = 1080
+    line_positions = [500, 620, 750]
+
+    importance_button = driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
+    importance_button.click()
+    time.sleep(2)
+    driver.set_window_size(screen_shot_width, normal_height)
+    driver.save_screenshot("data/calender/upcoming.png")
+    driver.set_window_size(normal_width, normal_height)
+
+    today_button = driver.find_element(By.ID, "Today")
+    today_button.click()
+    time.sleep(2)
+    driver.set_window_size(screen_shot_width, normal_height)
+    driver.save_screenshot("data/calender/today.png")
+
+    for file_name in os.listdir("data/calender/"):
+        with Image.open(f"data/calender/{file_name}") as img:
+            cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
+            draw = ImageDraw.Draw(cropped_img)
+            for line_position in line_positions:
+                draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
+            
+
+            cropped_img.save(f"data/calender/{file_name}")
+    driver.quit()
 
 
 if __name__ == "__main__":
-    scrape_pair_overview(is_local=True)
+    scrape_economic_calenders(
+        is_local=True,
+        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
+    )
     #test()

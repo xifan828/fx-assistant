@@ -280,17 +280,17 @@ class ECB:
                 monetary_policy_summary = ""
     
             if monetary_policy_summary != "" and press_release != "":
-                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                summary = self.summarize(press_release=press_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_complete.txt")
             elif monetary_policy_summary != "" or press_release != "":
-                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                summary = self.summarize(press_release=press_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_single.txt")
             else:
                 summary = f"## European Central Banks \n\nUpcoming ECB monetary policy dicisions on {date[:4]}-{date[4:6]}-{date[6:]}."
             return summary
         
         if len(existed_files) == 1:
-            presse_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
+            press_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
             try:
                 monetary_policy_url = self.main_page_url + self.find_monetary_policy_statement_href(html_content)
                 monetary_policy_html_content = self.scrape_website(monetary_policy_url)
@@ -300,25 +300,25 @@ class ECB:
                 monetary_policy_summary = ""
             if monetary_policy_summary != "":
                 self.save_to_txt(monetary_policy_summary, f"data/central_banks/ecb_{date}_qa.txt")
-                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                summary = self.summarize(press_release=press_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, f"data/central_banks/ecb_{date}_summary_complete.txt")
             else:
                 summary_file_path = f"data/central_banks/ecb_{date}_summary_single.txt"
                 if os.path.exists(summary_file_path):
                     summary = self.read_from_txt(summary_file_path)
                 else:
-                    summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                    summary = self.summarize(press_release=press_release, monetary_policy=monetary_policy_summary)
                     self.save_to_txt(summary, summary_file_path)
             return summary
 
         if len(existed_files) == 2:
-            presse_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
+            press_release = self.read_from_txt(f"data/central_banks/ecb_{date}_statement.txt")
             monetary_policy_summary = self.read_from_txt(f"data/central_banks/ecb_{date}_qa.txt")
             summary_file_path = f"data/central_banks/ecb_{date}_summary_complete.txt"
             if os.path.exists(summary_file_path):
                 summary = self.read_from_txt(summary_file_path)
             else:
-                summary = self.summarize(press_release=presse_release, monetary_policy=monetary_policy_summary)
+                summary = self.summarize(press_release=press_release, monetary_policy=monetary_policy_summary)
                 self.save_to_txt(summary, summary_file_path)
             return summary
 
@@ -480,7 +480,7 @@ if __name__ == "__main__":
     # fed = FED()
     # print(fed.run())
 
-    ecb = ECB()
-    print(ecb.run())
-    # boj = BOJ()
-    # print(boj.run())
+    # ecb = ECB()
+    # print(ecb.run())
+    boj = BOJ()
+    print(boj.run())

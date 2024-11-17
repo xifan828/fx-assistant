@@ -10,7 +10,7 @@ from datetime import datetime
 
 class TechnicalAnalysis:
     def __init__(self, analysis_model = None, synthesis_model = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
-        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
+        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=512).get_model()
         self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
         self.currency_pair = currency_pair
         self.ticker = ticker
@@ -22,7 +22,7 @@ class TechnicalAnalysis:
 - Provide short-term price outlook
 You should provide clear, concise, and actionable analysis. Use professional terminology with brief explanations. AVOID making forex trading risks and the importance of personal research.
 Retail Forex traders will use your analysis to make informed trading decisions and manage risk. 
-Start you output with `### {self.currency_pair} Technical Analysis within <period>`"""
+Start you output with `### {self.currency_pair} Technical Analysis within <period, 1 day, 5 days or 3 month>`"""
 
         self.system_prompt_technicals = f"""You are an expert forex analyst specializing in {self.currency_pair} pair technical indicators analysis. You will be provided with an image of the {self.currency_pair} technical indicators. 
 Your task is ONLY to extract the key indicators, their value, and their signal. 
@@ -84,11 +84,11 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 
         for task, result in zip(tasks, results):
             if "1_day" in task["file_name"]:
-                technical_indicators["1_day"] += result
+                technical_indicators["1_day"] += result + "\n"
             elif "1_hour" in task["file_name"]:
-                technical_indicators["1_hour"] += result
+                technical_indicators["1_hour"] += result + "\n"
             else:
-                technical_indicators["15_min"] += result
+                technical_indicators["15_min"] += result + "\n"
         return technical_indicators
     
     def extract_eur_usd_rate(self):
@@ -98,15 +98,17 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
             data = data["Close_str"].to_dict()
             new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
             return new_data
+        current_price = ti.download_data(period="1d", interval="1m")["Close"].iloc[-1].round(4)
         rate_1_day = transform(ti.download_data(period="1d", interval="15m"))
         rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
         rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
-        rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month}
+        rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month, "current_price": current_price}
         return rates
 
         
     def create_analysis_chain(self):
-        user_message_template = """{date}. Below are the latest data of {currency_pair} rates with a period of {rates_period} and interval of {rates_interval}.
+        user_message_template = """{date}. The {currency_pair} is currently trading at price of {current_price}. 
+Below are the latest data of {currency_pair} rates with a period of {rates_period} and interval of {rates_interval}.
 {rates}
 Below are the technical indicators with an interval of {ti_interval}.
 {technical_indicators}
@@ -125,13 +127,16 @@ Below are the technical indicators with an interval of {ti_interval}.
 
         tasks = []
         tasks.append({
-            "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"], "currency_pair": self.currency_pair
+            "date": formatted_date, "rates_period": "1 day", "rates_interval": "15 minutes", "rates": rates["1_day"], "ti_interval": "15 minutes", "technical_indicators": technical_indicators["15_min"], 
+            "currency_pair": self.currency_pair, "current_price": rates["current_price"]
         })
         tasks.append({
-            "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"], "currency_pair": self.currency_pair
+            "date": formatted_date, "rates_period": "5 days", "rates_interval": "1 hour", "rates": rates["5_day"], "ti_interval": "1 hour", "technical_indicators": technical_indicators["1_hour"], 
+            "currency_pair": self.currency_pair, "current_price": rates["current_price"]
         })
         tasks.append({
-            "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"], "currency_pair": self.currency_pair
+            "date": formatted_date, "rates_period": "3 months", "rates_interval": "1 day", "rates": rates["3_month"], "ti_interval": "1 day", "technical_indicators": technical_indicators["1_day"], 
+            "currency_pair": self.currency_pair, "current_price": rates["current_price"]
         })
         return tasks
 
@@ -178,6 +183,7 @@ if __name__ == "__main__":
     #synthesis = ta.run()
     #print(analysis)
     print(ta.run())
+
     end_time = time.time()
 
     print(f"Used {end_time-begin_time:.2f}")

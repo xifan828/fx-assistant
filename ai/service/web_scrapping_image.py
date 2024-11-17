@@ -197,8 +197,13 @@ def scrape_economic_calenders(is_local: bool, calender_url: str):
 
 
 if __name__ == "__main__":
-    scrape_economic_calenders(
-        is_local=True,
-        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
-    )
+    # scrape_economic_calenders(
+    #     is_local=True,
+    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
+    # )
     #test()
+
+    scrape_technical_indicators(
+        is_local=True,
+        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX_IDC"
+    )

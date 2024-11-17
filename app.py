@@ -24,7 +24,7 @@ def clear_session_states(keys):
 def main():
 
     st.markdown("# Foreign exchange trading assistant")
-    st.caption("An assistant developed by Xifan Wang")
+    st.caption("An assistant developed by Xifan Wang Email: xifan828@gmail.com")
 
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False

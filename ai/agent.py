@@ -238,7 +238,7 @@ if __name__ == "__main__":
         currency_pair="EUR/USD"
     )
     #kb.get_technical_analysis(is_local=True)
-    print(kb.get_economic_events())
+    print(kb.get_technical_analysis())
 
 
 

@@ -10,7 +10,7 @@ from datetime import datetime
 
 class TechnicalAnalysis:
     def __init__(self, analysis_model = None, synthesis_model = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
-        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=512).get_model()
+        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
         self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
         self.currency_pair = currency_pair
         self.ticker = ticker

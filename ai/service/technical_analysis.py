@@ -6,6 +6,7 @@ import base64
 from langchain_core.messages import HumanMessage, SystemMessage
 from ai.service.technical_indicators import TechnicalIndicators
 from datetime import datetime
+from ai.parameters import CURRENCY_TICKERS
 
 
 class TechnicalAnalysis:
@@ -13,7 +14,7 @@ class TechnicalAnalysis:
         self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
         self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
         self.currency_pair = currency_pair
-        self.ticker = ticker
+        self.ticker = CURRENCY_TICKERS[self.currency_pair]
 
         self.system_prompt_analysis = f"""As an expert forex analyst specializing in {self.currency_pair} pair technical analysis. You will be provided with data of {self.currency_pair} rates and technical indicators.
  You taks is to:
@@ -173,7 +174,9 @@ Below are the technical indicators with an interval of {ti_interval}.
         return synthesis
 
 if __name__ == "__main__":
-    ta = TechnicalAnalysis()
+    ta = TechnicalAnalysis(
+        currency_pair="USD/JPY"
+    )
     import time 
     begin_time = time.time()
     #rates = ta.extract_eur_usd_rate()

@@ -9,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 
 
-def main(model_name, temperature):
+def generate_trading_strategy():
 
     with open(r"D:\Projects\fx-assistant\simulation\test.txt", "a") as f:
         f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -> script ran. \n")
@@ -49,4 +49,4 @@ def main(model_name, temperature):
     #     df.to_csv(file_path, index=False)
 
 if __name__ == "__main__":
-    main("gpt-4o", 1.0)
+    generate_trading_strategy()

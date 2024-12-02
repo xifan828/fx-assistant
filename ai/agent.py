@@ -13,6 +13,8 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from httpx import Client
+
 
 
 class FXAgent():
@@ -63,7 +65,8 @@ class FXAgent():
     """
 
     def __init__(self, currency_pair: str = "EUR/USD" ,model_name: str = "gpt-4o-mini", temperature: float = 1.0):
-        self.client = OpenAI()
+        http_client = Client()
+        self.client = OpenAI(http_client=http_client)
         self.model_name = model_name
         self.temperature = temperature
         self.currency_pair = currency_pair

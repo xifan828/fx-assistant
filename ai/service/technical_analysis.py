@@ -175,7 +175,7 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="USD/JPY"
+        currency_pair="EUR/USD"
     )
     import time 
     begin_time = time.time()

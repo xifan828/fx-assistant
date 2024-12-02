@@ -231,6 +231,5 @@ if __name__ == "__main__":
 
     scrape_technical_indicators(
         is_local=True,
-        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
         indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
     )

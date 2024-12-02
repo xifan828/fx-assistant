@@ -10,13 +10,8 @@ import asyncio
 from typing import List, Dict
 from langchain_core.pydantic_v1 import BaseModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
-<<<<<<< HEAD
 from dotenv import load_dotenv
 from ai.models.data_model import TradingStrategy
-=======
-from httpx import Client
-
->>>>>>> main
 
 
 class FXAgent():
@@ -67,8 +62,7 @@ class FXAgent():
     """
 
     def __init__(self, currency_pair: str = "EUR/USD" ,model_name: str = "gpt-4o-mini", temperature: float = 1.0):
-        http_client = Client()
-        self.client = OpenAI(http_client=http_client)
+        self.client = OpenAI()
         self.model_name = model_name
         self.temperature = temperature
         self.currency_pair = currency_pair

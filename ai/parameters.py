@@ -32,18 +32,18 @@ ECONOMIC_INDICATORS_WEBSITES = {
 }
 
 NEWS_ROOT_WEBSITE = {
-    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/",
-    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/"
+    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX_IDC",
+    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX_IDC"
 }
 
 TECHNICAL_INDICATORS_WEBSITES = {
     "EUR/USD": {
-        "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/",
-        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/"
+        "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX_IDC",
+        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
     },
     "USD/JPY": {
-        "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/",
-        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/"
+        "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX_IDC",
+        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX_IDC"
     }
 }
 

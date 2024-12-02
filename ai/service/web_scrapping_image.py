@@ -4,8 +4,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
+
+
 import time
 from PIL import Image, ImageDraw
 import os
@@ -65,6 +67,8 @@ def scrape_technical_indicators(is_local: bool, indicator_url: str):
     # driver.save_screenshot("data/eur_usd_chart_1_month.png")
 
     driver.get(indicator_url)
+    close_ads(driver)
+    
     driver.execute_script("window.scrollBy(0, 550);")
     time.sleep(3)
     driver.set_window_size(1920, 1920)
@@ -166,6 +170,8 @@ def scrape_economic_calenders(is_local: bool, calender_url: str):
     driver.execute_script("window.scrollBy(0, 400);")
     time.sleep(2)
     
+    close_ads(driver)
+
     screen_shot_width = 900
     normal_width = 1920
     normal_height = 1080
@@ -195,15 +201,36 @@ def scrape_economic_calenders(is_local: bool, calender_url: str):
             cropped_img.save(f"data/calender/{file_name}")
     driver.quit()
 
+def close_ads(driver):
+    """
+    Automatically finds and closes ads or modal pop-ups if they appear.
+    """
+    try:
+        # Look for common ad elements
+        potential_ads = driver.find_elements(By.XPATH, "//*[contains(@style, 'z-index')]")
+        
+        for ad in potential_ads:
+            try:
+                # Attempt to find a close button within the potential ad element
+                close_button = ad.find_element(By.XPATH, ".//*[contains(text(), '×') or contains(@class, 'close') or contains(@id, 'close')]")
+                close_button.click()
+                print("Ad closed.")
+                return  # Exit after closing one ad (if multiple, can loop through others)
+            except NoSuchElementException:
+                continue  # Skip if no close button found in this element
+
+    except Exception as e:
+        print(f"Error while attempting to close ads: {e}")
 
 if __name__ == "__main__":
     # scrape_economic_calenders(
     #     is_local=True,
-    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
+    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
     # )
     #test()
 
     scrape_technical_indicators(
         is_local=True,
+        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
         indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
     )

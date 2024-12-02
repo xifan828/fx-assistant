@@ -1,52 +1,40 @@
-from ai.agent import StrtegyAgent, KnowledgeBase
+from ai.agent import NaiveStrategyAgent, KnowledgeBase
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+import csv
 import pandas as pd
-import os 
-import json
-from openai import OpenAI
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
+import pytz
 
 
-def generate_trading_strategy():
+def generate_trading_strategy(file_path):
+    load_dotenv()
+    kb = KnowledgeBase()
+    Knowledge = kb.get_all_data(is_local=True)
+    agent = NaiveStrategyAgent(knowledge=Knowledge)
+    response = agent.generate_strategy()
+    response_dict = dict(response)
+    berlin_tz = pytz.timezone("Europe/Berlin")
+    timestamp = datetime.today().astimezone(berlin_tz).replace(microsecond=0)
+    #response_dict["timestamp"] = timestamp
+    response_dict["status"] = "pending"
+    for filed in ["take_profit_custom", "stop_loss_custom", "price_at_order", "entry_time", "entry_price", "close_time", "close_price", "profit"]:
+        response_dict[filed] = None
 
-    with open(r"D:\Projects\fx-assistant\simulation\test.txt", "a") as f:
-        f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -> script ran. \n")
+    new_strategy = pd.DataFrame([response_dict])
+    new_strategy["order_time"] = timestamp
 
-    # kb = KnowledgeBase()
-    # economic_indicators = kb.get_economic_indicators()
-    # print("Getting technical news")
-    # technical_news = kb.get_technical_news()
-    # #print(technical_news)
-    # print("Getting technical analysis")
-    # technical_analysis = kb.get_technical_analysis(is_local=True)
-    # print("Getting central bank")
-    # central_bank = kb.get_central_bank()
+    file_exists = os.path.isfile(file_path)
 
-    # print("Agent starts answering.")
-    # agent = StrtegyAgent(model_name=model_name, temperature=temperature)
-    # model_name = agent.model_name
-    # temperature = agent.temperature
-    # response = agent.generate_strategy(economic_indicators=economic_indicators, technical_analysis=technical_analysis, technical_news=technical_news, central_bank=central_bank)
-    # print(response)
-    # try:
-    #     response_dict = json.loads(response)
-    # except json.JSONDecodeError as e:
-    #     print(f"JSONDecodeError: {e}")
-    #     response_clean = response.replace('\n', '\\n').replace('\r', '\\r')
-    #     response_dict = json.loads(response_clean)
-    # response_dict["time_generated"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if file_exists:
+        old_strategy = pd.read_csv(file_path, parse_dates=["order_time"])
+        try:
+            old_strategy["order_time"] = pd.to_datetime(old_strategy["order_time"]).dt.tz_convert("Europe/Berlin")
+        except:
+            old_strategy["order_time"] = pd.to_datetime(old_strategy["order_time"]).dt.tz_localize("Europe/Berlin")
+        new_strategy = pd.concat([old_strategy, new_strategy], axis=0)
 
-    # response_dict["model"] = model_name
-    # response_dict["temperature"] = temperature
-    # df = pd.DataFrame([response_dict])
-
-    # file_path = "simulation/trading_strategy.csv"
-    # if os.path.exists(file_path):
-    #     df.to_csv(file_path, mode='a', header=False, index=False)
-    # else:
-    #     df.to_csv(file_path, index=False)
+    new_strategy.to_csv(file_path, index=False)
 
 if __name__ == "__main__":
-    generate_trading_strategy()
+    generate_trading_strategy(r"simulation\12_02_12_06\trading_strategy.csv")

@@ -8,10 +8,10 @@ from ai.parameters import *
 from ai.config import Config
 import asyncio
 from typing import List, Dict
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
+from langchain_core.pydantic_v1 import BaseModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dotenv import load_dotenv
+from ai.models.data_model import TradingStrategy
 
 
 class FXAgent():
@@ -96,64 +96,70 @@ class FXAgent():
         )
         return response.choices[0].message.content
 
-class TradingStrategy(BaseModel):
-    """Trading strategy output format"""
-
-    strtegy: str = Field(description="Shall be either long, short or hold. If hold, leave the Fields `entry_point`, `exit_point`, `stop_loss_point` as 0.")
-    entry_point: float = Field()
-    exit_point: float = Field()
-    stop_loss_point: float = Field()
-    rationale: str = Field(description="The rationale behind this trade strategy.")
-
-class StrtegyAgent:
-    SYSTEM_MESSAGE = """You are an experienced Forex trader specializing in the EUR/USD currency pair. Your expertise lies in analyzing diverse information sources and developing profitable trading strategies. Your role is to:
-1. Read information from multiple sources
-2. Analyze the collected information to identify potential trading opportunities.
-3. Develop and propose trading strategies based on your analysis. These strategies should include: 
-    - Entry and exit points
-    - Stop-loss and take-profit levels
-    - Rationale 
-Your goal is to provide actionable trading advice that, if implemented, would result in profitable trades. And you will be rewarded with half of the profits generated.
-Wrap your output in `json` tags
-{format_instructions}
-Output nothing except the json tags.
-"""
-
-    USER_MESSAGE_TEMPLATE = """Below are collected information. Make a trading strategy the best you can. 
-    - Economic Indicators:
-    ###
-    {economic_indicators}
-    ###
-
-    - Most recent news:
-    ###
-    {technical_news}
-    ###
-
-    - Technical Indicator:
-    ###
-    {technical_analysis}
-    ###
-
-    - Central bank announcements:
-    ###
-    {central_bank}
-    ###"""
-    def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 1.0):
+class NaiveStrategyAgent:
+    def __init__(self, knowledge: dict, model_name: str = "gpt-4o", temperature: float = 1.0, currency_pair: str = "EUR/USD"):
         self.model_name = model_name
         self.temperature = temperature
-    
-    def generate_strategy(self, economic_indicators, technical_analysis, technical_news, central_bank):
-        model = Config(model_name=self.model_name, temperature=self.temperature).get_model()
-        parser = PydanticOutputParser(pydantic_object=TradingStrategy)
+        self.currency_pair = currency_pair
+        self.knowledege = knowledge
+        self.system_message = f"""You are an experienced Forex trader specializing in the {self.currency_pair} currency pair. Your expertise lies in analyzing diverse information sources and developing profitable trading strategies. 
+Your should read information from multiple sources and analyze the collected information to identify potential trading opportunities.
+Your goal will be to propose profitable trading strategies following the schema provided.
+Here is a description of the parameters:
+- rationale: A short rationale behind this trade strategy.
+- strategy: sell, buy
+- entry_point: entry price of the trade
+- take_profit: exit price when taking profit
+- stop_loss: exit price when cutting loss
+- confidence_score: how confident is this trading strategy based on current market situation. Score should be integer from 1 to 5, with 1 being the lowest and 5 being the highest.
+You will be rewarded with 100 % of the profits generated."""
+        self.user_message_template = """Below are collected information. Make a trading strategy the best you can. 
+- Economic Indicators:
+###
+{economic_indicators}
+###
 
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", self.SYSTEM_MESSAGE),
-            ("user", self.USER_MESSAGE_TEMPLATE)
-        ]).partial(format_instructions=parser.get_format_instructions())
-        chain = prompt | model | StrOutputParser()
-        response = chain.invoke({"economic_indicators": economic_indicators, "technical_news": technical_news, "technical_analysis": technical_analysis, "central_bank": central_bank}).strip("```json").strip("```").strip()
-        return response
+- Most recent news:
+###
+{technical_news}
+###
+
+- Central bank announcements:
+###
+{central_bank}
+###
+
+- Technical analysis:
+###
+{technical_analysis}
+###
+
+- Economic Events:
+###
+{economic_events}
+###
+"""
+    def generate_strategy(self):
+        load_dotenv()
+        client = OpenAI()
+        messages = [
+            {"role": "system", "content": self.system_message},
+            {"role": "user", "content": self.user_message_template.format(
+                economic_indicators = self.knowledege["Economic Indicators"],
+                technical_news = self.knowledege["Technical News"],
+                central_bank = self.knowledege["Central Bank"],
+                technical_analysis = self.knowledege["Technical Analysis"],
+                economic_events = self.knowledege["Economic Events"]
+            )}
+        ]
+        completion = client.beta.chat.completions.parse(
+        model=self.model_name,
+        messages=messages,
+        response_format=TradingStrategy,
+        )
+
+        strategy = completion.choices[0].message.parsed
+        return strategy
     
 
 class KnowledgeBase:
@@ -237,7 +243,7 @@ if __name__ == "__main__":
         currency_pair="EUR/USD"
     )
     #kb.get_technical_analysis(is_local=True)
-    print(kb.get_technical_analysis())
+    print(kb.get_all_data(is_local=True))
 
 
 

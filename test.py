@@ -1,12 +1,19 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-import time
-from simulation.generate_strategy import generate_trading_strategy
-from openai import OpenAI
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 
-generate_trading_strategy()
+from simulation.generate_strategy import generate_trading_strategy
+from simulation.back_test import BackTest
+
+#generate_trading_strategy()
+
+def back_test(currency_pair, strategy_file_path):
+    back_test = BackTest(
+        currency_pair=currency_pair,
+        strategy_file_path=strategy_file_path
+    )
+    updated_strategy = back_test.evaluate_strategy()
+    back_test.write_strategy(updated_strategy)
+
+
+if __name__ == "__main__":
+    #back_test("EUR/USD", r"simulation\trading_strategy.csv")
+
+    generate_trading_strategy(r"simulation\12_02_12_06\trading_strategy.csv")

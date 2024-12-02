@@ -205,5 +205,5 @@ if __name__ == "__main__":
 
     scrape_technical_indicators(
         is_local=True,
-        indicator_url="https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX_IDC"
+        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
     )

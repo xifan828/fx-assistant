@@ -14,7 +14,7 @@ import os
 
 
 # Set up Chrome options
-def scrape_technical_indicators(is_local: bool, indicator_url: str):
+def scrape_technical_indicators(indicator_url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -145,7 +145,7 @@ def scrape_technical_indicators(is_local: bool, indicator_url: str):
 
     driver.quit()
 
-def scrape_economic_calenders(is_local: bool, calender_url: str):
+def scrape_economic_calenders(calender_url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -223,13 +223,11 @@ def close_ads(driver):
         print(f"Error while attempting to close ads: {e}")
 
 if __name__ == "__main__":
-    scrape_economic_calenders(
-        is_local=True,
-        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
-    )
+    # scrape_economic_calenders(
+    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
+    # )
     #test()
 
-    # scrape_technical_indicators(
-    #     is_local=True,
-    #     indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
-    # )
+    scrape_technical_indicators(
+        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
+    )

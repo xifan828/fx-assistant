@@ -74,7 +74,7 @@ def main():
 
                 if "knowledge" not in st.session_state:
                     knowledge_base = KnowledgeBase(currency_pair=st.session_state["last_currency_pair"])
-                    knowledge = knowledge_base.get_all_data(is_local=False)
+                    knowledge = knowledge_base.get_all_data()
                     st.session_state["knowledge"] = knowledge
 
                 if "economic_indicators" not in st.session_state:

@@ -477,10 +477,10 @@ class BOJ:
 
     
 if __name__ == "__main__":
-    # fed = FED()
-    # print(fed.run())
+    fed = FED()
+    print(fed.run())
 
     # ecb = ECB()
     # print(ecb.run())
-    boj = BOJ()
-    print(boj.run())
+    # boj = BOJ()
+    # print(boj.run())

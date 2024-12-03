@@ -185,9 +185,8 @@ class KnowledgeBase:
         results = te_scrapper.scrape_news()
         return results
     
-    def get_technical_analysis(self, is_local: bool = True) -> str:
+    def get_technical_analysis(self) -> str:
         scrape_technical_indicators(
-            is_local=is_local,
             indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"],
         )
         ta_scrapper = TechnicalAnalysis(
@@ -205,23 +204,22 @@ class KnowledgeBase:
         results = f"{bank_a_results}\n\n{bank_b_results}"
         return results
     
-    def get_economic_events(self, is_local: bool = True) -> str:
+    def get_economic_events(self) -> str:
         scrape_economic_calenders(
-            is_local=is_local,
             calender_url=self.technical_indicators_websites[self.currency_pair]["calender"]
         )
         ec = EconomicCalenders(currency_pair=self.currency_pair)
         results = ec.run()
         return results
     
-    def get_all_data(self, is_local: bool = False):
+    def get_all_data(self):
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
                 executor.submit(self.get_economic_indicators): "Economic Indicators",
                 executor.submit(self.get_news): "Technical News",
-                executor.submit(self.get_technical_analysis, is_local): "Technical Analysis",
+                executor.submit(self.get_technical_analysis): "Technical Analysis",
                 executor.submit(self.get_central_bank): "Central Bank",
-                executor.submit(self.get_economic_events, is_local): "Economic Events"
+                executor.submit(self.get_economic_events): "Economic Events"
             }
             
             results = {}

@@ -23,12 +23,12 @@ def scrape_technical_indicators(is_local: bool, indicator_url: str):
     chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
     # Set up the Chrome driver
-    if is_local:
+    try:
         chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
         service = Service(chrome_driver_path)
         # Initialize Chrome driver with options
         driver = webdriver.Chrome(service=service, options=chrome_options)
-    else:
+    except:
         chrome_path = '/usr/bin/chromium'
         chromedriver_path = '/usr/bin/chromedriver'
         chrome_options.binary_location = chrome_path
@@ -154,12 +154,12 @@ def scrape_economic_calenders(is_local: bool, calender_url: str):
     chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
     # Set up the Chrome driver
-    if is_local:
+    try:
         chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
         service = Service(chrome_driver_path)
         # Initialize Chrome driver with options
         driver = webdriver.Chrome(service=service, options=chrome_options)
-    else:
+    except:
         chrome_path = '/usr/bin/chromium'
         chromedriver_path = '/usr/bin/chromedriver'
         chrome_options.binary_location = chrome_path
@@ -223,13 +223,13 @@ def close_ads(driver):
         print(f"Error while attempting to close ads: {e}")
 
 if __name__ == "__main__":
-    # scrape_economic_calenders(
-    #     is_local=True,
-    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
-    # )
+    scrape_economic_calenders(
+        is_local=True,
+        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
+    )
     #test()
 
-    scrape_technical_indicators(
-        is_local=True,
-        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
-    )
+    # scrape_technical_indicators(
+    #     is_local=True,
+    #     indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals/"
+    # )

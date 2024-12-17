@@ -133,5 +133,5 @@ class BackTest:
         self.write_strategy(df)
 
 if __name__ == "__main__":
-    back_test = BackTest(currency_pair="EUR/USD", strategy_file_path=r"simulation\12_02_12_06\trading_strategy.csv", custom=False)
+    back_test = BackTest(currency_pair="EUR/USD", strategy_file_path=r"simulation\12_09_12_13\trading_strategy.csv", custom=True, profit_pips=25, loss_pips=15)
     back_test.run()

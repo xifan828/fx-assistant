@@ -100,7 +100,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
             new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
             return new_data
         current_price = ti.download_data(period="1d", interval="1m")["Close"].iloc[-1].round(4)
-        rate_1_day = transform(ti.download_data(period="1d", interval="15m"))
+        rate_1_day = transform(ti.download_data(period="5d", interval="15m").iloc[-4*24:])
         rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
         rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
         rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month, "current_price": current_price}

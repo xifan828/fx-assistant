@@ -16,4 +16,4 @@ def back_test(currency_pair, strategy_file_path):
 if __name__ == "__main__":
     #back_test("EUR/USD", r"simulation\trading_strategy.csv")
 
-    generate_trading_strategy(r"simulation\12_02_12_06\trading_strategy.csv")
+    generate_trading_strategy(r"simulation\12_09_12_13\trading_strategy.csv")

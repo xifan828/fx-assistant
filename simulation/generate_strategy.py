@@ -2,7 +2,6 @@ from ai.agent import NaiveStrategyAgent, KnowledgeBase
 from datetime import datetime
 from dotenv import load_dotenv
 import os
-import csv
 import pandas as pd
 import pytz
 
@@ -10,10 +9,14 @@ import pytz
 def generate_trading_strategy(file_path):
     load_dotenv()
     kb = KnowledgeBase()
-    Knowledge = kb.get_all_data(is_local=True)
+    Knowledge = kb.get_partial_data()
     agent = NaiveStrategyAgent(knowledge=Knowledge)
     response = agent.generate_strategy()
-    response_dict = dict(response)
+    thinking_steps = response.steps
+    reasoning = "\n".join([step.analysis for step in thinking_steps])
+    response_dict = dict(response.final_strategy)
+    response_dict["rationale"] = reasoning + response_dict["rationale"] 
+
     berlin_tz = pytz.timezone("Europe/Berlin")
     timestamp = datetime.today().astimezone(berlin_tz).replace(microsecond=0)
     #response_dict["timestamp"] = timestamp
@@ -37,4 +40,4 @@ def generate_trading_strategy(file_path):
     new_strategy.to_csv(file_path, index=False)
 
 if __name__ == "__main__":
-    generate_trading_strategy(r"simulation\12_02_12_06\trading_strategy.csv")
+    generate_trading_strategy(r"simulation\12_09_12_13\trading_strategy.csv")

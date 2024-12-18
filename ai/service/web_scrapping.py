@@ -109,12 +109,45 @@ class TechnicalNewsScrapper:
             print("\n")
             print(sub_page_websites)
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
+            investing_sub_page_contents = self.scrape_investing_news()
+            sub_page_contents.extend(investing_sub_page_contents)
+            print(sub_page_contents)
+
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
+            print(sub_page_summaries)
             final_summary = self.create_final_summary(sub_page_summaries)
             return final_summary
         except:
             return ""
- 
+    
+    def scrape_investing_news(self) -> List[Dict[str, str]]:
+        response = requests.get("https://cn.investing.com/currencies/eur-usd-news")
+        if response.status_code == 200:
+
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            link_tags = soup.find_all("a", attrs={"data-test": "article-title-link"})
+
+            articles = []
+            if link_tags:
+                for link_tag in link_tags:
+                    href = link_tag.get("href")            # Extract the URL
+                    title = link_tag.get_text(strip=True)  # Extract the text inside the <a> tag, stripping whitespace
+                    articles.append({"article": title, "link": href})
+            else:
+                print("Could not find the link tag.")
+            
+            for article in articles:
+                response = requests.get(article["link"])
+                soup = BeautifulSoup(response.text, "html.parser")
+                article_divs = soup.find_all("div", id="article")
+
+                paragraphs = article_divs[0].find_all("p")
+                content = "\n".join(p.get_text(strip=True) for p in paragraphs)
+                article["content"] = content
+            return articles
+        else:
+            return [{"article": "None", "content": "None"}]
 
     def scrape_root_page(self) -> str:
         response = requests.get(self.ai_scrape_prefix + self.root_page_url)
@@ -158,29 +191,35 @@ If you can not find specific news article, set the 'article' and 'url' value to 
     def summarize_sub_pages(self, contents: List[Dict[str, str]]) -> List[Dict[str, str]]:
         model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
         prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of {currency_pair}."),
-        ("user", "{content}")
+        ("system", """You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of {currency_pair}.
+         Some articles are in Chinese. In this case, provide summary in English."""),
+        ("user", """<title>
+         {title}
+        </title>
+         <content>
+         {content}
+         </content>""")
         ])
         chain = prompt | model | StrOutputParser()
-        results = chain.batch([{"content": content["content"], "currency_pair": self.currency_pair} for content in contents])
+        results = chain.batch([{"title": content["article"], "content": content["content"], "currency_pair": self.currency_pair} for content in contents])
         summaries = []
         for content, result in zip(contents, results):
             summaries.append({"article": content["article"], "summary": result})
         return summaries
         
     def create_final_summary(self, summaries: List[Dict[str, str]]):
-        model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
+        model = Config(model_name="gpt-4o", temperature=0.2).get_model()
         system_prompt = f"""You are an advanced Forex Market Analyst specializing in the {self.currency_pair} currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
 You will be provided with the latest articles related to the {self.currency_pair} forex market. Each article will include a title and a summary. 
 Your tasks are:
 1. Extract key insights impacting {self.currency_pair}.
 2. Identify trends and potential market drivers.
-3. Highlight conflicting viewpoints.
-4. Quantify potential impacts when possible.
-5. Summarize analysis: key drivers, impacts, and risks.
+3. Identify and summarize the prevailing market sentiment toward EUR/USD, noting recurring themes, biases, and shifts in tone that may influence currency movements.
+4. Highlight conflicting viewpoints.
+5. Quantify potential impacts when possible.
+6. Summarize analysis: key drivers, impacts, and risks.
 Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
 """
-
         prompt = ChatPromptTemplate.from_messages([
                 ("system", system_prompt),
                 ("user", "{content}")
@@ -201,6 +240,7 @@ if __name__ == "__main__":
     # scraped_data = asyncio.run(scraper.scrape_websites(ECONOMIC_INDICATORS_WEBSITES))
     # print(scraped_data)
     scrapper = TechnicalNewsScrapper(top_k=5)
-    print(scrapper.scrape_root_page())
-    results = scrapper.scrape_news()
-    print(results)
+    print(scrapper.scrape_news())
+    # print(scrapper.scrape_root_page())
+    # results = scrapper.scrape_news()
+    # print(results)

@@ -223,11 +223,11 @@ def close_ads(driver):
         print(f"Error while attempting to close ads: {e}")
 
 if __name__ == "__main__":
-    # scrape_economic_calenders(
-    #     calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
-    # )
+    scrape_economic_calenders(
+        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
+    )
     #test()
 
-    scrape_technical_indicators(
-        indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
-    )
+    # scrape_technical_indicators(
+    #     indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
+    # )

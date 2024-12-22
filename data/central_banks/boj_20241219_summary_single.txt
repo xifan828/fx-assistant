@@ -1,0 +1,15 @@
+## Bank of Japan
+
+On December 19, 2024, the Bank of Japan's Policy Board held a Monetary Policy Meeting where they decided, by an 8-1 majority, to maintain the guideline for money market operations, encouraging the uncollateralized overnight call rate to remain around 0.25%. 
+
+The statement highlighted a moderate recovery in Japan's economy, with some areas showing weakness. Key points included:
+
+- **Economic Growth**: Japan's economy is expected to grow above its potential rate, supported by moderate growth in overseas economies and a virtuous cycle from income to spending.
+- **Inflation**: The year-on-year increase in the consumer price index (CPI) is currently between 2.0-2.5%. While the impact of past import price rises is diminishing, underlying inflation is projected to gradually increase due to improving output gaps and rising inflation expectations.
+- **Investment Trends**: Business fixed investment is on a moderate rise, while housing investment remains weak. Private consumption is increasing despite price pressures.
+- **Financial Conditions**: Financial conditions are described as accommodative, which is expected to support economic activity.
+- **Risks**: There are significant uncertainties regarding economic activity and prices, particularly concerning overseas developments, commodity prices, and domestic wage-setting behavior. The Bank noted that exchange rate fluctuations are becoming more influential on prices.
+
+The meeting also marked the completion of a comprehensive review of monetary policy, which assessed the effects of unconventional monetary policies over the past 25 years. The Bank reaffirmed its commitment to achieving a price stability target of 2% while adapting its policies to evolving economic conditions.
+
+The dissenting vote came from Tamura Naoki, who argued for a higher overnight call rate of around 0.5% due to perceived upside risks to prices, but this proposal was not supported by the majority.

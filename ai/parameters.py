@@ -8,7 +8,6 @@ CURRENT_DATE = datetime.datetime.now()
 FORMATED_DATE = CURRENT_DATE.strftime("%B %Y")
 
 ECONOMIC_INDICATORS_WEBSITES = {
-
     "USD": {
         "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",
         "Interest_Rate_US": "https://tradingeconomics.com/united-states/interest-rate",
@@ -28,7 +27,6 @@ ECONOMIC_INDICATORS_WEBSITES = {
         "Inflation_Rate_JP": "https://tradingeconomics.com/japan/inflation-cpi",
         "Unemployment_Rate_JP": "https://tradingeconomics.com/japan/unemployment-rate"
     }
-
 }
 
 NEWS_ROOT_WEBSITE = {
@@ -36,14 +34,21 @@ NEWS_ROOT_WEBSITE = {
     "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX_IDC"
 }
 
+INVESTING_NEWS_ROOT_WEBSITE = {
+    "EUR/USD": "https://cn.investing.com/currencies/eur-usd-news",
+    "USD/JPY": "https://cn.investing.com/currencies/usd-jpy-news"
+}
+
 TECHNICAL_INDICATORS_WEBSITES = {
     "EUR/USD": {
         "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX_IDC",
-        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC"
+        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC",
+        "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=EURUSD"
     },
     "USD/JPY": {
         "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX_IDC",
-        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX_IDC"
+        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX_IDC",
+        "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=USDJPY"
     }
 }
 
@@ -60,4 +65,3 @@ AI_SEARCH_QUERIES = [
         f"Recent FED reserve decisions affecting EUR/USD exchange rate {FORMATED_DATE}", 
         f"Recent ECB decisions affecting EUR/USD exchange rate {FORMATED_DATE}",
     ]
-

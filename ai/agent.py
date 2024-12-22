@@ -1,8 +1,7 @@
 from openai import OpenAI
 from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
-from ai.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators
+from ai.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
 from ai.service.technical_analysis import TechnicalAnalysis
-from ai.service.central_banks import ECB, FED
 from ai.service.economic_calenders import EconomicCalenders
 from ai.parameters import *
 from ai.config import Config
@@ -236,11 +235,15 @@ class KnowledgeBase:
     
     def get_technical_analysis(self) -> str:
         scrape_technical_indicators(
-            indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"],
+        indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
+        )
+
+        scrape_aastocks_chart(
+            url=self.technical_indicators_websites[self.currency_pair]["chart"]
         )
         ta_scrapper = TechnicalAnalysis(
-            currency_pair=self.currency_pair,
-            ticker=self.currency_ticker
+        currency_pair=self.currency_pair,
+        ticker=self.currency_ticker
         )
         results = ta_scrapper.run()
         return results
@@ -304,13 +307,20 @@ class KnowledgeBase:
             return results
 
 if __name__ == "__main__":
+    import time
+    begin_time = time.time()
     kb = KnowledgeBase(
         #currency_pair="USD/JPY",
         currency_pair="EUR/USD"
     )
     #kb.get_technical_analysis(is_local=True)
-    print(kb.get_partial_data())
+    end_time = time.time()
+    print(kb.get_all_data())
+    print("\n")
 
+    print(f"Used {end_time-begin_time:.2f}")
+
+    
 
 
     

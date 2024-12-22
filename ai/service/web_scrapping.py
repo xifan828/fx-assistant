@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from ai.config import Config
-from ai.parameters import ECONOMIC_INDICATORS_WEBSITES
+from ai.parameters import ECONOMIC_INDICATORS_WEBSITES, INVESTING_NEWS_ROOT_WEBSITE
 import time
 
 # economic indicators
@@ -105,23 +105,28 @@ class TechnicalNewsScrapper:
                 else:
                     time.sleep(1)
                     continue
-            print(root_page_content)
-            print("\n")
+            #print(root_page_content)
+            #print("\n")
             print(sub_page_websites)
             sub_page_contents = self.scrape_sub_pages(sub_page_websites)
             investing_sub_page_contents = self.scrape_investing_news()
             sub_page_contents.extend(investing_sub_page_contents)
-            print(sub_page_contents)
+            #print(sub_page_contents)
 
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
-            print(sub_page_summaries)
+            #print(sub_page_summaries)
+            # for summary in sub_page_summaries:
+            #     print(summary["article"])
+            #     print(summary["summary"])
+            #     print("\n")
             final_summary = self.create_final_summary(sub_page_summaries)
             return final_summary
         except:
             return ""
     
     def scrape_investing_news(self) -> List[Dict[str, str]]:
-        response = requests.get("https://cn.investing.com/currencies/eur-usd-news")
+        investing_news_url = INVESTING_NEWS_ROOT_WEBSITE[self.currency_pair]
+        response = requests.get(investing_news_url)
         if response.status_code == 200:
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -190,9 +195,19 @@ If you can not find specific news article, set the 'article' and 'url' value to 
     
     def summarize_sub_pages(self, contents: List[Dict[str, str]]) -> List[Dict[str, str]]:
         model = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
+        system_message = """You are a {currency_pair} forex news analyst tasked with identifying the most important and relevant information from news articles that could impact the forex market. 
+For each article you receive, extract the key information, insights, and opinions that a forex trader would find valuable.
+
+Pay particular attention to:
+- Information likely to influence {currency_pair} valuations.
+- Expert opinions and analysis from finance industry professionals.
+- Key data points and their potential implications.
+- Shifts in market sentiment or risk appetite.
+
+Be concise and focus on the most impactful information.
+"""
         prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are a highly skilled financial analyst with extensive experience in evaluating markets, and economic trends. You are provided with the financial news scrapped from the internet. Your task is to summarize the key information. The audience is financial experts in the fx trading of {currency_pair}.
-         Some articles are in Chinese. In this case, provide summary in English."""),
+        ("system", system_message),
         ("user", """<title>
          {title}
         </title>
@@ -219,7 +234,18 @@ Your tasks are:
 5. Quantify potential impacts when possible.
 6. Summarize analysis: key drivers, impacts, and risks.
 Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
-"""
+"""     
+        system_prompt = f"""You are a highly skilled {self.currency_pair} forex market analyst specializing in synthesizing information from multiple news articles to provide a comprehensive market overview. 
+Your primary input is a collection of key information extractions from recent news articles, each analyzed by another agent. 
+Your goal is to synthesize these individual extractions into a cohesive summary that identifies the key drivers and themes impacting the {self.currency_pair} market, **paying particular attention to the opinions and insights shared by finance industry professionals**. Focus on:
+
+- Identifying recurring themes and narratives across the articles.
+- Determining the overall market sentiment, **giving weight to the opinions expressed by finance professionals**.
+- Identifying the major factors currently influencing currency movements, **especially as highlighted by industry experts**.
+- Highlighting any conflicting information or differing perspectives presented in the articles, **including any disagreements among industry commentators**.
+- Assessing the potential short-term and medium-term outlook for the forex market based on the news, **considering the forecasts and expectations shared by experts**.
+
+Provide a concise and insightful synthesis that is valuable for forex traders."""
         prompt = ChatPromptTemplate.from_messages([
                 ("system", system_prompt),
                 ("user", "{content}")

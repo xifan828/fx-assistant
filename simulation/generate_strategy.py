@@ -40,4 +40,4 @@ def generate_trading_strategy(file_path):
     new_strategy.to_csv(file_path, index=False)
 
 if __name__ == "__main__":
-    generate_trading_strategy(r"simulation\12_09_12_13\trading_strategy.csv")
+    generate_trading_strategy(r"simulation\12_16_12_20\trading_strategy.csv")

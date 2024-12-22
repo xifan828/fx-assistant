@@ -5,11 +5,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
+from selenium.webdriver.common.action_chains import ActionChains
+
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 import time
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import os
 
 
@@ -70,19 +72,19 @@ def scrape_technical_indicators(indicator_url: str):
     close_ads(driver)
     
     driver.execute_script("window.scrollBy(0, 550);")
-    time.sleep(3)
+    time.sleep(2)
     driver.set_window_size(1920, 1920)
-    driver.save_screenshot("data/technical_indicators/technicals_1_day_interval.png")
+    # driver.save_screenshot("data/technical_indicators/technicals_1_day_interval.png")
 
-    second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="1h"]'
-    second_button = driver.find_element("xpath", second_button_xpath)
-    driver.execute_script("arguments[0].scrollIntoView(true);", second_button)
-    time.sleep(1)  # wait a bit for scrolling
-    driver.execute_script("arguments[0].click();", second_button)
-    # Wait for any potential page changes to take effect
-    time.sleep(3)
-    driver.execute_script("window.scrollBy(0, -100);")
-    driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval.png")
+    # second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="1h"]'
+    # second_button = driver.find_element("xpath", second_button_xpath)
+    # driver.execute_script("arguments[0].scrollIntoView(true);", second_button)
+    # time.sleep(1)  # wait a bit for scrolling
+    # driver.execute_script("arguments[0].click();", second_button)
+    # # Wait for any potential page changes to take effect
+    # time.sleep(3)
+    # driver.execute_script("window.scrollBy(0, -100);")
+    # driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval.png")
 
     second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="15m"]'
     second_button = driver.find_element("xpath", second_button_xpath)
@@ -90,7 +92,7 @@ def scrape_technical_indicators(indicator_url: str):
     time.sleep(1)  # wait a bit for scrolling
     driver.execute_script("arguments[0].click();", second_button)
     # Wait for any potential page changes to take effect
-    time.sleep(3)
+    time.sleep(2)
     driver.execute_script("window.scrollBy(0, -100);")
     driver.save_screenshot("data/technical_indicators/technicals_15_min_interval.png")
 
@@ -222,12 +224,160 @@ def close_ads(driver):
     except Exception as e:
         print(f"Error while attempting to close ads: {e}")
 
-if __name__ == "__main__":
-    scrape_economic_calenders(
-        calender_url="https://www.tradingview.com/symbols/EURUSD/economic-calendar"
-    )
-    #test()
+def scrape_aastocks_chart(url: str):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
+    chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
-    # scrape_technical_indicators(
-    #     indicator_url="https://www.tradingview.com/symbols/EURUSD/technicals"
-    # )
+    # Set up the Chrome driver
+    try:
+        chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
+        service = Service(chrome_driver_path)
+        # Initialize Chrome driver with options
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        print("Local Driver: done")
+    except:
+        chrome_path = '/usr/bin/chromium'
+        chromedriver_path = '/usr/bin/chromedriver'
+        chrome_options.binary_location = chrome_path
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    driver.get(url)
+    driver.execute_script("window.scrollBy(0, 400);")
+    time.sleep(2)
+
+    button_ids = {"QuickChartPeriod_5m1d_min": "1_day", "QuickChartPeriod_10d_hour": "10_days"} #, "QuickChartPeriod_6m_day"]
+    screenshot_directory = "data/chart/"
+    screen_shot_width = 3840
+    normal_height = 2160
+    for button_id, name in button_ids.items():
+        # Click the time frame button
+        first_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, button_id))
+        )
+        first_button.click()
+        print(f"Clicked button with ID: {button_id}")
+        time.sleep(2)
+
+        # Click the second button to open a new window
+        second_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "cp5"))
+        )
+        second_button.click()
+        print("Clicked second button")
+        time.sleep(2)
+
+        # Switch to the new window
+        main_window = driver.current_window_handle
+        all_windows = driver.window_handles
+        for window in all_windows:
+            if window != main_window:
+                driver.switch_to.window(window)
+                print("Switched to new window")
+                break
+
+        time.sleep(2)
+
+        # Perform screenshot in the new window
+        action = ActionChains(driver)
+        action.click().perform()
+        print("Clicked on the page")
+        time.sleep(2)
+
+        driver.set_window_size(screen_shot_width, normal_height)
+
+        screenshot_path = f"{screenshot_directory}{name}.png"
+        driver.save_screenshot(screenshot_path)
+        print(f"Saved screenshot: {screenshot_path}")
+
+        # Close the new window and switch back to the main window
+        driver.close()
+        driver.switch_to.window(main_window)
+        print("Switched back to the main window")
+        time.sleep(2)
+    
+    reduce_width = 650
+    reduce_top = 140
+    reduce_bottom = 240
+    text_boxes = {
+    "SMA10(Red), SMA20(Yellow), SMA50(White), SMA100(Orange), SMA150(Pink)": 50,
+    "RSI(14)": 835,
+    "MACD(12, 16): Red, EMA(9): Green, Divergence: Yellow": 1155,
+    "ROC(12)": 1455
+    }
+
+    with Image.open(f"{screenshot_directory}10_days.png") as img:
+        cropped_img = img.crop((1400, reduce_top, screen_shot_width - reduce_width, normal_height - reduce_bottom))
+        draw = ImageDraw.Draw(cropped_img)
+
+        font_size = 20
+        try:
+            font = ImageFont.truetype("arial.ttf", font_size)  # Use a truetype font
+        except IOError:
+            font = ImageFont.load_default()  # Use default font if `arial.ttf` is not found
+
+        # Loop through the dictionary to create text boxes
+        for text, text_y in text_boxes.items():
+            # Calculate text size using textbbox
+            text_bbox = draw.textbbox((0, 0), text, font=font)  # Get bounding box of the text
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+
+            # Specify text position (left side, experiment with vertical position)
+            text_x = 50  # Distance from the left
+
+            # Draw text box background
+            background_box = (text_x - 10, text_y - 10, text_x + text_width + 10, text_y + text_height + 10)
+            draw.rectangle(background_box, fill="blue")  # White background for text
+
+            # Add the text
+            draw.text((text_x, text_y), text, fill="white", font=font)
+
+        # Save the final image
+        cropped_img.save(f"{screenshot_directory}10_days_cropped.png")
+    
+    with Image.open(f"{screenshot_directory}1_day.png") as img:
+        cropped_img = img.crop((reduce_width, reduce_top, screen_shot_width - reduce_width, normal_height - reduce_bottom))
+        draw = ImageDraw.Draw(cropped_img)
+
+        font_size = 20
+        try:
+            font = ImageFont.truetype("arial.ttf", font_size)  # Use a truetype font
+        except IOError:
+            font = ImageFont.load_default()  # Use default font if `arial.ttf` is not found
+
+        for text, text_y in text_boxes.items():
+
+            text_bbox = draw.textbbox((0, 0), text, font=font)  # Get bounding box of the text
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+
+            text_x = 50  # Distance from the left
+
+            background_box = (text_x - 10, text_y - 10, text_x + text_width + 10, text_y + text_height + 10)
+            draw.rectangle(background_box, fill="blue")  # White background for text
+
+            draw.text((text_x, text_y), text, fill="white", font=font)
+        cropped_img.save(f"{screenshot_directory}1_day_cropped.png")
+
+    driver.quit()
+if __name__ == "__main__":
+
+    from ai.parameters import TECHNICAL_INDICATORS_WEBSITES
+
+    currency_pair = "USD/JPY"
+
+    scrape_economic_calenders(
+        calender_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["calender"]
+    )
+    scrape_technical_indicators(
+        indicator_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["indicator"]
+    )
+
+    scrape_aastocks_chart(
+        url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["chart"]
+    )

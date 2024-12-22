@@ -208,8 +208,8 @@ Below are the technical indicators with an interval of {ti_interval}.
         return results
     
     def create_gemini_analysis(self, pivot_points, current_price):
-        #genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-        genai.configure(api_key="AIzaSyB768Cu1oMl62CexoYld8mePXr6Q_Uk-oY")
+        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
         generation_config = {
             "temperature": 1.0,
             "top_p": 0.95,

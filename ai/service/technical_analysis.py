@@ -7,12 +7,14 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from ai.service.technical_indicators import TechnicalIndicators
 from datetime import datetime
 from ai.parameters import CURRENCY_TICKERS
+from ai.config import upload_to_gemini
+import google.generativeai as genai
 
 
 class TechnicalAnalysis:
     def __init__(self, analysis_model = None, synthesis_model = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
-        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=512).get_model()
-        self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o-mini", temperature=0.2, max_tokens=1024).get_model()
+        self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=512).get_model()
+        self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=1024).get_model()
         self.currency_pair = currency_pair
         self.ticker = CURRENCY_TICKERS[self.currency_pair]
 
@@ -45,6 +47,50 @@ For the synthesized analysis:
 - Highlight key support and resistance levels that align across multiple analyses.
 - Provide a comprehensive short to medium-term outlook for {self.currency_pair}.
 Deliver a clear, concise, and actionable synthesis. Prioritize the most significant insights that emerge from combining multiple analyses. Use professional terminology with brief explanations when necessary. AVOID discussing forex trading risks and the importance of personal research."""
+        
+        self.system_prompt_hourly_analysis = f"""
+**Role:** You are a highly skilled forex {self.currency_pair} technical analyst specializing in understanding medium-term trends and identifying key support and resistance levels.
+
+**Context (Inputs):**
+- Hourly price chart data
+
+**Goal:** To provide a comprehensive technical analysis of the medium-term trend that will serve as context for shorter-term analysis by another agent.
+
+**Tasks (Analytical Focus):**
+- Identify the prevailing trends present in the hourly chart data over the last 10 days.
+- Analyze the momentum and character of **recent** price action within the 10-day period.
+- Identify potential points or zones where the prevailing trend might change direction.
+- Determine key support and resistance zones, providing specific price levels where possible.
+- Analyze signals from relevant technical indicators included in the data.
+
+**Guidelines for Output:**
+- Be concise and focus on the most impactful observations for understanding the medium-term context.
+- Provide specific numerical values for key support and resistance levels/zones where possible.
+- Remember that your analysis will be used by another agent for further short-term analysis.
+"""
+        self.system_prompt_5_min_analysis = f"""
+**Role:** You are a skilled forex {self.currency_pair} technical analyst specializing in providing short-term trading outlooks based on recent price action.
+
+**Context (Inputs):**
+- Current 5-minute price chart
+- 15-minute interval pivot points
+- Exact current price
+- Previous hourly chart analysis
+
+**Goal:** To synthesize the provided information to understand the immediate trend of the {self.currency_pair} pair and provide a short-term trading outlook for the next few hours.
+
+**Tasks (Analytical Focus):**
+- Identify immediate support and resistance levels, considering both price action on the 5-minute chart and the provided 15-minute pivot points.
+- Identify potential entry and exit points for short-term trades.
+- Confirm or contradict the trends and key levels identified in the previous hourly chart analysis.
+- Analyze how the current price relates to the identified support and resistance levels, as well as the 15-minute pivot points and recent 5-minute price action.
+
+**Guidelines for Output:**
+- Be specific and actionable in your outlook, providing concrete levels or price areas to watch.
+- Remember to always consider the context provided by the previous hourly analysis.
+- Conclude your analysis by stating whether, based on the available information, a trade can be confidently executed at this time (either long or short).
+- If a trade cannot be confidently executed, explain what specific observations or signals would be needed to increase confidence in a potential trade in the near future.
+"""
 
         self.encoded_image_template = "data:image/png;base64,{base64_image}"
     
@@ -74,7 +120,6 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
                 encoded_images[file_name.split(".")[0]] = self.encoded_image_template.format(base64_image=self.encode_image(f"data/technical_indicators/{file_name}"))
         
         tasks = [{"file_name": k, "encoded_image": v} for k, v in encoded_images.items()]
-        print(tasks)
         return tasks
     
     def extract_technical_indicators(self):
@@ -100,7 +145,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
             new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
             return new_data
         current_price = ti.download_data(period="1d", interval="1m")["Close"].iloc[-1].round(4)
-        rate_1_day = transform(ti.download_data(period="1d", interval="15m"))
+        rate_1_day = transform(ti.download_data(period="5d", interval="15m").iloc[-4*24:])
         rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
         rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
         rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month, "current_price": current_price}
@@ -162,20 +207,78 @@ Below are the technical indicators with an interval of {ti_interval}.
         results = synthesis_chain.invoke({"results": analysis})
         return results
     
+    def create_gemini_analysis(self, pivot_points, current_price):
+        generation_config = {
+            "temperature": 1.0,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+            "response_mime_type": "text/plain",
+        }
+
+        model = genai.GenerativeModel(
+            model_name="gemini-2.0-flash-exp",
+            #model_name="gemini-2.0-flash-thinking-exp-1219",
+            generation_config=generation_config,
+            system_instruction=self.system_prompt_hourly_analysis
+        )
+        files = [
+        upload_to_gemini("data/chart/10_days_cropped.png", mime_type="image/png"),
+        ]
+        query = f"Analyze the following hourly chart data for {self.currency_pair} from the last 10 days."
+        chat_session = model.start_chat(history=[])
+        response_hourly = chat_session.send_message([query, files[0]]).text
+
+        model = genai.GenerativeModel(
+        #model_name="gemini-2.0-flash-exp",
+        model_name="gemini-2.0-flash-thinking-exp-1219",
+        generation_config=generation_config,
+        system_instruction=self.system_prompt_5_min_analysis
+        )
+        files = [
+        upload_to_gemini("data/chart/1_day_cropped.png", mime_type="image/png"),
+        ]
+
+        query = f"""Here is the previous hourly chart analysis provided by another analyst:
+        <Hourly chart analysis>
+        {response_hourly}
+        </Hourly chart analysis>
+
+        Here are the 15-minute interval pivot points:
+        <15-Minute Pivot Points>
+        {pivot_points}
+        </15-Minute Pivot Points>
+
+        The current price is: {current_price}
+
+        Now, analyze the uploaded 5-minute chart data for {self.currency_pair} from today.
+        """
+        chat_session = model.start_chat(history=[])
+        final_response = chat_session.send_message([query, files[0]]).parts[1].text
+
+        return final_response
+
     def run(self):
-        print("extracting ti")
         technical_indicators = self.extract_technical_indicators()
-        print(type(technical_indicators))
-        print(technical_indicators)
+        for i in technical_indicators["15_min"].split("###"):
+            if "pivot" in i.lower():
+                pivot_points = i
+                break
+            else:
+                pivot_points = "Not available"
+        print(pivot_points)
         rates = self.extract_eur_usd_rate()
-        analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
+        current_price = rates["current_price"]
+        print(current_price)
+        #analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
         #synthesis = self.create_synthesis(analysis=analysis)
+        analysis = self.create_gemini_analysis(pivot_points, current_price)
         synthesis = analysis
         return synthesis
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="EUR/USD"
+        currency_pair="USD/JPY"
     )
     import time 
     begin_time = time.time()

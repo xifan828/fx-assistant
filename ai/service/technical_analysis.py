@@ -80,6 +80,8 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 **Goal:** To synthesize the provided information to understand the immediate trend of the {self.currency_pair} pair and provide a short-term trading outlook for the next few hours.
 
 **Tasks (Analytical Focus):**
+- Identify the prevailing trends present in the 5-minute chart.
+- Analyze the momentum and character of **recent** price action.
 - Identify immediate support and resistance levels, considering both price action on the 5-minute chart and the provided 15-minute pivot points.
 - Identify potential entry and exit points for short-term trades.
 - Confirm or contradict the trends and key levels identified in the previous hourly chart analysis.
@@ -211,7 +213,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
         generation_config = {
-            "temperature": 1.0,
+            "temperature": 0.5,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
@@ -232,8 +234,8 @@ Below are the technical indicators with an interval of {ti_interval}.
         response_hourly = chat_session.send_message([query, files[0]]).text
 
         model = genai.GenerativeModel(
-        #model_name="gemini-2.0-flash-exp",
-        model_name="gemini-2.0-flash-thinking-exp-1219",
+        model_name="gemini-2.0-flash-exp",
+        #model_name="gemini-2.0-flash-thinking-exp-1219",
         generation_config=generation_config,
         system_instruction=self.system_prompt_5_min_analysis
         )
@@ -256,7 +258,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         Now, analyze the uploaded 5-minute chart data for {self.currency_pair} from today.
         """
         chat_session = model.start_chat(history=[])
-        final_response = chat_session.send_message([query, files[0]]).parts[1].text
+        final_response = chat_session.send_message([query, files[0]]).text
 
         return final_response
 
@@ -280,7 +282,7 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="USD/JPY"
+        currency_pair="EUR/USD"
     )
     import time 
     begin_time = time.time()

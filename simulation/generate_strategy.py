@@ -10,6 +10,8 @@ def generate_trading_strategy(file_path):
     load_dotenv()
     kb = KnowledgeBase()
     Knowledge = kb.get_partial_data()
+
+    {}
     agent = NaiveStrategyAgent(knowledge=Knowledge)
     response = agent.generate_strategy()
     thinking_steps = response.steps

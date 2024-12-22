@@ -6,12 +6,12 @@ from ai.service.economic_calenders import EconomicCalenders
 from ai.parameters import *
 from ai.config import Config
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, Literal
 from langchain_core.pydantic_v1 import BaseModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from ai.models.data_model import TradingReasoning
-
+import os
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -161,42 +161,58 @@ class FXAgent():
 #         return strategy
 
 class NaiveStrategyAgent:
-    def __init__(self, knowledge: dict, model_name: str = "gpt-4o", temperature: float = 1.0, currency_pair: str = "EUR/USD"):
+    def __init__(self, knowledge: dict, provider: Literal["openai", "google"] = "openai", model_name: str = "gpt-4o", temperature: float = 0.5, currency_pair: str = "EUR/USD"):
+        self.provider = provider
         self.model_name = model_name
         self.temperature = temperature
         self.currency_pair = currency_pair
         self.knowledege = knowledge
-        self.system_message = f"""You are a seasoned daily self-employed Forex trader specializing in the {self.currency_pair} currency pair. Your excel in analyzing diverse information sources and developing profitable trading strategies. 
-Your goal is to propose profitable trading strategy based on user provided information. Think step by step before you create the final strategy.
+#         self.system_message = f"""You are a seasoned daily self-employed Forex trader specializing in the {self.currency_pair} currency pair. Your excel in analyzing diverse information sources and developing profitable trading strategies. 
+# Your goal is to propose profitable trading strategy based on user provided information. Think step by step before you create the final strategy.
+# """     
+        self.system_message = f"""You are a highly experienced and methodical self-employed Forex trader specializing in the {self.currency_pair} currency pair. Your expertise lies in developing well-reasoned and profitable trading strategies based on a comprehensive analysis of technical indicators, recent news, and upcoming economic events.
+
+Your process involves a step-by-step analysis of the provided information to formulate a trading strategy. For each step, explicitly state the information you are considering and how it influences your understanding of the market.
+
+**Crucially, consider the following in your analysis:**
+
+* **Technical Analysis:** Identify key trends, support and resistance levels, and potential entry/exit points suggested by the technical analysis.
+* **Recent News:** Analyze the sentiment and potential impact of recent news articles on the {self.currency_pair}. Consider both bullish and bearish implications.
+* **Economic Events:**  Evaluate how upcoming or recent economic events might affect volatility and the direction of the {self.currency_pair}.
+
+**Your goal is to propose a specific trading strategy (buy, sell or wait) with clearly defined entry point, take profit, stop loss, and a confidence score reflecting your assessment of the strategy's potential.** Explain the rationale behind each element of your strategy.
+If the strategy is wait, fill entry point, take profit, stop loss and confidence score with None.
+
+Think carefully and methodically before finalizing your strategy. Ensure all aspects of the provided information are considered in your reasoning.
 """
-        self.user_message_template = """Below are collected information. Make a trading strategy the best you can. 
+        self.user_message = f"""Below is information collected for the {self.currency_pair} currency pair. Develop a detailed trading strategy based on this information.
 Recent news
 <Recent news>
-{technical_news}
+{knowledge["Technical News"]}
 </Recent news>
 
 Technical analysis
 <Technical analysis>
-{technical_analysis}
+{knowledge["Technical Analysis"]}
 </Technical analysis>
 
 Economic Events
 <Economic Events>
-{economic_events}
+{knowledge["Economic Events"]}
 </Economic Events>
 """
     def generate_strategy(self):
-        load_dotenv()
-        client = OpenAI()
+        if self.provider == "openai":
+            load_dotenv()
+            client = OpenAI()
+        elif self.provider == "google":
+            client = OpenAI(
+                api_key=os.environ["GEMINI_API_KEY"],
+                base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+            )
         messages = [
             {"role": "system", "content": self.system_message},
-            {"role": "user", "content": self.user_message_template.format(
-                #economic_indicators = self.knowledege["Economic Indicators"],
-                technical_news = self.knowledege["Technical News"],
-                #central_bank = self.knowledege["Central Bank"],
-                technical_analysis = self.knowledege["Technical Analysis"],
-                economic_events = self.knowledege["Economic Events"]
-            )}
+            {"role": "user", "content": self.user_message}
         ]
         completion = client.beta.chat.completions.parse(
         model=self.model_name,
@@ -308,17 +324,14 @@ class KnowledgeBase:
 
 if __name__ == "__main__":
     import time
-    begin_time = time.time()
     kb = KnowledgeBase(
         #currency_pair="USD/JPY",
         currency_pair="EUR/USD"
     )
     #kb.get_technical_analysis(is_local=True)
     end_time = time.time()
-    print(kb.get_all_data())
-    print("\n")
+    knowledge = kb.get_partial_data()
 
-    print(f"Used {end_time-begin_time:.2f}")
 
     
 

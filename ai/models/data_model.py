@@ -22,7 +22,7 @@ class TradingStrategy(BaseModel):
     confidence_score: int = Field(..., description="Confidence score from 1 (lowest) to 5 (highest)")
 
 class Step(BaseModel):
-    analysis: strs
+    analysis: str
 
 
 class TradingReasoning(BaseModel):

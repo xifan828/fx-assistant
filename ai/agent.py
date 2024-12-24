@@ -261,7 +261,7 @@ class KnowledgeBase:
         currency_pair=self.currency_pair,
         ticker=self.currency_ticker
         )
-        results = ta_scrapper.run()
+        results = asyncio.run(ta_scrapper.run())
         return results
     
     def get_central_bank(self) -> List[str]:
@@ -331,6 +331,7 @@ if __name__ == "__main__":
     #kb.get_technical_analysis(is_local=True)
     end_time = time.time()
     knowledge = kb.get_partial_data()
+    print(knowledge)
 
 
     

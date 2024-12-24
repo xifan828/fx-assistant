@@ -369,7 +369,7 @@ if __name__ == "__main__":
 
     from ai.parameters import TECHNICAL_INDICATORS_WEBSITES
 
-    currency_pair = "USD/JPY"
+    currency_pair = "EUR/USD"
 
     scrape_economic_calenders(
         calender_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["calender"]

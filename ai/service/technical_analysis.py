@@ -1,5 +1,5 @@
 import os
-from ai.config import Config
+from ai.config import Config, GeminiClient
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import base64
@@ -7,8 +7,8 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from ai.service.technical_indicators import TechnicalIndicators
 from datetime import datetime
 from ai.parameters import CURRENCY_TICKERS
-from ai.config import upload_to_gemini
 import google.generativeai as genai
+import asyncio
 
 
 class TechnicalAnalysis:
@@ -209,7 +209,34 @@ Below are the technical indicators with an interval of {ti_interval}.
         results = synthesis_chain.invoke({"results": analysis})
         return results
     
-    def create_gemini_analysis(self, pivot_points, current_price):
+    async def extract_technical_indicators_with_gemini(self):
+        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+        generation_config = {
+            "temperature": 0.1,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+            "response_mime_type": "text/plain",
+        }
+
+        model = genai.GenerativeModel(
+            model_name="gemini-2.0-flash-exp",
+            #model_name="gemini-2.0-flash-thinking-exp-1219",
+            generation_config=generation_config,
+            system_instruction=self.system_prompt_technicals
+        )
+        client = GeminiClient()
+        tasks = []
+        for file_name in os.listdir("data/technical_indicators/"):
+            if file_name.endswith("png") and "pivot" in file_name:
+                task = client.call_gemini_api(model, f"{file_name} is uploaded", image_path=f"data/technical_indicators/{file_name}")
+                tasks.append(task)
+        results = await asyncio.gather(*tasks)
+        return results
+
+        
+    async def create_gemini_analysis(self, pivot_points, current_price):
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
         generation_config = {
@@ -226,22 +253,30 @@ Below are the technical indicators with an interval of {ti_interval}.
             generation_config=generation_config,
             system_instruction=self.system_prompt_hourly_analysis
         )
-        files = [
-        upload_to_gemini("data/chart/10_days_cropped.png", mime_type="image/png"),
-        ]
+
+        client = GeminiClient()
+
         query = f"Analyze the following hourly chart data for {self.currency_pair} from the last 10 days."
-        chat_session = model.start_chat(history=[])
-        response_hourly = chat_session.send_message([query, files[0]]).text
+        response_hourly = await client.call_gemini_api(
+            model, query, image_path="data/chart/10_days_cropped.png"
+        )
+
+        # files = [
+        # upload_to_gemini("data/chart/10_days_cropped.png", mime_type="image/png"),
+        # ]
+        # query = f"Analyze the following hourly chart data for {self.currency_pair} from the last 10 days."
+        # chat_session = model.start_chat(history=[])
+        # response_hourly = chat_session.send_message([query, files[0]]).text
 
         model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash-exp",
-        #model_name="gemini-2.0-flash-thinking-exp-1219",
-        generation_config=generation_config,
-        system_instruction=self.system_prompt_5_min_analysis
+            model_name="gemini-2.0-flash-exp",
+            #model_name="gemini-2.0-flash-thinking-exp-1219",
+            generation_config=generation_config,
+            system_instruction=self.system_prompt_5_min_analysis
         )
-        files = [
-        upload_to_gemini("data/chart/1_day_cropped.png", mime_type="image/png"),
-        ]
+        # files = [
+        # upload_to_gemini("data/chart/1_day_cropped.png", mime_type="image/png"),
+        # ]
 
         query = f"""Here is the previous hourly chart analysis provided by another analyst:
         <Hourly chart analysis>
@@ -257,26 +292,30 @@ Below are the technical indicators with an interval of {ti_interval}.
 
         Now, analyze the uploaded 5-minute chart data for {self.currency_pair} from today.
         """
-        chat_session = model.start_chat(history=[])
-        final_response = chat_session.send_message([query, files[0]]).text
+        final_response = await client.call_gemini_api(
+            model, query, image_path="data/chart/1_day_cropped.png"
+        )
+        # chat_session = model.start_chat(history=[])
+        # final_response = chat_session.send_message([query, files[0]]).text
 
         return final_response
 
-    def run(self):
-        technical_indicators = self.extract_technical_indicators()
-        for i in technical_indicators["15_min"].split("###"):
-            if "pivot" in i.lower():
-                pivot_points = i
-                break
-            else:
-                pivot_points = "Not available"
+    async def run(self):
+        technical_indicators = await self.extract_technical_indicators_with_gemini()
+        # for i in technical_indicators["15_min"].split("###"):
+        #     if "pivot" in i.lower():
+        #         pivot_points = i
+        #         break
+        #     else:
+        #         pivot_points = "Not available"
+        pivot_points = technical_indicators[0]
         print(pivot_points)
         rates = self.extract_eur_usd_rate()
         current_price = rates["current_price"]
         print(current_price)
         #analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
         #synthesis = self.create_synthesis(analysis=analysis)
-        analysis = self.create_gemini_analysis(pivot_points, current_price)
+        analysis = await self.create_gemini_analysis(pivot_points, current_price)
         synthesis = analysis
         return synthesis
 
@@ -292,7 +331,7 @@ if __name__ == "__main__":
     #analysis = ta.create_analysis(rates=rates, technical_indicators=technical_indicators)
     #synthesis = ta.run()
     #print(analysis)
-    print(ta.run())
+    print(asyncio.run(ta.run()))
 
     end_time = time.time()
 

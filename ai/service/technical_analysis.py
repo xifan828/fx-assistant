@@ -48,13 +48,13 @@ For the synthesized analysis:
 - Provide a comprehensive short to medium-term outlook for {self.currency_pair}.
 Deliver a clear, concise, and actionable synthesis. Prioritize the most significant insights that emerge from combining multiple analyses. Use professional terminology with brief explanations when necessary. AVOID discussing forex trading risks and the importance of personal research."""
         
-        self.system_prompt_hourly_analysis = f"""
-**Role:** You are a highly skilled forex {self.currency_pair} technical analyst specializing in understanding medium-term trends and identifying key support and resistance levels.
+        self.system_prompt_long_term_analysis = f"""
+**Role:** You are a highly skilled forex {self.currency_pair} technical analyst specializing in understanding long-term trends and identifying key support and resistance levels.
 
 **Context (Inputs):**
-- Hourly price chart data
+- 4 Hourly price chart data
 
-**Goal:** To provide a comprehensive technical analysis of the medium-term trend that will serve as context for shorter-term analysis by another agent.
+**Goal:** To provide a comprehensive technical analysis of the long-term trend that will serve as context for medium-term analysis by another agent.
 
 **Tasks (Analytical Focus):**
 - Identify the prevailing trends present in the hourly chart data over the last 10 days.
@@ -68,11 +68,59 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 - Provide specific numerical values for key support and resistance levels/zones where possible.
 - Remember that your analysis will be used by another agent for further short-term analysis.
 """
+        self.system_prompt_medium_term_analysis = f"""
+**Role:** You are a highly skilled forex {self.currency_pair} technical analyst specializing in refining the understanding of medium-term trends and identifying potential trade setups.
+
+**Context (Inputs):**
+- 1-Hourly price chart data.
+- Output from the 4-hour analysis agent, which includes:
+    - The prevailing trend on the 4-hour timeframe (bullish, bearish, or sideways).
+    - Analysis of recent 4-hour price action, momentum, and potential trend reversal points.
+    - Key support and resistance zones identified on the 4-hour chart.
+
+**Goal:** To refine the directional bias established by the 4-hour analysis, identify nearer-term structure, and pinpoint potential trade setups on the 1-hour timeframe. Your analysis will serve as a bridge to the shorter-term (15M/5M) analysis agent.
+
+**Tasks (Analytical Focus):**
+
+1. **Trend Confirmation/Refinement:**
+   - **Compare H1 Trend with H4 Trend:**
+     - If H1 and H4 trends are aligned, state how this reinforces the established bias.
+     - If H1 contradicts H4, describe the nature of the contradiction.
+     - If both timeframes are sideways, characterize the range (e.g., "Both H4 and H1 are in a sideways range between [price] and [price].").
+   - **Moving Average Analysis:**
+     - Use the 20 EMA, 50 EMA, and 100 EMA to assess the short- to medium-term trend on H1.
+     - Describe the relationship between the EMAs.
+     - Note any significant crosses or slopes of the EMAs.
+   - **Momentum Indicator Analysis:**
+     - Analyze momentum indicators of RSI (14), MACD (12, 26, 9) and ROC (12) on the H1 chart.
+       - RSI (14): State whether RSI is above or below 50 and how this relates to the trend bias.
+       - MACD (12, 26, 9): Describe the position of the MACD line relative to the signal line and the zero line, and note any crossovers or histogram direction as confirmation of momentum.
+       - ROC (12): Interpret the rate of change indicator in the context of momentum confirmation.
+
+2. **Structure and Setup Identification:**
+   - **Identify Intraday S/R:** Look for if any newly formed support/resistance levels on the H1 chart not highlighted in the H4 analysis.
+   - **Chart Patterns:** Identify any short-term chart patterns (e.g., channels, triangles, head and shoulders) that could indicate potential continuation or reversal.
+   - **Breakout/Pullback Scenarios:** Describe potential trade setups based on price action:
+     - Breakout: "If price breaks above [price] with strong momentum, it might signal a continuation of the uptrend."
+     - Pullback: "If price pulls back to the 20 EMA or [support level] and shows a bullish reversal candle, it could offer a buying opportunity."
+
+3. **Alignment with H4 Bias:**
+   - Explicitly state whether the H1 analysis confirms the H4 bias.
+   - If there's a contradiction, outline the conditions under which the H1 analysis would align with the H4 bias, or vice versa.
+
+**Guidelines for Output:**
+- Be concise and focus on actionable insights for the next stage (15M/5M analysis).
+- Provide specific price levels for identified support/resistance, pattern boundaries, and potential entry/exit points.
+- Clearly articulate the relationship between the H1 and H4 analyses.
+- Use clear and objective language, avoiding overly subjective or ambiguous statements.
+- Your output should serve as a clear roadmap for the lower timeframe agent to identify precise entry and exit points.
+"""
+
         self.system_prompt_5_min_analysis = f"""
 **Role:** You are a skilled forex {self.currency_pair} technical analyst specializing in providing short-term trading outlooks based on recent price action.
 
 **Context (Inputs):**
-- Current 5-minute price chart
+- Current 15-minute price chart
 - 15-minute interval pivot points
 - Exact current price
 - Previous hourly chart analysis
@@ -90,7 +138,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 **Guidelines for Output:**
 - Be specific and actionable in your outlook, providing concrete levels or price areas to watch.
 - Remember to always consider the context provided by the previous hourly analysis.
-- Conclude your analysis by stating whether, based on the available information, a trade can be confidently executed at this time (either long or short).
+- Conclude your analysis by stating whether, based on the available information, a trade can be confidently executed at this time (either long, short or wait).
 - If a trade cannot be confidently executed, explain what specific observations or signals would be needed to increase confidence in a potential trade in the near future.
 """
 
@@ -140,18 +188,19 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
         return technical_indicators
     
     def extract_eur_usd_rate(self):
-        ti = TechnicalIndicators(ticker_symbol=self.ticker)
-        def transform(data):
-            data['Close_str'] = data['Close'].map(lambda x: f'{x:.4f}')
-            data = data["Close_str"].to_dict()
-            new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
-            return new_data
-        current_price = ti.download_data(period="1d", interval="1m")["Close"].iloc[-1].round(4)
-        rate_1_day = transform(ti.download_data(period="5d", interval="15m").iloc[-4*24:])
-        rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
-        rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
-        rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month, "current_price": current_price}
-        return rates
+        ti = TechnicalIndicators(ticker=self.ticker, interval="1m")
+        # def transform(data):
+        #     data['Close_str'] = data['Close'].map(lambda x: f'{x:.4f}')
+        #     data = data["Close_str"].to_dict()
+        #     new_data = {key.strftime('%Y-%m-%d %H:%M:%S'): value for key, value in data.items()}
+        #     return new_data
+        # current_price = ti.download_data(period="1d", interval="1m")["Close"].iloc[-1].round(4)
+        # rate_1_day = transform(ti.download_data(period="5d", interval="15m").iloc[-4*24:])
+        # rate_5_day = transform(ti.download_data(period="5d", interval="1h"))
+        # rate_3_month = transform(ti.download_data(period="3mo", interval="1d"))
+        # rates = {"1_day": rate_1_day, "5_day": rate_5_day, "3_month": rate_3_month, "current_price": current_price}
+        current_price = ti.download_data()["Close"].iloc[-1].round(4)
+        return current_price
 
         
     def create_analysis_chain(self):
@@ -210,8 +259,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         return results
     
     async def extract_technical_indicators_with_gemini(self):
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-
+        genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
         generation_config = {
             "temperature": 0.1,
             "top_p": 0.95,
@@ -222,7 +270,6 @@ Below are the technical indicators with an interval of {ti_interval}.
 
         model = genai.GenerativeModel(
             model_name="gemini-2.0-flash-exp",
-            #model_name="gemini-2.0-flash-thinking-exp-1219",
             generation_config=generation_config,
             system_instruction=self.system_prompt_technicals
         )
@@ -237,7 +284,9 @@ Below are the technical indicators with an interval of {ti_interval}.
 
         
     async def create_gemini_analysis(self, pivot_points, current_price):
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+        genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
+        # model_name = "gemini-2.0-flash-exp"
+        model_name = "gemini-2.0-flash-thinking-exp-1219"
 
         generation_config = {
             "temperature": 0.5,
@@ -248,92 +297,84 @@ Below are the technical indicators with an interval of {ti_interval}.
         }
 
         model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash-exp",
-            #model_name="gemini-2.0-flash-thinking-exp-1219",
+            model_name=model_name,
             generation_config=generation_config,
-            system_instruction=self.system_prompt_hourly_analysis
+            system_instruction=self.system_prompt_long_term_analysis
         )
 
         client = GeminiClient()
 
-        query = f"Analyze the following hourly chart data for {self.currency_pair} from the last 10 days."
-        response_hourly = await client.call_gemini_api(
-            model, query, image_path="data/chart/10_days_cropped.png"
+        query = f"Analyze the following 4 hourly chart data for {self.currency_pair} from the last 3 months."
+        response_long_term = await client.call_gemini_api(
+            model, query, image_path="data/chart/4h.png"
         )
+        print("Long term analysis \n", response_long_term)
+        print("\n\n")
 
-        # files = [
-        # upload_to_gemini("data/chart/10_days_cropped.png", mime_type="image/png"),
-        # ]
-        # query = f"Analyze the following hourly chart data for {self.currency_pair} from the last 10 days."
-        # chat_session = model.start_chat(history=[])
-        # response_hourly = chat_session.send_message([query, files[0]]).text
 
         model = genai.GenerativeModel(
-            model_name="gemini-2.0-flash-exp",
-            #model_name="gemini-2.0-flash-thinking-exp-1219",
+            model_name=model_name,
+            generation_config=generation_config,
+            system_instruction=self.system_prompt_medium_term_analysis
+        )
+        query = f"""Here is the previous 4 hourly chart analysis provided by another analyst:
+        <4 Hourly chart analysis>
+        {response_long_term}
+        </4 Hourly chart analysis>
+
+        Now, analyze the uploaded hourly chart data for {self.currency_pair} from the last 20 days.
+        """
+        response_medium_term = await client.call_gemini_api(
+            model, query, image_path="data/chart/1h.png"
+        )
+
+        print("Medium term analysis \n", response_medium_term)
+        print("\n\n")
+
+        model = genai.GenerativeModel(
+            model_name=model_name,
             generation_config=generation_config,
             system_instruction=self.system_prompt_5_min_analysis
         )
-        # files = [
-        # upload_to_gemini("data/chart/1_day_cropped.png", mime_type="image/png"),
-        # ]
-
         query = f"""Here is the previous hourly chart analysis provided by another analyst:
         <Hourly chart analysis>
-        {response_hourly}
+        {response_medium_term}
         </Hourly chart analysis>
 
-        Here are the 15-minute interval pivot points:
-        <15-Minute Pivot Points>
+        Here are the 15-minute pivot points.
+        <Pivot points>
         {pivot_points}
-        </15-Minute Pivot Points>
+        </Pivot points>
 
-        The current price is: {current_price}
-
-        Now, analyze the uploaded 5-minute chart data for {self.currency_pair} from today.
-        """
-        final_response = await client.call_gemini_api(
-            model, query, image_path="data/chart/1_day_cropped.png"
+        The currrent price is {current_price}. 
+        
+        Analyze the uploaded 15-min chart data from the last 3 days."""
+        response_short_term = await client.call_gemini_api(
+            model, query, image_path="data/chart/15m.png"
         )
-        # chat_session = model.start_chat(history=[])
-        # final_response = chat_session.send_message([query, files[0]]).text
+        print("5 min analysis \n", response_short_term)
 
-        return final_response
+        return response_short_term
 
     async def run(self):
         technical_indicators = await self.extract_technical_indicators_with_gemini()
-        # for i in technical_indicators["15_min"].split("###"):
-        #     if "pivot" in i.lower():
-        #         pivot_points = i
-        #         break
-        #     else:
-        #         pivot_points = "Not available"
+
         pivot_points = technical_indicators[0]
         print(pivot_points)
-        rates = self.extract_eur_usd_rate()
-        current_price = rates["current_price"]
+        current_price = self.extract_eur_usd_rate()
         print(current_price)
-        #analysis = self.create_analysis(rates=rates, technical_indicators=technical_indicators)
-        #synthesis = self.create_synthesis(analysis=analysis)
+
         analysis = await self.create_gemini_analysis(pivot_points, current_price)
         synthesis = analysis
         return synthesis
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="EUR/USD"
+        #currency_pair="EUR/USD",
+        currency_pair="USD/JPY",
     )
-    import time 
-    begin_time = time.time()
-    #rates = ta.extract_eur_usd_rate()
-    #technical_indicators = ta.extract_technical_indicators()
-    #print(technical_indicators)
-    #analysis = ta.create_analysis(rates=rates, technical_indicators=technical_indicators)
-    #synthesis = ta.run()
-    #print(analysis)
-    print(asyncio.run(ta.run()))
 
-    end_time = time.time()
+    asyncio.run(ta.run())
 
-    print(f"Used {end_time-begin_time:.2f}")
+
 

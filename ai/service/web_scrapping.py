@@ -105,13 +105,15 @@ class TechnicalNewsScrapper:
                 else:
                     time.sleep(1)
                     continue
-            #print(root_page_content)
-            #print("\n")
+    
             print(sub_page_websites)
-            sub_page_contents = self.scrape_sub_pages(sub_page_websites)
+            if sub_page_websites[0]["article"] is not None:
+                sub_page_contents = self.scrape_sub_pages(sub_page_websites)
+            else:
+                sub_page_contents = []
             investing_sub_page_contents = self.scrape_investing_news()
-            sub_page_contents.extend(investing_sub_page_contents)
-            #print(sub_page_contents)
+            sub_page_contents += investing_sub_page_contents
+            print(sub_page_contents)
 
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
             #print(sub_page_summaries)
@@ -127,6 +129,7 @@ class TechnicalNewsScrapper:
     def scrape_investing_news(self) -> List[Dict[str, str]]:
         investing_news_url = INVESTING_NEWS_ROOT_WEBSITE[self.currency_pair]
         response = requests.get(investing_news_url)
+        print(response.status_code)
         if response.status_code == 200:
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -224,17 +227,17 @@ Be concise and focus on the most impactful information.
         
     def create_final_summary(self, summaries: List[Dict[str, str]]):
         model = Config(model_name="gpt-4o", temperature=0.2).get_model()
-        system_prompt = f"""You are an advanced Forex Market Analyst specializing in the {self.currency_pair} currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
-You will be provided with the latest articles related to the {self.currency_pair} forex market. Each article will include a title and a summary. 
-Your tasks are:
-1. Extract key insights impacting {self.currency_pair}.
-2. Identify trends and potential market drivers.
-3. Identify and summarize the prevailing market sentiment toward EUR/USD, noting recurring themes, biases, and shifts in tone that may influence currency movements.
-4. Highlight conflicting viewpoints.
-5. Quantify potential impacts when possible.
-6. Summarize analysis: key drivers, impacts, and risks.
-Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
-"""     
+#         system_prompt = f"""You are an advanced Forex Market Analyst specializing in the {self.currency_pair} currency pair. Your expertise lies in synthesizing information from multiple sources and extracting actionable insights for forex traders.
+# You will be provided with the latest articles related to the {self.currency_pair} forex market. Each article will include a title and a summary. 
+# Your tasks are:
+# 1. Extract key insights impacting {self.currency_pair}.
+# 2. Identify trends and potential market drivers.
+# 3. Identify and summarize the prevailing market sentiment toward EUR/USD, noting recurring themes, biases, and shifts in tone that may influence currency movements.
+# 4. Highlight conflicting viewpoints.
+# 5. Quantify potential impacts when possible.
+# 6. Summarize analysis: key drivers, impacts, and risks.
+# Your analysis will be used by forex traders of varying experience levels. Your analysis should be clear, concise, and actionable, allowing traders to quickly grasp the most important information and apply it to their trading decisions. **Avoid** general advice about monitoring future events or data.
+# """     
         system_prompt = f"""You are a highly skilled {self.currency_pair} forex market analyst specializing in synthesizing information from multiple news articles to provide a comprehensive market overview. 
 Your primary input is a collection of key information extractions from recent news articles, each analyzed by another agent. 
 Your goal is to synthesize these individual extractions into a cohesive summary that identifies the key drivers and themes impacting the {self.currency_pair} market, **paying particular attention to the opinions and insights shared by finance industry professionals**. Focus on:
@@ -266,7 +269,7 @@ if __name__ == "__main__":
     # scraped_data = asyncio.run(scraper.scrape_websites(ECONOMIC_INDICATORS_WEBSITES))
     # print(scraped_data)
     scrapper = TechnicalNewsScrapper(top_k=5)
-    print(scrapper.scrape_news())
+    print(scrapper.scrape_investing_news())
     # print(scrapper.scrape_root_page())
     # results = scrapper.scrape_news()
     # print(results)

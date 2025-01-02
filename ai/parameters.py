@@ -30,8 +30,8 @@ ECONOMIC_INDICATORS_WEBSITES = {
 }
 
 NEWS_ROOT_WEBSITE = {
-    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX_IDC",
-    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX_IDC"
+    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX",
+    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX"
 }
 
 INVESTING_NEWS_ROOT_WEBSITE = {
@@ -41,13 +41,13 @@ INVESTING_NEWS_ROOT_WEBSITE = {
 
 TECHNICAL_INDICATORS_WEBSITES = {
     "EUR/USD": {
-        "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX_IDC",
-        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX_IDC",
+        "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX",
+        "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX",
         "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=EURUSD"
     },
     "USD/JPY": {
-        "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX_IDC",
-        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX_IDC",
+        "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX",
+        "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX",
         "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=USDJPY"
     }
 }

@@ -34,6 +34,7 @@ def main():
 
     with st.sidebar:
         auth_email_address = st.text_input("Email address", key="auth_email")
+        st.text_input("Password", type="password")
         authenticate = st.button("Authenticate")
 
     if authenticate:

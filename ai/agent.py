@@ -280,7 +280,10 @@ class KnowledgeBase:
         ticker=self.currency_ticker
         )
         results = asyncio.run(ta_scrapper.run())
-        return results
+        analysis = results["analysis"]
+        strategy = results["strategy"]
+        final = f"{analysis}\n{strategy}"
+        return final
     
     def get_central_bank(self) -> List[str]:
         bank_a = self.central_banks[self.currency_a]

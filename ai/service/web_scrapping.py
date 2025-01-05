@@ -113,7 +113,7 @@ class TechnicalNewsScrapper:
                 sub_page_contents = []
             investing_sub_page_contents = self.scrape_investing_news()
             sub_page_contents += investing_sub_page_contents
-            print(sub_page_contents)
+            #print(sub_page_contents)
 
             sub_page_summaries = self.summarize_sub_pages(sub_page_contents)
             #print(sub_page_summaries)

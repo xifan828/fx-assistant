@@ -452,7 +452,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         response_json, _ = await client.call_gemini_text_api(query, history=history)
         print(response_json)
 
-        return f"{analysis_15m}\n{response_json}"
+        return {"analysis": analysis_15m, "strategy": response_json}
 
     async def run(self):
         results = await self.extract_technical_indicators_with_gemini()

@@ -255,11 +255,11 @@ class KnowledgeBase:
         # scrape_technical_indicators(
         # indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
         # )
-        ti = TechnicalIndicators(ticker=self.currency_ticker, interval="4h")
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="4h")
         ti.run()
-        ti = TechnicalIndicators(ticker=self.currency_ticker, interval="1h")
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
         ti.run()
-        ti = TechnicalIndicators(ticker=self.currency_ticker, interval="15m")
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="15min")
         ti.run()
 
     def get_economic_indicators(self) -> Dict:

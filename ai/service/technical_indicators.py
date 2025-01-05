@@ -9,30 +9,37 @@ from matplotlib.ticker import MaxNLocator
 from matplotlib import pyplot as plt
 from mplfinance.original_flavor import candlestick_ohlc
 import os
+from PIL import Image, ImageDraw, ImageFont
+from twelvedata import TDClient
+
 # creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
 class TechnicalIndicators:
-    def __init__(self, ticker: str, interval: str, period: str = None):
-        self.ticker = ticker
+    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA"):
+        self.currency_pair = currency_pair
         self.interval = interval
-        if self.interval == "15m":
-            self.period = "5d" if period is None else period
-        elif self.interval == "1h":
-            self.period = "1mo" if period is None else period
-        elif self.interval == "4h":
-            self.period = "6mo" if period is None else period
-        elif self.interval == "1m":
-            self.period = "1d" if period is None else period
+        self.outputsize = outputsize
+        self.exchange = exchange
         self.chart_root_path = "data/chart"
     
     def download_data(self):
         """Download data from yfinance"""
-        if self.interval == "4h":
-            data = yf.download(self.ticker, period=self.period, interval="1h")
-            data = data.resample('4h').agg({'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'})
-            data = data.dropna(subset=["Open", "Close"])
-        else:
-            data = yf.download(self.ticker, period=self.period, interval=self.interval)
+        # if self.interval == "4h":
+        #     data = yf.download(self.ticker, period=self.period, interval="1h")
+        #     data = data.resample('4h').agg({'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'})
+        #     data = data.dropna(subset=["Open", "Close"])
+        # else:
+        #     data = yf.download(self.ticker, period=self.period, interval=self.interval)
+        td = TDClient(apikey=os.environ["TD_API_KEY"])
+        data = td.time_series(
+            symbol=self.currency_pair,
+            exchange=self.exchange,
+            interval=self.interval,
+            outputsize=self.outputsize,
+            timezone="Europe/Berlin"
+        ).as_pandas()
+        data = data.rename(columns={"open": "Open", "high": "High", "low": "Low", "close": "Close"})
+        data = data.iloc[::-1]
         return data
     
     def calculate_technical_indicators(self, df):
@@ -76,13 +83,14 @@ class TechnicalIndicators:
         
         df['Date'] = df.index
 
-        today = pd.Timestamp.now().date()
-        if self.interval == "15m":
-            df = df.tail(2*24*4)
+        #df = df.loc[df["Date"] <= "2025-01-02 22:15:00"]
+
+        if self.interval == "15min":
+            df = df.tail(int(1.5*24*4))
         elif self.interval == "1h":
-            df = df.tail(12*24)
+            df = df.tail(7*24)
         elif self.interval == "4h":
-            df = df.tail(int(2.5*20*6))
+            df = df.tail(int(2*20*6))
         return df
     
     def plot_chart(self, fx_data: pd.DataFrame):
@@ -103,15 +111,26 @@ class TechnicalIndicators:
         axes = [ax1, ax2, ax3, ax4]
 
         # --- Plot 1: Candlestick Chart with SMA ---
+        lines = []
+        labels = []
         candlestick_ohlc(axes[0], ohlc_data.values, width=0.6, colorup='green', colordown='red', alpha=0.8)
         if self.interval == "15m":
-            axes[0].plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 10: blue")
         if self.interval != "4h":
-            axes[0].plot(fx_data['Index'], fx_data['EMA20'], label='EMA 20', color='orange', linewidth=2)
-        axes[0].plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
-        axes[0].plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
-        axes[0].legend(loc='upper left')
-        axes[0].set_title('EUR/USD Candlestick Chart with SMA')
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA20'], label='EMA 20', color='orange', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 20: orange")
+        line, = axes[0].plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
+        lines.append(line)
+        labels.append("EMA 50: purple")
+        if self.interval != "15m":
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 100: violet")
+        axes[0].legend(lines, labels, loc='upper left', fontsize=12)
+        axes[0].set_title(f"{self.currency_pair} Candlestick Chart with EMAs")
         axes[0].grid(True)
 
         # --- Plot 2: RSI ---
@@ -122,8 +141,14 @@ class TechnicalIndicators:
         axes[1].grid(True)
 
         # --- Plot 3: MACD ---
-        axes[2].plot(fx_data['Index'], fx_data['MACD'], label='MACD', color='red')
-        axes[2].plot(fx_data['Index'], fx_data['MACD_Signal'], label='EMA (9)', color='lightgreen')
+        lines = []
+        labels = []
+        line, = axes[2].plot(fx_data['Index'], fx_data['MACD'], label='MACD', color='red')
+        lines.append(line)
+        labels.append("MACD: red")
+        line, = axes[2].plot(fx_data['Index'], fx_data['MACD_Signal'], label='EMA (9)', color='green')
+        lines.append(line)
+        labels.append("Signal: green")
 
         # Calculate histogram data
         macd_diff = fx_data['MACD_Diff']
@@ -132,10 +157,12 @@ class TechnicalIndicators:
         pos_diff[pos_diff <= 0] = 0  # Set negative values to 0 for positive bars
         neg_diff[neg_diff >= 0] = 0  # Set positive values to 0 for negative bars
 
-        axes[2].bar(fx_data['Index'], pos_diff, color='peru', label='Divergence', width=0.6)
+        line = axes[2].bar(fx_data['Index'], pos_diff, color='peru', label='Divergence', width=0.6)
+        lines.append(line)
+        labels.append("Divergence (negative: black, positive: peru)")
         axes[2].bar(fx_data['Index'], neg_diff, color='black', width=0.6)
 
-        axes[2].legend(loc='upper left')
+        axes[2].legend(lines, labels, loc='upper left', fontsize=12)
         axes[2].grid(True)
 
         # --- Plot 4: ROC ---
@@ -146,15 +173,19 @@ class TechnicalIndicators:
             axes[3].grid(True)
 
         # --- Formatting ---
-        def price_formatter(x, p):
-            return f"{x:.4f}"
+        if self.currency_pair == "EUR/USD":
+            def price_formatter(x, p):
+                return f"{x:.4f}"
+        if self.currency_pair == "USD/JPY":
+            def price_formatter(x, p):
+                return f"{x:.1f}"
 
         # Calculate y-axis limits and ticks for the first subplot
         y_min, y_max = ax1.get_ylim()
         # Round to nearest 5 pips below and above
-        pip_interval_dict = {"EURUSD=X": {'15m': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
-                             "USDJPY=X": {'15m': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
-        pip_interval = pip_interval_dict[self.ticker][self.interval]
+        pip_interval_dict = {"EUR/USD": {'15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
+                             "USD/JPY": {'15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
+        pip_interval = pip_interval_dict[self.currency_pair][self.interval]
 
         y_min = round(y_min / pip_interval) * pip_interval
         y_max = round(y_max / pip_interval) * pip_interval
@@ -170,7 +201,7 @@ class TechnicalIndicators:
         for i, ax in enumerate(axes):
             ax.xaxis.set_major_formatter(FuncFormatter(date_formatter))
             ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=10))
-            ax.set_xlim(0, len(fx_data) + 10)
+            ax.set_xlim(0, len(fx_data) + 5)
 
             ax.yaxis.tick_right()
             ax.yaxis.set_label_position("right")
@@ -189,23 +220,81 @@ class TechnicalIndicators:
 
         # Adjust layout to prevent label cutoff
         plt.tight_layout()
-        # save the figure
-        chart_path = f"{self.interval}.png"
-        fig.savefig(os.path.join(self.chart_root_path, chart_path))
+        fig.savefig(os.path.join(self.chart_root_path, f"{self.interval}.png"))
+        plt.close(fig)
         return 
     
+    def crop_image(self):
+        img_path = os.path.join(self.chart_root_path, f"{self.interval}.png")   
+        partition_height = 720
+        partition_width = 1200
+        with Image.open(img_path) as img:
+            width, height = img.size
+            left = 0
+            top = 0
+            right = width
+            bottom = height - partition_height
+            img = img.crop((left, top, right, bottom))
+            img.save(os.path.join(self.chart_root_path, f"{self.interval}_candel.png"))
+        
+        text_boxes = {
+        # "RSI(14)": 10,
+        # "MACD: Red\nSignal: Green\nDivergence: (negative: black, positive: peru)": 260,
+        # "ROC(12)": 520
+        "RSI(14)": 10,
+        "MACD": 260,
+        "ROC(12)": 520
+        }
+        font_size = 15
+        with Image.open(img_path) as img:
+            width, height = img.size
+            left = partition_width
+            top = height - partition_height
+            right = width
+            bottom = height
+            img = img.crop((left, top, right, bottom))
+            draw = ImageDraw.Draw(img)
+            try:
+                font = ImageFont.truetype("arial.ttf", font_size)  # Use a truetype font
+            except IOError:
+                font = ImageFont.load_default()
+            for text, text_y in text_boxes.items():
+                # Calculate text size using textbbox
+                text_bbox = draw.textbbox((0, 0), text, font=font)  # Get bounding box of the text
+                text_width = text_bbox[2] - text_bbox[0]
+                text_height = text_bbox[3] - text_bbox[1]
+
+                # Specify text position (left side, experiment with vertical position)
+                text_x = 5  # Distance from the left
+
+                # Draw text box background
+                background_box = (text_x - 10, text_y - 10, text_x + text_width + 10, text_y + text_height + 10)
+                draw.rectangle(background_box, fill="grey")  # White background for text
+
+                # Add the text
+                draw.text((text_x, text_y), text, fill="black", font=font)
+
+            img.save(os.path.join(self.chart_root_path, f"{self.interval}_ti.png"))
+        return
+
+    
+
     def run(self):
         data = self.download_data()
         data = self.calculate_technical_indicators(data)
         self.plot_chart(data)
+        self.crop_image()
         return data
 
 
 if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
-    ti = TechnicalIndicators(ticker="EURUSD=X", interval="4h")
+    currency_pair = "EUR/USD"
+    #ticker = "USDJPY=X"
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
     data = ti.run()
-    ti = TechnicalIndicators(ticker="EURUSD=X", interval="1h")
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
     data = ti.run()
-    ti = TechnicalIndicators(ticker="EURUSD=X", interval="15m")
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
     data = ti.run()
+

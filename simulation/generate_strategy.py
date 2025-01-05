@@ -11,7 +11,8 @@ def generate_trading_strategy(file_path: str, currency_pair: str):
     kb = KnowledgeBase(currency_pair=currency_pair)
     Knowledge = kb.get_partial_data()
 
-    providers = ["openai", "google"]
+    #providers = ["openai", "google"]
+    providers =["openai"]
 
     for provider in providers:
         if provider == "openai":
@@ -49,4 +50,4 @@ def generate_trading_strategy(file_path: str, currency_pair: str):
         new_strategy.to_csv(file_path, index=False)
 
 if __name__ == "__main__":
-    generate_trading_strategy(r"simulation\12_16_12_20\trading_strategy.csv", "EUR/USD")
+    generate_trading_strategy(r"simulation\2025_01_02\trading_strategy.csv", "EUR/USD")

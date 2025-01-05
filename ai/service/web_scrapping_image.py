@@ -19,6 +19,9 @@ import os
 def scrape_technical_indicators(indicator_url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")  # Especially on Windows
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
@@ -150,6 +153,9 @@ def scrape_technical_indicators(indicator_url: str):
 def scrape_economic_calenders(calender_url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")  # Especially on Windows
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
@@ -227,6 +233,9 @@ def close_ads(driver):
 def scrape_aastocks_chart(url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")  # Especially on Windows
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
@@ -371,13 +380,13 @@ if __name__ == "__main__":
 
     currency_pair = "EUR/USD"
 
-    scrape_economic_calenders(
-        calender_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["calender"]
-    )
+    # scrape_economic_calenders(
+    #     calender_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["calender"]
+    # )
     scrape_technical_indicators(
         indicator_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["indicator"]
     )
 
-    scrape_aastocks_chart(
-        url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["chart"]
-    )
+    # scrape_aastocks_chart(
+    #     url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["chart"]
+    # )

@@ -163,7 +163,7 @@ Identify nearer-term structure, and pinpoint potential trade setups on the 1-hou
         self.system_prompt_template_candlestick_15m = """**Role:** You are a skilled forex {currency_pair} technical analyst specializing in providing short-term trading outlooks based on recent price action.
 
 **Context (Inputs):**
-- Current 15-minute price chart including candlestick patterns and EMAs.
+- Current 5-minute price chart including candlestick patterns and EMAs.
 - Detailed analysis of the MACD, RSI and ROC indicators for the same period and same interval, provided by another technical analyst agent.
 - Summary of the 1-hour interval price chart analysis by another analysis agent.
 - 15-minute interval pivot points
@@ -173,7 +173,7 @@ Identify nearer-term structure, and pinpoint potential trade setups on the 1-hou
 
 **Tasks (Analytical Focus):**
 - **Trend Identification:**
-    - Identify the prevailing trends present in the 15 min chart data over the last one and half.
+    - Identify the prevailing trends present in the 5 min chart data.
         - Describe the overall trend direction by looking at price actions.
     - Analyze the the most **recent** price action.
         - Describe the recent price movements and candlestick patterns.
@@ -333,7 +333,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         return results
 
     async def get_technical_indicators_analysis(self, client, image_path):
-        query = "The technical indicators chart is uploaded.\nIn the MACD chart, red line represents MACD, green line represents Signal, balck histogram represents negative and peru histogram represents positive.\nStart your analysis."
+        query = "The technical indicators chart is uploaded. The latest period should be considred is shaded in grey.\nIn the MACD chart, red line represents MACD, green line represents Signal, balck histogram represents negative and peru histogram represents positive.\nStart your analysis."
         response, _ = await client.call_gemini_vision_api(
         user_message=query, image_path=image_path
         )
@@ -341,7 +341,7 @@ Below are the technical indicators with an interval of {ti_interval}.
 
     async def get_technical_analysis(self, client, image_path, technical_indicators_analysis, previous_analysis = None, current_price = None, pivit_points = None):
         query_prefix = (
-        "The candlestick chart is uploaded.\n",
+        "The candlestick chart is uploaded. The **latest** candlesticks are shaded in grey.\n",
         "The technical indicators analysis for the same period is provided below by another agent:\n",
         "<Technical indicators analysis>\n",
         f"{technical_indicators_analysis}\n",
@@ -385,11 +385,11 @@ Below are the technical indicators with an interval of {ti_interval}.
         
     async def create_gemini_analysis(self, pivot_points, current_price):
         genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
-        model_name = "gemini-2.0-flash-exp"
+        #model_name = "gemini-2.0-flash-exp"
         #model_name = "gemini-2.0-flash-thinking-exp-1219"
-        #model_name = "gemini-exp-1206"
+        model_name = "gemini-exp-1206"
         generation_config = {
-            "temperature": 0.5,
+            "temperature": 0.1,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
@@ -398,7 +398,8 @@ Below are the technical indicators with an interval of {ti_interval}.
         
         # analyze all technical indicators
         tasks = []
-        files = [("4 hour", "data/chart/4h_ti.png"), ("1 hour", "data/chart/1h_ti.png"), ("15 min", "data/chart/15min_ti.png")]
+        #files = [("4 hour", "data/chart/4h_ti.png"), ("1 hour", "data/chart/1h_ti.png"), ("15 min", "data/chart/15min_ti.png")]
+        files = [("4 hour", "data/chart/4h_ti.png"), ("1 hour", "data/chart/1h_ti.png"), ("5 min", "data/chart/5min_ti.png")]
         for interval, image_path in files:
             system_prompt_technical_indicators = self.system_prompt_template_techncial_indicators.format(interval=interval, currency_pair=self.currency_pair)
             client = GeminiClient(
@@ -413,11 +414,13 @@ Below are the technical indicators with an interval of {ti_interval}.
             print("\n\n")
 
         # 4 hour analysis
+        #chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/15min_candel.png"]
+        chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/5min_candel.png"]
         system_prompt_candlestick_4h = self.system_prompt_template_candlestick_4h.format(currency_pair=self.currency_pair)
         client = GeminiClient(
             model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_4h
         )
-        analysis_4h, _ = await self.get_technical_analysis(client, "data/chart/4h_candel.png", ti_analysis_results[0])
+        analysis_4h, _ = await self.get_technical_analysis(client, chart_files[0], ti_analysis_results[0])
         summary_4h = analysis_4h.split("**Summary:**")[-1].strip()
         print(summary_4h)
 
@@ -426,7 +429,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         client = GeminiClient(
             model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_1h
         )
-        analysis_1h, _ = await self.get_technical_analysis(client, "data/chart/1h_candel.png", ti_analysis_results[1], summary_4h)
+        analysis_1h, _ = await self.get_technical_analysis(client, chart_files[1], ti_analysis_results[1], summary_4h)
         summary_1h = analysis_1h.split("**Summary:**")[-1].strip()
         print(summary_1h)
 
@@ -435,7 +438,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         client = GeminiClient(
             model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_15m
         )
-        analysis_15m, history = await self.get_technical_analysis(client, "data/chart/15min_candel.png", ti_analysis_results[2], summary_1h, current_price, pivot_points)
+        analysis_15m, history = await self.get_technical_analysis(client, chart_files[2], ti_analysis_results[2], summary_1h, current_price, pivot_points)
         print(analysis_15m)
         summary_15m = analysis_15m.split("**Summary:**")[-1].strip()
 
@@ -452,12 +455,13 @@ Below are the technical indicators with an interval of {ti_interval}.
         response_json, _ = await client.call_gemini_text_api(query, history=history)
         print(response_json)
 
-        return {"analysis": analysis_15m, "strategy": response_json}
+        return {"analysis": analysis_15m, "strategy": response_json, "summary": summary_15m}
 
     async def run(self):
         results = await self.extract_technical_indicators_with_gemini()
         technical_indicators, _  = results[0]
         print(technical_indicators)
+
         current_price = self.extract_eur_usd_rate()
         print(current_price)
 
@@ -467,8 +471,8 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="EUR/USD",
-        #currency_pair="USD/JPY",
+        #currency_pair="EUR/USD",
+        currency_pair="USD/JPY",
     )
 
     asyncio.run(ta.run())

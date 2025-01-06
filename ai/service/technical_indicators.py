@@ -21,6 +21,7 @@ class TechnicalIndicators:
         self.outputsize = outputsize
         self.exchange = exchange
         self.chart_root_path = "data/chart"
+        self.df = None
     
     def download_data(self):
         """Download data from yfinance"""
@@ -83,14 +84,14 @@ class TechnicalIndicators:
         
         df['Date'] = df.index
 
-        #df = df.loc[df["Date"] <= "2025-01-02 22:15:00"]
-
-        if self.interval == "15min":
+        #df = df.loc[df["Date"] <= "2025-01-06 15:55:00"]
+        if self.interval == "15min" or self.interval=="5min":
             df = df.tail(int(1.5*24*4))
         elif self.interval == "1h":
-            df = df.tail(7*24)
+            df = df.tail(4*24)
         elif self.interval == "4h":
-            df = df.tail(int(2*20*6))
+            df = df.tail(int(1*20*6))
+        self.df = df
         return df
     
     def plot_chart(self, fx_data: pd.DataFrame):
@@ -114,7 +115,7 @@ class TechnicalIndicators:
         lines = []
         labels = []
         candlestick_ohlc(axes[0], ohlc_data.values, width=0.6, colorup='green', colordown='red', alpha=0.8)
-        if self.interval == "15m":
+        if self.interval == "15min" or self.interval == "5min":
             line, = axes[0].plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
             lines.append(line)
             labels.append("EMA 10: blue")
@@ -125,7 +126,7 @@ class TechnicalIndicators:
         line, = axes[0].plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
         lines.append(line)
         labels.append("EMA 50: purple")
-        if self.interval != "15m":
+        if self.interval != "15min" or self.interval != "5min":
             line, = axes[0].plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
             lines.append(line)
             labels.append("EMA 100: violet")
@@ -183,8 +184,8 @@ class TechnicalIndicators:
         # Calculate y-axis limits and ticks for the first subplot
         y_min, y_max = ax1.get_ylim()
         # Round to nearest 5 pips below and above
-        pip_interval_dict = {"EUR/USD": {'15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
-                             "USD/JPY": {'15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
+        pip_interval_dict = {"EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
+                             "USD/JPY": {'5min': 10 / 100,'15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
         pip_interval = pip_interval_dict[self.currency_pair][self.interval]
 
         y_min = round(y_min / pip_interval) * pip_interval
@@ -218,6 +219,29 @@ class TechnicalIndicators:
             
             ax.grid(True, alpha=0.4)
 
+        #------------------- Shading Added Here ------------------------------------------
+        # Calculate the starting index for shading. Based on time interval.
+        time_intervals_dict = {"5min": 12, "15min": 6, "1h": 5, "4h": 5} # Number of bars to mark
+        bars_to_mark = time_intervals_dict[self.interval]
+
+        start_shade = max(0, len(fx_data) - bars_to_mark)
+        end_shade = len(fx_data)
+
+        # Add shaded area
+        for ax in axes:
+            ax.axvspan(start_shade, end_shade, facecolor='grey', alpha=0.2, zorder=-1)
+
+        # Add Text Annotation
+        # time_unit = "minutes"
+        # if self.interval == "1h" or self.interval == "4h":
+        #     time_unit = "hours"
+        
+        # text_annotation = f"Last {bars_to_mark * int(self.interval.replace('min', '').replace('h', ''))} {time_unit}"
+        
+        # text_x = (start_shade + end_shade) / 2
+        # text_y = ax1.get_ylim()[1] - (ax1.get_ylim()[1] - ax1.get_ylim()[0]) / 10  # Place text near the top
+        # ax1.text(text_x, text_y, text_annotation, ha='center', va='bottom', fontsize=12)
+
         # Adjust layout to prevent label cutoff
         plt.tight_layout()
         fig.savefig(os.path.join(self.chart_root_path, f"{self.interval}.png"))
@@ -237,13 +261,15 @@ class TechnicalIndicators:
             img = img.crop((left, top, right, bottom))
             img.save(os.path.join(self.chart_root_path, f"{self.interval}_candel.png"))
         
+        current_rsi = self.df.iloc[-1]["RSI14"]
+        current_roc = self.df.iloc[-1]["ROC12"]
         text_boxes = {
         # "RSI(14)": 10,
         # "MACD: Red\nSignal: Green\nDivergence: (negative: black, positive: peru)": 260,
         # "ROC(12)": 520
-        "RSI(14)": 10,
+        f"RSI(14): {current_rsi:.1f}": 10,
         "MACD": 260,
-        "ROC(12)": 520
+        f"ROC(12): {current_roc:.3f}": 520
         }
         font_size = 15
         with Image.open(img_path) as img:
@@ -289,12 +315,12 @@ class TechnicalIndicators:
 
 if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
-    currency_pair = "EUR/USD"
-    #ticker = "USDJPY=X"
+    #currency_pair = "EUR/USD"
+    currency_pair = "USD/JPY"
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
     data = ti.run()
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
     data = ti.run()
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
     data = ti.run()
 

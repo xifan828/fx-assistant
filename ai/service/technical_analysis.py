@@ -313,7 +313,7 @@ Below are the technical indicators with an interval of {ti_interval}.
             "temperature": 0.1,
             "top_p": 0.95,
             "top_k": 40,
-            "max_output_tokens": 8192,
+            "max_output_tokens": 4096,
             "response_mime_type": "text/plain",
         }
         model_name = "gemini-2.0-flash-exp"

@@ -118,6 +118,9 @@ def main():
             for msg in st.session_state["messages"]:
                 st.chat_message(msg["role"]).write(msg["content"])
 
+            options = ["EUR/USD Plan", "USD/JPY Plan"]
+            selection = st.pills("Select a plan:", options, selection_mode="single")
+
             if prompt := st.chat_input():
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.chat_message("user").write(prompt)

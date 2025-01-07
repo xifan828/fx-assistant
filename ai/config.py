@@ -67,8 +67,9 @@ class GeminiClient:
     async def call_gemini_text_api(self, user_message, history=[]):
         try:
             chat_session = self.model.start_chat(history=history)
-            response = chat_session.send_message(user_message).text
-            return response, chat_session.history
+            response = await chat_session.send_message_async(user_message)
+            response_text = response.text
+            return response_text, chat_session.history
         
         except Exception as e:
             print(f"Error in call_api: {e}")

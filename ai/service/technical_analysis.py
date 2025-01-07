@@ -385,9 +385,9 @@ Below are the technical indicators with an interval of {ti_interval}.
         
     async def create_gemini_analysis(self, pivot_points, current_price):
         genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
-        #model_name = "gemini-2.0-flash-exp"
+        model_name = "gemini-2.0-flash-exp"
         #model_name = "gemini-2.0-flash-thinking-exp-1219"
-        model_name = "gemini-exp-1206"
+        #model_name = "gemini-exp-1206"
         generation_config = {
             "temperature": 0.1,
             "top_p": 0.95,
@@ -471,8 +471,8 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        #currency_pair="EUR/USD",
-        currency_pair="USD/JPY",
+        currency_pair="EUR/USD",
+        #currency_pair="USD/JPY",
     )
 
     asyncio.run(ta.run())

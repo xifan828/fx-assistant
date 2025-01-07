@@ -259,7 +259,7 @@ class KnowledgeBase:
         ti.run()
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
         ti.run()
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="15min")
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
         ti.run()
 
     def get_economic_indicators(self) -> Dict:

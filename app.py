@@ -118,8 +118,24 @@ def main():
             for msg in st.session_state["messages"]:
                 st.chat_message(msg["role"]).write(msg["content"])
 
-            options = ["EUR/USD Plan", "USD/JPY Plan"]
-            selection = st.pills("Select a plan:", options, selection_mode="single")
+            options = ["EUR/USD Trading Plan", "USD/JPY Trading Plan"]
+            eu, jp = st.columns(2)
+
+            # An attempt at button prompts to instantly bring out a response
+
+            if eu.button(options[0], use_container_width=True):
+                st.session_state["messages"].append({"role": "user", "content": options[0]})
+                st.chat_message("user").write(options[0])
+                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                st.session_state["messages"].append({"role": "assistant", "content": response})
+                st.chat_message("assistant").write(response)
+            
+            if jp.button(options[1], use_container_width=True):
+                st.session_state["messages"].append({"role": "user", "content": options[1]})
+                st.chat_message("user").write(options[1])
+                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                st.session_state["messages"].append({"role": "assistant", "content": response})
+                st.chat_message("assistant").write(response)
 
             if prompt := st.chat_input():
                 st.session_state["messages"].append({"role": "user", "content": prompt})

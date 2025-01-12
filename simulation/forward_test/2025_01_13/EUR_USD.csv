@@ -1,0 +1,7 @@
+time,strategy,entry_point,stop_loss,take_profit
+2025-01-12 22:26:46+01:00,wait,None,None,None
+2025-01-12 22:26:46+01:00,wait,None,None,None
+2025-01-12 22:26:46+01:00,wait,None,None,None
+2025-01-12 22:46:05+01:00,sell,1.0248,1.0252,1.023
+2025-01-12 22:46:05+01:00,wait,None,None,None
+2025-01-12 22:46:05+01:00,wait,None,None,None

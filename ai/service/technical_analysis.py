@@ -7,14 +7,15 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from ai.service.technical_indicators import TechnicalIndicators
 from datetime import datetime
 from ai.parameters import CURRENCY_TICKERS
-import google.generativeai as genai
 import asyncio
 
 
 class TechnicalAnalysis:
-    def __init__(self, analysis_model = None, synthesis_model = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
+    def __init__(self, analysis_model = None, synthesis_model = None, gemini_model = None, gemini_api_key = None, currency_pair: str = "EUR/USD", ticker: str = "EURUSD=X"):
         self.analysis_model = analysis_model if analysis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=512).get_model()
         self.synthesis_model = synthesis_model if synthesis_model is not None else Config(model_name="gpt-4o", temperature=0.2, max_tokens=1024).get_model()
+        self.gemini_model = gemini_model if gemini_model is not None else "gemini-2.0-flash-exp"
+        self.gemini_api_key = gemini_api_key if gemini_api_key is not None else os.environ["GEMINI_API_KEY_XIFAN"]
         self.currency_pair = currency_pair
         self.ticker = CURRENCY_TICKERS[self.currency_pair]
 
@@ -308,7 +309,6 @@ Below are the technical indicators with an interval of {ti_interval}.
         return results
     
     async def extract_technical_indicators_with_gemini(self):
-        genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
         generation_config = {
             "temperature": 0.1,
             "top_p": 0.95,
@@ -321,6 +321,7 @@ Below are the technical indicators with an interval of {ti_interval}.
         client = GeminiClient(
             model_name=model_name,
             generation_config=generation_config,
+            api_key=self.gemini_api_key,
             system_instruction=system_instruction
         )
 
@@ -377,17 +378,14 @@ Below are the technical indicators with an interval of {ti_interval}.
         query_tuple = query_prefix + query_suffix
         query = "".join(query_tuple)
             
-        response, chat_history = await client.call_gemini_vision_api(
+        response, chat_session = await client.call_gemini_vision_api(
         user_message=query, image_path=image_path
         )
-        return response, chat_history
+        return response, chat_session
 
         
     async def create_gemini_analysis(self, pivot_points, current_price):
-        genai.configure(api_key=os.environ["GEMINI_API_KEY_CONG"])
-        model_name = "gemini-2.0-flash-exp"
-        #model_name = "gemini-2.0-flash-thinking-exp-1219"
-        #model_name = "gemini-exp-1206"
+        model_name = self.gemini_model
         generation_config = {
             "temperature": 0.1,
             "top_p": 0.95,
@@ -403,43 +401,48 @@ Below are the technical indicators with an interval of {ti_interval}.
         for interval, image_path in files:
             system_prompt_technical_indicators = self.system_prompt_template_techncial_indicators.format(interval=interval, currency_pair=self.currency_pair)
             client = GeminiClient(
-            model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_technical_indicators
+            model_name=model_name, 
+            generation_config=generation_config, 
+            api_key=self.gemini_api_key,
+            system_instruction=system_prompt_technical_indicators
             )
             task = self.get_technical_indicators_analysis(client, image_path)
             tasks.append(task)
         ti_analysis_results = await asyncio.gather(*tasks)
-
-        for analysis in ti_analysis_results:
-            print(analysis)
-            print("\n\n")
 
         # 4 hour analysis
         #chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/15min_candel.png"]
         chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/5min_candel.png"]
         system_prompt_candlestick_4h = self.system_prompt_template_candlestick_4h.format(currency_pair=self.currency_pair)
         client = GeminiClient(
-            model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_4h
+            model_name=model_name, 
+            generation_config=generation_config, 
+            api_key=self.gemini_api_key,
+            system_instruction=system_prompt_candlestick_4h
         )
         analysis_4h, _ = await self.get_technical_analysis(client, chart_files[0], ti_analysis_results[0])
         summary_4h = analysis_4h.split("**Summary:**")[-1].strip()
-        print(summary_4h)
 
         # 1 hour analysis
         system_prompt_candlestick_1h = self.system_prompt_template_candlestick_1h.format(currency_pair=self.currency_pair)
         client = GeminiClient(
-            model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_1h
+            model_name=model_name, 
+            generation_config=generation_config, 
+            api_key=self.gemini_api_key,
+            system_instruction=system_prompt_candlestick_1h
         )
         analysis_1h, _ = await self.get_technical_analysis(client, chart_files[1], ti_analysis_results[1], summary_4h)
         summary_1h = analysis_1h.split("**Summary:**")[-1].strip()
-        print(summary_1h)
 
         # 15 min analysis
         system_prompt_candlestick_15m = self.system_prompt_template_candlestick_15m.format(currency_pair=self.currency_pair)
         client = GeminiClient(
-            model_name=model_name, generation_config=generation_config, system_instruction=system_prompt_candlestick_15m
+            model_name=model_name, 
+            generation_config=generation_config, 
+            api_key=self.gemini_api_key,
+            system_instruction=system_prompt_candlestick_15m
         )
-        analysis_15m, history = await self.get_technical_analysis(client, chart_files[2], ti_analysis_results[2], summary_1h, current_price, pivot_points)
-        print(analysis_15m)
+        analysis_15m, chat_session = await self.get_technical_analysis(client, chart_files[2], ti_analysis_results[2], summary_1h, current_price, pivot_points)
         summary_15m = analysis_15m.split("**Summary:**")[-1].strip()
 
         query = """Based on your analysis, please output a trading strategy in json format. Using the following format:
@@ -452,9 +455,8 @@ Below are the technical indicators with an interval of {ti_interval}.
         }
         ```
         """
-        response_json, _ = await client.call_gemini_text_api(query, history=history)
-        print(response_json)
-
+        response_json = await chat_session.send_message(query)
+        response_json = response_json.text
         return {"analysis": analysis_15m, "strategy": response_json, "summary": summary_15m}
 
     async def run(self):
@@ -471,11 +473,12 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="EUR/USD",
-        #currency_pair="USD/JPY",
+        #currency_pair="EUR/USD",
+        currency_pair="USD/JPY",
+        gemini_model="gemini-exp-1206"
     )
 
-    asyncio.run(ta.run())
+    print(asyncio.run(ta.run()))
 
 
 

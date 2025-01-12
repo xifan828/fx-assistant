@@ -1,0 +1,4 @@
+time,strategy,entry_point,stop_loss,take_profit
+2025-01-12 22:47:43+01:00,sell,157.7,157.85,157.65
+2025-01-12 22:47:43+01:00,wait,None,None,None
+2025-01-12 22:47:43+01:00,sell,157.85,157.95,157.7

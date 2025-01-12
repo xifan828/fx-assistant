@@ -15,13 +15,15 @@ from twelvedata import TDClient
 # creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
 class TechnicalIndicators:
-    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA"):
+    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA", start_date: str = None, end_date: str = None):
         self.currency_pair = currency_pair
         self.interval = interval
         self.outputsize = outputsize
         self.exchange = exchange
         self.chart_root_path = "data/chart"
         self.df = None
+        self.end_date = end_date
+        self.start_date = start_date
     
     def download_data(self):
         """Download data from yfinance"""
@@ -37,7 +39,9 @@ class TechnicalIndicators:
             exchange=self.exchange,
             interval=self.interval,
             outputsize=self.outputsize,
-            timezone="Europe/Berlin"
+            timezone="Europe/Berlin",
+            end_date = self.end_date,
+            start_date = self.start_date
         ).as_pandas()
         data = data.rename(columns={"open": "Open", "high": "High", "low": "Low", "close": "Close"})
         data = data.iloc[::-1]

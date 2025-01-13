@@ -123,26 +123,21 @@ def main():
 
             # An attempt at button prompts to instantly bring out a response
 
-            if eu.button(options[0], use_container_width=True):
-                st.session_state["messages"].append({"role": "user", "content": options[0]})
-                st.chat_message("user").write(options[0])
-                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                st.session_state["messages"].append({"role": "assistant", "content": response})
-                st.chat_message("assistant").write(response)
-            
-            if jp.button(options[1], use_container_width=True):
-                st.session_state["messages"].append({"role": "user", "content": options[1]})
-                st.chat_message("user").write(options[1])
+            def sendPrompt(input):
+                st.session_state["messages"].append({"role": "user", "content": input})
+                st.chat_message("user").write(input)
                 response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
                 st.session_state["messages"].append({"role": "assistant", "content": response})
                 st.chat_message("assistant").write(response)
 
+            if eu.button(options[0], use_container_width=True):
+                sendPrompt(options[0])
+            
+            if jp.button(options[1], use_container_width=True):
+                sendPrompt(options[1])
+
             if prompt := st.chat_input():
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                st.chat_message("user").write(prompt)
-                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                st.session_state["messages"].append({"role": "assistant", "content": response})
-                st.chat_message("assistant").write(response)
+                sendPrompt(prompt)
         else:
             st.warning("Please authenticate to access the application.")
 

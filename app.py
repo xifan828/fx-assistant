@@ -1,6 +1,7 @@
 import streamlit as st
 from ai.agent import FXAgent, KnowledgeBase
 from PIL import Image
+from st_chat_message import message
 import os
 from dotenv import load_dotenv
 
@@ -115,20 +116,19 @@ def main():
                     {"role": "assistant", "content": "Hello, how may I help you?"},
                 ]
 
-            for msg in st.session_state["messages"]:
-                st.chat_message(msg["role"]).write(msg["content"])
+            message("Hello, how may I help you?")
 
             options = ["EUR/USD Trading Plan", "USD/JPY Trading Plan"]
             eu, jp = st.columns(2)
 
             # An attempt at button prompts to instantly bring out a response
 
-            def sendPrompt(input):
-                st.session_state["messages"].append({"role": "user", "content": input})
-                st.chat_message("user").write(input)
+            def sendPrompt(prompt):
+                st.session_state["messages"].append({"role": "user", "content": prompt})
+                message(prompt, is_user=True)
                 response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
                 st.session_state["messages"].append({"role": "assistant", "content": response})
-                st.chat_message("assistant").write(response)
+                message(response)
 
             if eu.button(options[0], use_container_width=True):
                 sendPrompt(options[0])

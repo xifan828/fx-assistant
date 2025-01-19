@@ -5,6 +5,9 @@ import time
 from ai.agent import KnowledgeBase
 import asyncio
 from ai.service.technical_indicators import TechnicalIndicators
+import os
+from dotenv import load_dotenv
+
 #generate_trading_strategy()
 
 def back_test(currency_pair, strategy_file_path):
@@ -15,7 +18,16 @@ def back_test(currency_pair, strategy_file_path):
     updated_strategy = back_test.evaluate_strategy()
     back_test.write_strategy(updated_strategy)
 
-
+def main():
+    load_dotenv() 
+    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_13\EUR_USD.csv", 
+                                          currency_pair="EUR/USD",
+                                          gemini_model="gemini-2.0-flash-exp"))
+    time.sleep(60)
+    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_13\USD_JPY.csv", 
+                                          currency_pair="USD/JPY",
+                                          gemini_model="gemini-2.0-flash-exp"))
+    
 if __name__ == "__main__":
     #back_test("EUR/USD", r"simulation\trading_strategy.csv")
 
@@ -40,11 +52,4 @@ if __name__ == "__main__":
 
     # print(f"Used {end - begin} seconds.")
 
-    for interval in ["4h", "1h", "5min", "1min"]:
-        ti = TechnicalIndicators(currency_pair="EUR/USD", interval=interval, outputsize=300)
-        if interval != "1min":
-            ti.run()
-        else:
-            data = ti.download_data()
-            current_price = data.iloc[-1]["Close"]
-    print("chart prepared.")
+    main()

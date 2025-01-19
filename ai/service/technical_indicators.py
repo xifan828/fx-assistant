@@ -200,12 +200,12 @@ class TechnicalIndicators:
         def date_formatter(x, pos):
             index = int(round(x))
             if index < len(fx_data):
-                return fx_data['Date'].iloc[index].strftime('%d %H:%M')  # Format as 'Hour:Minute'
+                return fx_data['Date'].iloc[index].strftime('%m-%d %H:%M')  # Format as 'Hour:Minute'
             return ''
 
         for i, ax in enumerate(axes):
             ax.xaxis.set_major_formatter(FuncFormatter(date_formatter))
-            ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=10))
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=20))
             ax.set_xlim(0, len(fx_data) + 5)
 
             ax.yaxis.tick_right()

@@ -57,7 +57,7 @@ import time
 #         new_strategy.to_csv(file_path, index=False)
 
 async def generate_trading_strategy_new(file_path: str, currency_pair: str, gemini_model: str):
-    for interval in ["4h", "1h", "5min", "1min"]:
+    for interval in ["1h", "5min", "1min"]:
         ti = TechnicalIndicators(currency_pair=currency_pair, interval=interval, outputsize=300)
         if interval != "1min":
             ti.run()
@@ -141,17 +141,20 @@ async def generate_back_test_strategies(start_date, end_date, currency_pair, fil
 
     for i, hour in enumerate(hours, start=1):
         print(f"{i}: Start generating for {hour}")
-        for interval in ["4h", "1h", "5min"]:
+        for interval in ["1h", "5min"]:
             TI = TechnicalIndicators(
                 currency_pair=currency_pair,
                 interval=interval,
                 outputsize=200,
                 end_date=hour
             )
-            TI.run()
+            data = TI.download_data()
+            data = data.iloc[:-1]
+            data = TI.calculate_technical_indicators(data)
+            TI.plot_chart(data)
+            TI.crop_image()
             if interval == "5min":
-                current_price = TI.df.iloc[-1]["Close"]
-
+                current_price = data.iloc[-1]["Close"]
 
         coroutines = []
         for api_key in [os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"]]:
@@ -178,14 +181,14 @@ async def generate_back_test_strategies(start_date, end_date, currency_pair, fil
                 }
             save_strategy_to_file(file_path, hour, strategy)
             
-        time.sleep(30)
+        time.sleep(60)
         print(f"{i}: Complete generating for {hour}. {total - i} timestamps left.")
 
 
 if __name__ == "__main__":
     #generate_trading_strategy_new(r"simulation\2025_01_06\trading_strategy.csv", "EUR/USD")
     begin = time.time()
-    start_date = "2024-11-19"
+    start_date = "2024-11-29"
     end_date = "2024-11-29"
     currency_pair = "EUR/USD"
     currency_name = "EUR_USD"

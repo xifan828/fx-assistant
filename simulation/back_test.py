@@ -23,8 +23,8 @@ class BackTest:
             if profit_pips is None or loss_pips is None:
                 raise ValueError("If custom is True, profit_pips and loss_pips can not be None")    
     
-    def get_price(self, start_date, end_date):
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=None, start_date=start_date, end_date=end_date)
+    def get_price(self, output_size, end_date):
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=output_size, end_date=end_date)
         price_data = ti.download_data()
         try:
             dt_index_berlin = price_data.index.tz_convert("Europe/Berlin")
@@ -129,7 +129,8 @@ class BackTest:
 
         i = 0
         for time_index, row in not_closed_strategy.iterrows():
-            fx_data = self.get_price(start_date=time_index, end_date=time_index + pd.Timedelta(hours=48))
+            fx_data = self.get_price(output_size=48*60, end_date=time_index + pd.Timedelta(hours=48))
+            fx_data = fx_data[fx_data.index >= time_index]
             status_dict = self.get_trade_status(row, fx_data)
             for k, v in status_dict.items():
                 strategy_data.at[time_index, k] = v
@@ -146,12 +147,12 @@ class BackTest:
 
 if __name__ == "__main__":
     back_test = BackTest(currency_pair="USD/JPY", 
-                         strategy_file_path=r"simulation\2025_01_06\USD_JPY.csv", 
+                         strategy_file_path=r"simulation\back_test\2024_11\USD_JPY_agg.csv", 
                          test_result_file_path=r"simulation\2025_01_06\USD_JPY_test.csv",
                          custom=False, profit_pips=25, loss_pips=15)
-    back_test.run()
-    back_test = BackTest(currency_pair="USD/JPY", 
-                         strategy_file_path=r"simulation\2025_01_06\USD_JPY.csv", 
-                         test_result_file_path=r"simulation\2025_01_06\USD_JPY_test_custom.csv",
-                         custom=True, profit_pips=30, loss_pips=15)
-    back_test.run()
+    back_test.evaluate_strategy()
+    # back_test = BackTest(currency_pair="USD/JPY", 
+    #                      strategy_file_path=r"simulation\2025_01_06\USD_JPY.csv", 
+    #                      test_result_file_path=r"simulation\2025_01_06\USD_JPY_test_custom.csv",
+    #                      custom=True, profit_pips=30, loss_pips=15)
+    # back_test.run()

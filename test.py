@@ -20,11 +20,11 @@ def back_test(currency_pair, strategy_file_path):
 
 def main():
     load_dotenv() 
-    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_13\EUR_USD.csv", 
+    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_20\EUR_USD.csv", 
                                           currency_pair="EUR/USD",
                                           gemini_model="gemini-2.0-flash-exp"))
     time.sleep(60)
-    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_13\USD_JPY.csv", 
+    asyncio.run(generate_trading_strategy_new(file_path=r"simulation\forward_test\2025_01_20\USD_JPY.csv", 
                                           currency_pair="USD/JPY",
                                           gemini_model="gemini-2.0-flash-exp"))
     

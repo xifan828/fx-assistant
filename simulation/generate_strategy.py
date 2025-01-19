@@ -57,20 +57,20 @@ import time
 #         new_strategy.to_csv(file_path, index=False)
 
 async def generate_trading_strategy_new(file_path: str, currency_pair: str, gemini_model: str):
-    for interval in ["1h", "5min", "1min"]:
-        ti = TechnicalIndicators(currency_pair=currency_pair, interval=interval, outputsize=300)
-        if interval != "1min":
-            ti.run()
-        else:
-            data = ti.download_data()
-            current_price = data.iloc[-1]["Close"]
-    print("chart prepared.")
+    kb = KnowledgeBase(currency_pair=currency_pair)
+    kb.prepare_figures()
+    TA = TechnicalAnalysis(currency_pair=currency_pair, gemini_model=gemini_model, gemini_api_key=os.environ["GEMINI_API_KEY_KIEN"])
+    results = await TA.extract_technical_indicators_with_gemini()
+    technical_indicators, _  = results[0]
+    TI = TechnicalIndicators(currency_pair=currency_pair, interval="1min", outputsize=200)
+    data = TI.download_data()
+    current_price = data.iloc[-1]["Close"]
 
     coroutines = []
     for api_key in [os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"]]:
         TA = TechnicalAnalysis(currency_pair=currency_pair, gemini_model=gemini_model, gemini_api_key=api_key)
         coroutines.append(TA.create_gemini_analysis(
-            pivot_points="Pivot points are not provided.",
+            pivot_points=technical_indicators,
             current_price=current_price
         ))
     results = await asyncio.gather(*coroutines)

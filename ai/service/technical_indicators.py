@@ -15,13 +15,15 @@ from twelvedata import TDClient
 # creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
 class TechnicalIndicators:
-    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA"):
+    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA", start_date: str = None, end_date: str = None):
         self.currency_pair = currency_pair
         self.interval = interval
         self.outputsize = outputsize
         self.exchange = exchange
         self.chart_root_path = "data/chart"
         self.df = None
+        self.end_date = end_date
+        self.start_date = start_date
     
     def download_data(self):
         """Download data from yfinance"""
@@ -37,7 +39,9 @@ class TechnicalIndicators:
             exchange=self.exchange,
             interval=self.interval,
             outputsize=self.outputsize,
-            timezone="Europe/Berlin"
+            timezone="Europe/Berlin",
+            end_date = self.end_date,
+            start_date = self.start_date
         ).as_pandas()
         data = data.rename(columns={"open": "Open", "high": "High", "low": "Low", "close": "Close"})
         data = data.iloc[::-1]
@@ -196,12 +200,12 @@ class TechnicalIndicators:
         def date_formatter(x, pos):
             index = int(round(x))
             if index < len(fx_data):
-                return fx_data['Date'].iloc[index].strftime('%d %H:%M')  # Format as 'Hour:Minute'
+                return fx_data['Date'].iloc[index].strftime('%m-%d %H:%M')  # Format as 'Hour:Minute'
             return ''
 
         for i, ax in enumerate(axes):
             ax.xaxis.set_major_formatter(FuncFormatter(date_formatter))
-            ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=10))
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=20))
             ax.set_xlim(0, len(fx_data) + 5)
 
             ax.yaxis.tick_right()

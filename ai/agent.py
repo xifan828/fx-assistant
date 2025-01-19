@@ -255,8 +255,6 @@ class KnowledgeBase:
         # scrape_technical_indicators(
         # indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
         # )
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="4h")
-        ti.run()
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
         ti.run()
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
@@ -280,7 +278,7 @@ class KnowledgeBase:
         ticker=self.currency_ticker
         )
         results = asyncio.run(ta_scrapper.run())
-        analysis = results["analysis"]
+        analysis = results["analysis_5min"]
         strategy = results["strategy"]
         final = f"{analysis}\n{strategy}"
         return final

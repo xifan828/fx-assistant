@@ -1,11 +1,10 @@
 from langchain_openai import ChatOpenAI
-import google.generativeai as genai
 import os
 import asyncio
 import mimetypes
 import aiofiles  # Install with: pip install aiofiles
-import google.generativeai as genai
-from google.generativeai.types import generation_types
+from google import genai
+from google.genai import types
 
 class Config:
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0, max_tokens: int = None):
@@ -17,14 +16,17 @@ class Config:
         return ChatOpenAI(model=self.model_name, temperature=self.temperature, max_tokens=self.max_tokens)
 
 class GeminiClient:
-    def __init__(self, model_name: str, generation_config: dict, system_instruction: str = None):
+    def __init__(self, model_name: str, generation_config: dict, api_key: str, system_instruction: str = None):
         self.model_name = model_name
         self.generation_config = generation_config
         self.system_instruction = "You are a helpful assistant" if system_instruction is None else system_instruction
-        self.model = self.get_model()
+        self.generation_config["system_instruction"] = self.system_instruction
+        self.api_key = api_key
+        self.client = self.get_client()
     
-    def get_model(self):
-        return genai.GenerativeModel(model_name=self.model_name, generation_config=self.generation_config, system_instruction=self.system_instruction)
+    def get_client(self):
+        client = genai.Client(api_key=self.api_key)
+        return client
 
     def upload_to_gemini(self, path, mime_type=None):
         """Uploads the given file to Gemini.
@@ -43,7 +45,10 @@ class GeminiClient:
 
     async def call_gemini_vision_api(self, user_message, history=[], image_path=None):
         try:
-            chat_session = self.model.start_chat(history=history)
+            chat_session = self.client.aio.chats.create(history=history,
+                                                    model=self.model_name,
+                                                    config=self.generation_config
+                                                    )
             parts = [user_message]
             if image_path:
                 if not os.path.exists(image_path):
@@ -53,50 +58,44 @@ class GeminiClient:
                 mime_type, _ = mimetypes.guess_type(image_path)
                 image_data = await self.read_file_async(image_path)
                 parts.append(
-                {"mime_type": mime_type, "data": image_data}
+                types.Part.from_bytes(data=image_data, mime_type=mime_type)
                 )
 
-            response = await chat_session.send_message_async(parts)
+            response = await chat_session.send_message(parts)
             response_text = response.text
-            return response_text, chat_session.history
+            return response_text, chat_session
         
         except Exception as e:
-            print(f"Error in call_api: {e}")
+            print(f"Error in call_api: {e}, api is {self.api_key}")
             return None
+
+
+async def main():
+
+    generation_config = {
+            "temperature": 0.1,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+            "response_mime_type": "text/plain",
+        }
     
-    async def call_gemini_text_api(self, user_message, history=[]):
-        try:
-            chat_session = self.model.start_chat(history=history)
-            response = await chat_session.send_message_async(user_message)
-            response_text = response.text
-            return response_text, chat_session.history
-        
-        except Exception as e:
-            print(f"Error in call_api: {e}")
-            return None
-    
-    def call_gemini_vision_api_sync(self, user_message, history=None, image_path=None):
-        if history is None:
-            history = []
-        try:
-            files = []
-            if image_path:
-                if not os.path.exists(image_path):
-                    print(f"Error: Image file not found at path: {image_path}")
-                    return None
-                files = [self.upload_to_gemini(image_path, mime_type="image/png")]
-            
-            chat_session = self.model.start_chat(history=history)
-            # 'files[0]' only applies if we actually have a file
-            if files:
-                response = chat_session.send_message([user_message, files[0]]).text
-            else:
-                response = chat_session.send_message(user_message).text
-            
-            return response, chat_session.history
+    model_name = "gemini-2.0-flash-exp"
 
-        except Exception as e:
-            print(f"Error in call_api: {e}")
-            return None
+    system_instruction = "Call the user as Dr. Wang."
+
+    client = GeminiClient(
+        model_name=model_name,
+        generation_config=generation_config,
+        system_instruction=system_instruction,
+        api_key=os.environ["GEMINI_API_KEY_XIFAN"]
+    )
+    image_path = "data/chart/1h.png"
+
+    response, chat_session = await client.call_gemini_vision_api(
+        user_message="describe this image briefly.", image_path=image_path
+    )
 
 
+if __name__ == "__main__":
+    asyncio.run(main())

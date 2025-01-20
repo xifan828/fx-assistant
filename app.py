@@ -47,6 +47,8 @@ def main():
             st.error("Authentication failed. Please check your email address.")
 
     if st.session_state["authenticated"]:
+        # Choices of Currency Pairs
+        currencyOptions = ["EUR/USD", "USD/JPY"]
         
         # Model Selection
         model_choice = st.sidebar.selectbox(
@@ -58,7 +60,7 @@ def main():
         # Currency Pair Selection
         currency_pair = st.sidebar.selectbox(
             "Select Currency Pair",
-            options=["EUR/USD", "USD/JPY"],
+            options=currencyOptions,
             index=0
         )
 
@@ -93,7 +95,7 @@ def main():
                     
             chart, chat = st.columns(2)
             with chart:
-                with st.container(height=400, border=True):
+                with st.container(height=350, border=True):
                     st.bar_chart(np.random.randn(50, 3))
 
 
@@ -110,24 +112,27 @@ def main():
                 st.session_state["messages"] = [
                     {"role": "assistant", "content": "Hello, how may I help you?"},
                 ]
+            if "strategy" not in st.session_state:
+                    st.session_state["strategy"] = []
 
             with chat:
-                with st.container(height=400):
-                    st.html("<div style='text-align: center; font-size: 2vw'><b> Ask a question </b></div>")
-                    def sendPrompt(prompt):
-                        st.session_state["messages"].append({"role": "user", "content": prompt})
-                        message(prompt, is_user=True)
-                        response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                        st.session_state["messages"].append({"role": "assistant", "content": response})
-                        message(response)
+                with st.container(height=350):
+                    st.html("<div style='text-align: center; font-size: 35px'><b> Ask a question </b></div>")
+                    msgs = st.container(height=190, border=False)
 
                     if prompt := st.chat_input():
-                        sendPrompt(prompt)
+                        with msgs:
+                            st.session_state["messages"].append({"role": "user", "content": prompt})
+                            message(prompt, is_user=True)
+                            response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                            st.session_state["messages"].append({"role": "assistant", "content": response})
+                            message(response)
 
 
             with st.container():
-                tab1, tab2, tab3, tab4, tab5 = st.tabs(
-                    ["Economic Indicators",
+                tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+                    ["Strategy",
+                    "Economic Indicators",
                     "Technical Analysis",
                     "Latest News",
                     "Central Bank",
@@ -135,14 +140,19 @@ def main():
                 )
 
                 with tab1:
-                    st.write(st.session_state["economic_indicators"])
+                    st.session_state["strategy"].append({"role": "user", "content": currency_pair + " Trading Plan"})
+                    strategy = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["strategy"])
+                    st.session_state["strategy"].append({"role": "assistant", "content": strategy})
+                    st.chat_message("assistant").write(strategy)
                 with tab2:
-                    st.write(st.session_state["technical_analysis"])
+                    st.write(st.session_state["economic_indicators"])
                 with tab3:
-                    st.write(st.session_state["latest_news"])
+                    st.write(st.session_state["technical_analysis"])
                 with tab4:
-                    st.write(st.session_state["central_bank"])
+                    st.write(st.session_state["latest_news"])
                 with tab5:
+                    st.write(st.session_state["central_bank"])
+                with tab6:
                     st.write(st.session_state["economic_events"])
         else:
             st.warning("Please authenticate to access the application.")

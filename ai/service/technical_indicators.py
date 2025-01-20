@@ -184,7 +184,7 @@ class TechnicalIndicators:
             lines.append(line)
             labels.append("EMA 100: violet")
         axes[0].legend(lines, labels, loc='upper left', fontsize=12)
-        axes[0].set_title(f"{self.currency_pair} Candlestick Chart with EMAs")
+        axes[0].set_title(f"{self.currency_pair}-{self.interval}")
         axes[0].grid(True)
 
         # --- Plot 2: RSI ---
@@ -370,9 +370,9 @@ if __name__ == "__main__":
     currency_pair = "EUR/USD"
     #currency_pair = "USD/JPY"
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
-    # data = ti.run()
-    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
-    # data = ti.run()
-    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
-    # data = ti.run()
+    data = ti.run()
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    data = ti.run()
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
+    data = ti.run()
     print(ti.get_current_price())

@@ -181,7 +181,7 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
     
     def extract_eur_usd_rate(self):
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=100)
-        current_price = ti.download_data()["Close"].iloc[-1].round(4)
+        current_price = ti.get_current_price()
         return current_price
 
         

@@ -11,6 +11,7 @@ from mplfinance.original_flavor import candlestick_ohlc
 import os
 from PIL import Image, ImageDraw, ImageFont
 from twelvedata import TDClient
+import time
 
 # creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
@@ -24,6 +25,7 @@ class TechnicalIndicators:
         self.df = None
         self.end_date = end_date
         self.start_date = start_date
+        self.client = TDClient(apikey=os.environ["TD_API_KEY"])
     
     def download_data(self):
         """Download data from yfinance"""
@@ -33,19 +35,66 @@ class TechnicalIndicators:
         #     data = data.dropna(subset=["Open", "Close"])
         # else:
         #     data = yf.download(self.ticker, period=self.period, interval=self.interval)
-        td = TDClient(apikey=os.environ["TD_API_KEY"])
-        data = td.time_series(
+        ts = self.client.time_series(
             symbol=self.currency_pair,
             exchange=self.exchange,
             interval=self.interval,
             outputsize=self.outputsize,
             timezone="Europe/Berlin",
             end_date = self.end_date,
-            start_date = self.start_date
-        ).as_pandas()
-        data = data.rename(columns={"open": "Open", "high": "High", "low": "Low", "close": "Close"})
-        data = data.iloc[::-1]
-        return data
+            start_date = self.start_date)
+        df = (
+                ts
+                .with_ema(time_period=10)
+                .with_ema(time_period=20)
+                .with_ema(time_period=50)
+                .with_ema(time_period=100)
+                .with_bbands(ma_type="SMA", sd=2, series_type="close", time_period=20)
+                .with_macd(fast_period=12, series_type="close", signal_period=9, slow_period=26)
+                .with_rsi(time_period=14)
+                .with_roc(time_period=12)
+                .as_pandas()
+            )
+        df.columns = ["Open", "High", "Low", "Close", "EMA10", "EMA20", "EMA50", "EMA100", "upper_band", "middle_band", "lower_band", "MACD", "MACD_Signal", "MACD_Diff", "RSI14", "ROC12"]
+        df = df[::-1]
+        df['Date'] = df.index
+        if self.interval == "15min" or self.interval=="5min":
+            df = df.tail(int(1.5*24*4))
+        elif self.interval == "1h":
+            df = df.tail(4*24)
+        elif self.interval == "4h":
+            df = df.tail(int(1*20*6))
+        self.df = df
+
+        return df
+    
+    def get_current_price(self):
+        prices = []
+        def on_event(e):
+            print(e)
+            if e["event"] == "price":
+                prices.append(e["price"])
+        ws = self.client.websocket(symbols=self.currency_pair, on_event=on_event)
+        ws.subscribe([self.currency_pair])
+        ws.connect()
+        count = 0
+        while True:
+            ws.heartbeat()
+            time.sleep(7)
+            count += 1
+            if count > 0:
+                break
+        ws.disconnect()
+        if prices:
+            current_price = np.mean(prices)
+            if self.currency_pair == "EUR/USD":
+                current_price = round(current_price, 4)
+            if self.currency_pair == "USD/JPY":
+                current_price = round(current_price, 2)
+        else:
+            current_price = "Not availabel currently."
+        return current_price
+
     
     def calculate_technical_indicators(self, df):
         """
@@ -311,20 +360,19 @@ class TechnicalIndicators:
 
     def run(self):
         data = self.download_data()
-        data = self.calculate_technical_indicators(data)
         self.plot_chart(data)
-        self.crop_image()
+        #self.crop_image()
         return data
 
 
 if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
-    #currency_pair = "EUR/USD"
-    currency_pair = "USD/JPY"
+    currency_pair = "EUR/USD"
+    #currency_pair = "USD/JPY"
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
-    data = ti.run()
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
-    data = ti.run()
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
-    data = ti.run()
-
+    # data = ti.run()
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    # data = ti.run()
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
+    # data = ti.run()
+    print(ti.get_current_price())

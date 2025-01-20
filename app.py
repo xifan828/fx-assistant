@@ -3,9 +3,10 @@ from ai.agent import FXAgent, KnowledgeBase
 from PIL import Image
 from st_chat_message import message
 import os
+import numpy as np
 from dotenv import load_dotenv
 
-
+st.set_page_config(layout = "wide")
 
 load_dotenv()
 def check_email(email):
@@ -90,16 +91,10 @@ def main():
                 if "economic_events" not in st.session_state:
                     st.session_state["economic_events"] = st.session_state["knowledge"]["Economic Events"]
                     
-            with st.expander("Economic Indicators"):
-                st.write(st.session_state["economic_indicators"])
-            with st.expander("Technical Analysis"):
-                st.write(st.session_state["technical_analysis"])
-            with st.expander("Latest News"):
-                st.write(st.session_state["latest_news"])
-            with st.expander("Central Bank"):
-                st.write(st.session_state["central_bank"])
-            with st.expander("Economic Calenders"):
-                st.write(st.session_state["economic_events"])
+            chart, chat = st.columns(2)
+            with chart:
+                with st.container(height=400, border=True):
+                    st.bar_chart(np.random.randn(50, 3))
 
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
@@ -116,28 +111,39 @@ def main():
                     {"role": "assistant", "content": "Hello, how may I help you?"},
                 ]
 
-            message("Hello, how may I help you?")
+            with chat:
+                with st.container(height=400):
+                    st.html("<div style='text-align: center; font-size: 2vw'><b> Ask a question </b></div>")
+                    def sendPrompt(prompt):
+                        st.session_state["messages"].append({"role": "user", "content": prompt})
+                        message(prompt, is_user=True)
+                        response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                        st.session_state["messages"].append({"role": "assistant", "content": response})
+                        message(response)
 
-            options = ["EUR/USD Trading Plan", "USD/JPY Trading Plan"]
-            eu, jp = st.columns(2)
+                    if prompt := st.chat_input():
+                        sendPrompt(prompt)
 
-            # An attempt at button prompts to instantly bring out a response
 
-            def sendPrompt(prompt):
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                message(prompt, is_user=True)
-                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                st.session_state["messages"].append({"role": "assistant", "content": response})
-                message(response)
+            with st.container():
+                tab1, tab2, tab3, tab4, tab5 = st.tabs(
+                    ["Economic Indicators",
+                    "Technical Analysis",
+                    "Latest News",
+                    "Central Bank",
+                    "Economic Calenders"]
+                )
 
-            if eu.button(options[0], use_container_width=True):
-                sendPrompt(options[0])
-            
-            if jp.button(options[1], use_container_width=True):
-                sendPrompt(options[1])
-
-            if prompt := st.chat_input():
-                sendPrompt(prompt)
+                with tab1:
+                    st.write(st.session_state["economic_indicators"])
+                with tab2:
+                    st.write(st.session_state["technical_analysis"])
+                with tab3:
+                    st.write(st.session_state["latest_news"])
+                with tab4:
+                    st.write(st.session_state["central_bank"])
+                with tab5:
+                    st.write(st.session_state["economic_events"])
         else:
             st.warning("Please authenticate to access the application.")
 

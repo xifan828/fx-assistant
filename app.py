@@ -1,10 +1,12 @@
 import streamlit as st
+
 from ai.agent import FXAgent, KnowledgeBase
 from PIL import Image
-from st_chat_message import message
+#from st.chat_message import message
 import os
 import numpy as np
 from dotenv import load_dotenv
+
 
 st.set_page_config(layout = "wide")
 
@@ -129,10 +131,14 @@ def main():
                     if prompt := st.chat_input():
                         with msgs:
                             st.session_state["messages"].append({"role": "user", "content": prompt})
-                            message(prompt, is_user=True)
+                            message = st.chat_message("user")
+                            message.write(prompt)
+                            #st.chat_message(prompt, is_user=True)
                             response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
                             st.session_state["messages"].append({"role": "assistant", "content": response})
-                            message(response)
+                            message = st.chat_message("assistant")
+                            message.write(response)
+                            #st.chat_message(response)
 
 
             with st.container():

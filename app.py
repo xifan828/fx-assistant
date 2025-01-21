@@ -98,14 +98,11 @@ def main():
             chart, chat = st.columns(2)
             with chart:
                 with st.container(height=350, border=True):
-                    tab1, tab2, tab3 = st.tabs(["5 minutes", "1 Hour", "4 Hours"])
+                    tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
                     with tab1:
                         st.image("data/chart/5min.png")
                     with tab2:
                         st.image("data/chart/1h.png")
-                    with tab3:
-                        st.image("data/chart/4h.png")
-
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
             if "prefix_messages" not in st.session_state:

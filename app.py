@@ -1,10 +1,12 @@
 import streamlit as st
 from ai.agent import FXAgent, KnowledgeBase
 from PIL import Image
+from st_chat_message import message
 import os
+import numpy as np
 from dotenv import load_dotenv
 
-
+st.set_page_config(layout = "wide")
 
 load_dotenv()
 def check_email(email):
@@ -34,6 +36,7 @@ def main():
 
     with st.sidebar:
         auth_email_address = st.text_input("Email address", key="auth_email")
+        st.text_input("Password", type="password")
         authenticate = st.button("Authenticate")
 
     if authenticate:
@@ -44,6 +47,8 @@ def main():
             st.error("Authentication failed. Please check your email address.")
 
     if st.session_state["authenticated"]:
+        # Choices of Currency Pairs
+        currencyOptions = ["EUR/USD", "USD/JPY"]
         
         # Model Selection
         model_choice = st.sidebar.selectbox(
@@ -55,11 +60,11 @@ def main():
         # Currency Pair Selection
         currency_pair = st.sidebar.selectbox(
             "Select Currency Pair",
-            options=["EUR/USD", "USD/JPY"],
+            options=currencyOptions,
             index=0
         )
 
-        run_process = st.sidebar.button("Run")
+        run_process = st.sidebar.button("Live Market Update")
         if run_process or st.session_state["process_initialized"]:
             if run_process:
                 st.session_state["process_initialized"] = True
@@ -88,16 +93,16 @@ def main():
                 if "economic_events" not in st.session_state:
                     st.session_state["economic_events"] = st.session_state["knowledge"]["Economic Events"]
                     
-            with st.expander("Economic Indicators"):
-                st.write(st.session_state["economic_indicators"])
-            with st.expander("Technical Analysis"):
-                st.write(st.session_state["technical_analysis"])
-            with st.expander("Latest News"):
-                st.write(st.session_state["latest_news"])
-            with st.expander("Central Bank"):
-                st.write(st.session_state["central_bank"])
-            with st.expander("Economic Calenders"):
-                st.write(st.session_state["economic_events"])
+            chart, chat = st.columns(2)
+            with chart:
+                with st.container(height=350, border=True):
+                    tab1, tab2, tab3 = st.tabs(["5 minutes", "1 Hour", "4 Hours"])
+                    with tab1:
+                        st.image("data/chart/5min.png")
+                    with tab2:
+                        st.image("data/chart/1h.png")
+                    with tab3:
+                        st.image("data/chart/4h.png")
 
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
@@ -113,16 +118,48 @@ def main():
                 st.session_state["messages"] = [
                     {"role": "assistant", "content": "Hello, how may I help you?"},
                 ]
+            if "strategy" not in st.session_state:
+                    st.session_state["strategy"] = []
 
-            for msg in st.session_state["messages"]:
-                st.chat_message(msg["role"]).write(msg["content"])
+            with chat:
+                with st.container(height=350):
+                    st.html("<div style='text-align: center; font-size: 35px'><b> Ask a question </b></div>")
+                    msgs = st.container(height=190, border=False)
 
-            if prompt := st.chat_input():
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                st.chat_message("user").write(prompt)
-                response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                st.session_state["messages"].append({"role": "assistant", "content": response})
-                st.chat_message("assistant").write(response)
+                    if prompt := st.chat_input():
+                        with msgs:
+                            st.session_state["messages"].append({"role": "user", "content": prompt})
+                            message(prompt, is_user=True)
+                            response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                            st.session_state["messages"].append({"role": "assistant", "content": response})
+                            message(response)
+
+
+            with st.container():
+                tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+                    ["Strategy",
+                    "Economic Indicators",
+                    "Technical Analysis",
+                    "Latest News",
+                    "Central Bank",
+                    "Economic Calenders"]
+                )
+
+                with tab1:
+                    st.session_state["strategy"].append({"role": "user", "content": currency_pair + " Trading Plan"})
+                    strategy = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["strategy"])
+                    st.session_state["strategy"].append({"role": "assistant", "content": strategy})
+                    st.chat_message("assistant", avatar="📈").write(strategy)
+                with tab2:
+                    st.write(st.session_state["economic_indicators"])
+                with tab3:
+                    st.write(st.session_state["technical_analysis"])
+                with tab4:
+                    st.write(st.session_state["latest_news"])
+                with tab5:
+                    st.write(st.session_state["central_bank"])
+                with tab6:
+                    st.write(st.session_state["economic_events"])
         else:
             st.warning("Please authenticate to access the application.")
 

@@ -2,224 +2,377 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import ta
-import json
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import MaxNLocator
+from matplotlib import pyplot as plt
+from mplfinance.original_flavor import candlestick_ohlc
+import os
+from PIL import Image, ImageDraw, ImageFont
+from twelvedata import TDClient
+import time
+
+# creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
 class TechnicalIndicators:
-    def __init__(self, ticker_symbol: str = "EURUSD=X", interval: str = "1h", period: str = "5d"):
-        self.ticker_symbol = ticker_symbol
+    def __init__(self, currency_pair: str, interval: str, outputsize: int = 400, exchange: str = "OANDA", start_date: str = None, end_date: str = None):
+        self.currency_pair = currency_pair
         self.interval = interval
-        self.period = period
-        self.data = None
-        self.indicators = {}
-        self.oscillators = {}
-
-    def download_data(self, interval, period):
-        try:
-            self.data = yf.download(self.ticker_symbol, period=period, interval=interval)
-            return self.data
-        except Exception as e:
-            print(f"Error while downloading. {e}")
-            return None
+        self.outputsize = outputsize
+        self.exchange = exchange
+        self.chart_root_path = "data/chart"
+        self.df = None
+        self.end_date = end_date
+        self.start_date = start_date
+        self.client = TDClient(apikey=os.environ["TD_API_KEY"])
     
+    def download_data(self):
+        """Download data from yfinance"""
+        # if self.interval == "4h":
+        #     data = yf.download(self.ticker, period=self.period, interval="1h")
+        #     data = data.resample('4h').agg({'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'})
+        #     data = data.dropna(subset=["Open", "Close"])
+        # else:
+        #     data = yf.download(self.ticker, period=self.period, interval=self.interval)
+        ts = self.client.time_series(
+            symbol=self.currency_pair,
+            exchange=self.exchange,
+            interval=self.interval,
+            outputsize=self.outputsize,
+            timezone="Europe/Berlin",
+            end_date = self.end_date,
+            start_date = self.start_date)
+        df = (
+                ts
+                .with_ema(time_period=10)
+                .with_ema(time_period=20)
+                .with_ema(time_period=50)
+                .with_ema(time_period=100)
+                .with_bbands(ma_type="SMA", sd=2, series_type="close", time_period=20)
+                .with_macd(fast_period=12, series_type="close", signal_period=9, slow_period=26)
+                .with_rsi(time_period=14)
+                .with_roc(time_period=12)
+                .as_pandas()
+            )
+        df.columns = ["Open", "High", "Low", "Close", "EMA10", "EMA20", "EMA50", "EMA100", "upper_band", "middle_band", "lower_band", "MACD", "MACD_Signal", "MACD_Diff", "RSI14", "ROC12"]
+        df = df[::-1]
+        df['Date'] = df.index
+        if self.interval == "15min" or self.interval=="5min":
+            df = df.tail(int(1.5*24*4))
+        elif self.interval == "1h":
+            df = df.tail(4*24)
+        elif self.interval == "4h":
+            df = df.tail(int(1*20*6))
+        self.df = df
 
-    def calculate_indicators(self):
-        if self.data is not None:
-            self.indicators['EMA_10'] = self.data['Close'].ewm(span=10, adjust=False).mean()
-            self.indicators['SMA_10'] = self.data['Close'].rolling(window=10).mean()
+        return df
+    
+    def get_current_price(self):
+        prices = []
+        def on_event(e):
+            print(e)
+            if e["event"] == "price":
+                prices.append(e["price"])
+        ws = self.client.websocket(symbols=self.currency_pair, on_event=on_event)
+        ws.subscribe([self.currency_pair])
+        ws.connect()
+        count = 0
+        while True:
+            ws.heartbeat()
+            time.sleep(7)
+            count += 1
+            if count > 0:
+                break
+        ws.disconnect()
+        if prices:
+            current_price = np.mean(prices)
+            if self.currency_pair == "EUR/USD":
+                current_price = round(current_price, 4)
+            if self.currency_pair == "USD/JPY":
+                current_price = round(current_price, 2)
+        else:
+            current_price = "Not availabel currently."
+        return current_price
 
-            self.indicators['EMA_20'] = self.data['Close'].ewm(span=20, adjust=False).mean()
-            self.indicators['SMA_20'] = self.data['Close'].rolling(window=20).mean()
+    
+    def calculate_technical_indicators(self, df):
+        """
+        Calculates various technical indicators using the 'ta' library.
 
-            self.indicators['EMA_30'] = self.data['Close'].ewm(span=30, adjust=False).mean()
-            self.indicators['SMA_30'] = self.data['Close'].rolling(window=30).mean()
+        Args:
+            df: Pandas DataFrame with DateTimeIndex and 'Open', 'High', 'Low', 'Close' columns.
 
-            self.indicators['EMA_50'] = self.data['Close'].ewm(span=50, adjust=False).mean()
-            self.indicators['SMA_50'] = self.data['Close'].rolling(window=50).mean()
+        Returns:
+            Pandas DataFrame with the added technical indicator columns.
+        """
 
-            self.indicators['EMA_100'] = self.data['Close'].ewm(span=100, adjust=False).mean()
-            self.indicators['SMA_100'] = self.data['Close'].rolling(window=100).mean()
+        # Ensure the index is a DateTimeIndex
+        if not isinstance(df.index, pd.DatetimeIndex):
+            raise ValueError("DataFrame index must be a DateTimeIndex")
 
-            self.indicators['EMA_200'] = self.data['Close'].ewm(span=200, adjust=False).mean()
-            self.indicators['SMA_200'] = self.data['Close'].rolling(window=200).mean()
+        # --- Simple Moving Average (SMA) ---
+        df['SMA10'] = ta.trend.sma_indicator(df['Close'], window=10)
+        df['SMA20'] = ta.trend.sma_indicator(df['Close'], window=20)
+        df['SMA50'] = ta.trend.sma_indicator(df['Close'], window=50)
+        df['SMA100'] = ta.trend.sma_indicator(df['Close'], window=100)
 
-            high_9 = self.data['High'].rolling(window=9).max()
-            low_9 = self.data['Low'].rolling(window=9).min()
-            self.indicators['Ichimoku_Base_Line'] = (high_9 + low_9) / 2
+        # --- Exponential Moving Average (EMA) ---
+        df['EMA10'] = ta.trend.ema_indicator(df['Close'], window=10)
+        df['EMA20'] = ta.trend.ema_indicator(df['Close'], window=20)
+        df['EMA50'] = ta.trend.ema_indicator(df['Close'], window=50)
+        df['EMA100'] = ta.trend.ema_indicator(df['Close'], window=100)
 
-            self.indicators['HMA_9'] = self.hma(self.data['Close'], 9)
+        # --- Relative Strength Index (RSI) ---
+        df['RSI14'] = ta.momentum.rsi(df['Close'], window=14)
 
-    def calculate_oscillators(self):
-        if self.data is not None:
-            self.oscillators['RSI_14'] = ta.momentum.RSIIndicator(self.data['Close'], window=14).rsi()
-            self.oscillators['Stochastic_%K'] = ta.momentum.StochasticOscillator(self.data['High'], self.data['Low'], self.data['Close'], window=14, smooth_window=3).stoch()
-            self.oscillators['CCI_20'] = ta.trend.CCIIndicator(self.data['High'], self.data['Low'], self.data['Close'], window=20).cci()
-            try:
-                self.oscillators['ADX_14'] = ta.trend.ADXIndicator(self.data['High'], self.data['Low'], self.data['Close'], window=14).adx()
-            except ValueError:
-                self.oscillators['ADX_14'] = pd.Series([np.nan] * len(self.data))
-            self.oscillators['Awesome_Oscillator'] = ta.momentum.AwesomeOscillatorIndicator(self.data['High'], self.data['Low']).awesome_oscillator()
-            self.oscillators['Momentum_10'] = ta.momentum.ROCIndicator(self.data['Close'], window=10).roc()
-            self.oscillators['MACD_Level'] = ta.trend.MACD(self.data['Close'], window_slow=26, window_fast=12, window_sign=9).macd()
-            self.oscillators['Stochastic_RSI_Fast'] = ta.momentum.StochRSIIndicator(self.data['Close'], window=14, smooth1=3, smooth2=3).stochrsi_k()
-            self.oscillators['Williams_%R'] = ta.momentum.WilliamsRIndicator(self.data['High'], self.data['Low'], self.data['Close'], lbp=14).williams_r()
-            self.oscillators['Bull_Bear_Power'] = self.data['Close'] - self.data['Close'].ewm(span=13, adjust=False).mean()
-            self.oscillators['Ultimate_Oscillator'] = ta.momentum.UltimateOscillator(self.data['High'], self.data['Low'], self.data['Close']).ultimate_oscillator()
+        # --- Moving Average Convergence Divergence (MACD) ---
+        macd = ta.trend.MACD(df['Close'], window_slow=26, window_fast=12, window_sign=9)
+        df['MACD'] = macd.macd()
+        df['MACD_Signal'] = macd.macd_signal()
+        df['MACD_Diff'] = macd.macd_diff()  # This is the MACD Histogram
 
-    def wma(self, data, period):
-        weights = np.arange(1, period + 1)
-        return data.rolling(period).apply(lambda prices: np.dot(prices, weights) / weights.sum(), raw=True)
-
-    def hma(self, data, period):
-        half_length = int(period / 2)
-        sqrt_length = int(np.sqrt(period))
-        return self.wma(2 * self.wma(data, half_length) - self.wma(data, period), sqrt_length)
-
-    def get_latest_signals(self):
-        latest_values = []
-        actions = []
-        if self.data is not None:
-            latest_close_price = self.data['Close'].iloc[-1]
-            for name, indicator in self.indicators.items():
-                latest_value = indicator.iloc[-1]
-                latest_values.append(latest_value)
-                if latest_close_price > latest_value:
-                    actions.append("Buy")
-                elif latest_close_price < latest_value:
-                    actions.append("Sell")
-                else:
-                    actions.append("Hold")
-
-        return {
-            "Name": [
-                "Exponential Moving Average (10)",
-                "Simple Moving Average (10)",
-                "Exponential Moving Average (20)",
-                "Simple Moving Average (20)",
-                "Exponential Moving Average (30)",
-                "Simple Moving Average (30)",
-                "Exponential Moving Average (50)",
-                "Simple Moving Average (50)",
-                "Exponential Moving Average (100)",
-                "Simple Moving Average (100)",
-                "Exponential Moving Average (200)",
-                "Simple Moving Average (200)",
-                "Ichimoku Base Line (9, 26, 52, 26)",
-                "Hull Moving Average (9)"
-            ],
-            "Value": latest_values,
-            "Action": actions
-        }
-
-    def get_latest_oscillators(self):
-        latest_values = []
-        actions = []
-        if self.data is not None:
-            for name, oscillator in self.oscillators.items():
-                latest_value = oscillator.iloc[-1]
-                latest_values.append(latest_value)
-                if name == 'RSI_14':
-                    if latest_value > 70:
-                        actions.append("Sell")
-                    elif latest_value < 30:
-                        actions.append("Buy")
-                    else:
-                        actions.append("Neutral")
-                elif name == 'Stochastic_%K' or name == 'Stochastic_RSI_Fast':
-                    if latest_value > 80:
-                        actions.append("Sell")
-                    elif latest_value < 20:
-                        actions.append("Buy")
-                    else:
-                        actions.append("Neutral")
-                elif name == 'CCI_20':
-                    if latest_value > 100:
-                        actions.append("Buy")
-                    elif latest_value < -100:
-                        actions.append("Sell")
-                    else:
-                        actions.append("Neutral")
-                elif name == 'Williams_%R':
-                    if latest_value > -20:
-                        actions.append("Sell")
-                    elif latest_value < -80:
-                        actions.append("Buy")
-                    else:
-                        actions.append("Neutral")
-                else:
-                    actions.append("Neutral")
-
-        return {
-            "Name": [
-                "Relative Strength Index (14)",
-                "Stochastic %K (14, 3, 3)",
-                "Commodity Channel Index (20)",
-                "Average Directional Index (14)",
-                "Awesome Oscillator",
-                "Momentum (10)",
-                "MACD Level (12, 26)",
-                "Stochastic RSI Fast (3, 3, 14, 14)",
-                "Williams Percent Range (14)",
-                "Bull Bear Power",
-                "Ultimate Oscillator (7, 14, 28)"
-            ],
-            "Value": latest_values,
-            "Action": actions
-        }
-
-    def output_to_json(self) -> str:
-        latest_signals = self.get_latest_signals()
-        latest_oscillators = self.get_latest_oscillators()
-        latest_signals_json = pd.DataFrame(latest_signals).to_json(orient="records")
-        latest_oscillators_json = pd.DataFrame(latest_oscillators).to_json(orient="records")
-        output_str = f"Moving average signal: {latest_signals_json} \nOscillators signal: {latest_oscillators_json}"
-        return output_str
+        # --- Rate of Change (ROC) ---
+        df['ROC12'] = ta.momentum.roc(df['Close'], window=12)
         
-class FullRangeTechnicalIndicators:
-    def __init__(self):
-        pass
+        df['Date'] = df.index
 
-    def get_1_hour_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='1mo')
-        ti.download_data()
-        ti.calculate_indicators()
-        ti.calculate_oscillators()
-        return ti.output_to_json()
-
-    def get_4_hour_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1h', period='3mo')
-        ti.download_data()
-        df = ti.data.drop(columns=["Adj Close"]).copy()
-        df_resampled = df.resample("4h").ohlc()
-        df_resampled.columns = ['_'.join(col) for col in df_resampled.columns]
-        df_resampled.columns = ['Open' if 'Open_open' in col else
-                                'High' if 'High_high' in col else
-                                'Low' if 'Low_low' in col else
-                                'Close' if 'Close_close' in col else col
-                                for col in df_resampled.columns]
-        ti.data = df_resampled
-        ti.calculate_indicators()
-        ti.calculate_oscillators()
-        return ti.output_to_json()
+        #df = df.loc[df["Date"] <= "2025-01-06 15:55:00"]
+        if self.interval == "15min" or self.interval=="5min":
+            df = df.tail(int(1.5*24*4))
+        elif self.interval == "1h":
+            df = df.tail(4*24)
+        elif self.interval == "4h":
+            df = df.tail(int(1*20*6))
+        self.df = df
+        return df
     
-    def get_1_day_indicators(self):
-        ti = TechnicalIndicators(ticker_symbol='EURUSD=X', interval='1d', period='6mo')
-        ti.download_data()
-        ti.calculate_indicators()
-        ti.calculate_oscillators()
-        return ti.output_to_json()
+    def plot_chart(self, fx_data: pd.DataFrame):
+        fx_data = fx_data.copy()
+
+        fx_data.loc[:, 'Index'] = range(len(fx_data))  # New range index without gaps
+
+        # --- Update OHLC Data for Candlestick ---
+        ohlc_data = fx_data[['Index', 'Open', 'High', 'Low', 'Close']].copy()
+
+        # Create the figure and subplots
+        fig = plt.figure(figsize=(20, 15))
+        gs = fig.add_gridspec(12, 1)  # 10 rows for more granular control
+        ax1 = fig.add_subplot(gs[:6, :])  # Price chart takes up 6/10 of the height
+        ax2 = fig.add_subplot(gs[6:8, :])  # RSI takes up 1/10
+        ax3 = fig.add_subplot(gs[8:10, :])  # MACD takes up 1/10
+        ax4 = fig.add_subplot(gs[10:12, :])  # ROC takes up 1/10
+        axes = [ax1, ax2, ax3, ax4]
+
+        # --- Plot 1: Candlestick Chart with SMA ---
+        lines = []
+        labels = []
+        candlestick_ohlc(axes[0], ohlc_data.values, width=0.6, colorup='green', colordown='red', alpha=0.8)
+        if self.interval == "15min" or self.interval == "5min":
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 10: blue")
+        if self.interval != "4h":
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA20'], label='EMA 20', color='orange', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 20: orange")
+        line, = axes[0].plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
+        lines.append(line)
+        labels.append("EMA 50: purple")
+        if self.interval != "15min" or self.interval != "5min":
+            line, = axes[0].plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 100: violet")
+        axes[0].legend(lines, labels, loc='upper left', fontsize=12)
+        axes[0].set_title(f"{self.currency_pair}-{self.interval}")
+        axes[0].grid(True)
+
+        # --- Plot 2: RSI ---
+        axes[1].plot(fx_data['Index'], fx_data['RSI14'], label='RSI (14)', color='purple')
+        axes[1].axhline(70, color='red', linestyle='--')
+        axes[1].axhline(30, color='green', linestyle='--')
+        axes[1].legend(loc='upper left')
+        axes[1].grid(True)
+
+        # --- Plot 3: MACD ---
+        lines = []
+        labels = []
+        line, = axes[2].plot(fx_data['Index'], fx_data['MACD'], label='MACD', color='red')
+        lines.append(line)
+        labels.append("MACD: red")
+        line, = axes[2].plot(fx_data['Index'], fx_data['MACD_Signal'], label='EMA (9)', color='green')
+        lines.append(line)
+        labels.append("Signal: green")
+
+        # Calculate histogram data
+        macd_diff = fx_data['MACD_Diff']
+        pos_diff = macd_diff.copy()
+        neg_diff = macd_diff.copy()
+        pos_diff[pos_diff <= 0] = 0  # Set negative values to 0 for positive bars
+        neg_diff[neg_diff >= 0] = 0  # Set positive values to 0 for negative bars
+
+        line = axes[2].bar(fx_data['Index'], pos_diff, color='peru', label='Divergence', width=0.6)
+        lines.append(line)
+        labels.append("Divergence (negative: black, positive: peru)")
+        axes[2].bar(fx_data['Index'], neg_diff, color='black', width=0.6)
+
+        axes[2].legend(lines, labels, loc='upper left', fontsize=12)
+        axes[2].grid(True)
+
+        # --- Plot 4: ROC ---
+        if self.interval != "4h":
+            axes[3].plot(fx_data['Index'], fx_data['ROC12'], label='ROC (12)', color='green')
+            axes[3].axhline(0, color='black', linestyle='--')
+            axes[3].legend(loc='upper left')
+            axes[3].grid(True)
+
+        # --- Formatting ---
+        if self.currency_pair == "EUR/USD":
+            def price_formatter(x, p):
+                return f"{x:.4f}"
+        if self.currency_pair == "USD/JPY":
+            def price_formatter(x, p):
+                return f"{x:.1f}"
+
+        # Calculate y-axis limits and ticks for the first subplot
+        y_min, y_max = ax1.get_ylim()
+        # Round to nearest 5 pips below and above
+        pip_interval_dict = {"EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
+                             "USD/JPY": {'5min': 10 / 100,'15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
+        pip_interval = pip_interval_dict[self.currency_pair][self.interval]
+
+        y_min = round(y_min / pip_interval) * pip_interval
+        y_max = round(y_max / pip_interval) * pip_interval
+        # Create ticks at 5 pip intervals
+        y_ticks = np.arange(y_min, y_max + pip_interval, pip_interval)
+
+        def date_formatter(x, pos):
+            index = int(round(x))
+            if index < len(fx_data):
+                return fx_data['Date'].iloc[index].strftime('%m-%d %H:%M')  # Format as 'Hour:Minute'
+            return ''
+
+        for i, ax in enumerate(axes):
+            ax.xaxis.set_major_formatter(FuncFormatter(date_formatter))
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=20))
+            ax.set_xlim(0, len(fx_data) + 5)
+
+            ax.yaxis.tick_right()
+            ax.yaxis.set_label_position("right")
+            
+
+            # Special formatting for the first subplot (price chart)
+            if i == 0:
+                ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
+                ax.set_yticks(y_ticks)
+                ax.tick_params(axis='x', rotation=0)
+            else:
+                ax.set_xticklabels([])
+                ax.tick_params(axis='x', length=0)
+            
+            ax.grid(True, alpha=0.4)
+
+        #------------------- Shading Added Here ------------------------------------------
+        # Calculate the starting index for shading. Based on time interval.
+        time_intervals_dict = {"5min": 12, "15min": 6, "1h": 5, "4h": 5} # Number of bars to mark
+        bars_to_mark = time_intervals_dict[self.interval]
+
+        start_shade = max(0, len(fx_data) - bars_to_mark)
+        end_shade = len(fx_data)
+
+        # Add shaded area
+        for ax in axes:
+            ax.axvspan(start_shade, end_shade, facecolor='grey', alpha=0.2, zorder=-1)
+
+        # Add Text Annotation
+        # time_unit = "minutes"
+        # if self.interval == "1h" or self.interval == "4h":
+        #     time_unit = "hours"
+        
+        # text_annotation = f"Last {bars_to_mark * int(self.interval.replace('min', '').replace('h', ''))} {time_unit}"
+        
+        # text_x = (start_shade + end_shade) / 2
+        # text_y = ax1.get_ylim()[1] - (ax1.get_ylim()[1] - ax1.get_ylim()[0]) / 10  # Place text near the top
+        # ax1.text(text_x, text_y, text_annotation, ha='center', va='bottom', fontsize=12)
+
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
+        fig.savefig(os.path.join(self.chart_root_path, f"{self.interval}.png"))
+        plt.close(fig)
+        return 
     
-    def get_full_indicators(self):
-        return (
-            "Technical indicators in **1 hour** interval. \n"
-            f"{self.get_1_hour_indicators()} \n"
-            "Technical indicators in **4 hour** interval. \n"
-            f"{self.get_4_hour_indicators()} \n"
-            "Technical indicators in **1 day** interval. \n"
-            f"{self.get_1_day_indicators()} \n"
-        )
+    def crop_image(self):
+        img_path = os.path.join(self.chart_root_path, f"{self.interval}.png")   
+        partition_height = 720
+        partition_width = 1200
+        with Image.open(img_path) as img:
+            width, height = img.size
+            left = 0
+            top = 0
+            right = width
+            bottom = height - partition_height
+            img = img.crop((left, top, right, bottom))
+            img.save(os.path.join(self.chart_root_path, f"{self.interval}_candel.png"))
+        
+        current_rsi = self.df.iloc[-1]["RSI14"]
+        current_roc = self.df.iloc[-1]["ROC12"]
+        text_boxes = {
+        # "RSI(14)": 10,
+        # "MACD: Red\nSignal: Green\nDivergence: (negative: black, positive: peru)": 260,
+        # "ROC(12)": 520
+        f"RSI(14): {current_rsi:.1f}": 10,
+        "MACD": 260,
+        f"ROC(12): {current_roc:.3f}": 520
+        }
+        font_size = 15
+        with Image.open(img_path) as img:
+            width, height = img.size
+            left = partition_width
+            top = height - partition_height
+            right = width
+            bottom = height
+            img = img.crop((left, top, right, bottom))
+            draw = ImageDraw.Draw(img)
+            try:
+                font = ImageFont.truetype("arial.ttf", font_size)  # Use a truetype font
+            except IOError:
+                font = ImageFont.load_default()
+            for text, text_y in text_boxes.items():
+                # Calculate text size using textbbox
+                text_bbox = draw.textbbox((0, 0), text, font=font)  # Get bounding box of the text
+                text_width = text_bbox[2] - text_bbox[0]
+                text_height = text_bbox[3] - text_bbox[1]
+
+                # Specify text position (left side, experiment with vertical position)
+                text_x = 5  # Distance from the left
+
+                # Draw text box background
+                background_box = (text_x - 10, text_y - 10, text_x + text_width + 10, text_y + text_height + 10)
+                draw.rectangle(background_box, fill="grey")  # White background for text
+
+                # Add the text
+                draw.text((text_x, text_y), text, fill="black", font=font)
+
+            img.save(os.path.join(self.chart_root_path, f"{self.interval}_ti.png"))
+        return
+
+    
+
+    def run(self):
+        data = self.download_data()
+        self.plot_chart(data)
+        #self.crop_image()
+        return data
 
 
-# Example usage
 if __name__ == "__main__":
-    ti = FullRangeTechnicalIndicators()
-    print(ti.get_full_indicators())
+    #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
+    currency_pair = "EUR/USD"
+    #currency_pair = "USD/JPY"
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
+    data = ti.run()
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    data = ti.run()
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
+    data = ti.run()
+    print(ti.get_current_price())

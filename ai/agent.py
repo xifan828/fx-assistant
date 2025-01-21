@@ -2,6 +2,7 @@ from openai import OpenAI
 from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
 from ai.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
 from ai.service.technical_analysis import TechnicalAnalysis
+from ai.service.technical_indicators import TechnicalIndicators
 from ai.service.economic_calenders import EconomicCalenders
 from ai.parameters import *
 from ai.config import Config
@@ -207,7 +208,7 @@ Economic Events
             client = OpenAI()
         elif self.provider == "google":
             client = OpenAI(
-                api_key=os.environ["GEMINI_API_KEY"],
+                api_key=os.environ["GEMINI_API_KEY_CONG"],
                 base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
             )
         messages = [
@@ -235,7 +236,29 @@ class KnowledgeBase:
         self.currency_a = currency_pair.split("/")[0]
         self.currency_b = currency_pair.split("/")[-1]
         self.currency_ticker = self.currency_tickers[self.currency_pair]
-        #self.ai_search_queries = ai_search_queries if ai_search_queries is not None else AI_SEARCH_QUERIES
+    
+    def prepare_figures(self):
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_data = {
+            executor.submit(scrape_economic_calenders, calender_url=self.technical_indicators_websites[self.currency_pair]["calender"]): "Economic Calenders",
+            executor.submit(scrape_technical_indicators, indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]): "Technical Indicators",
+            }
+            for future in as_completed(future_to_data):
+                data_name = future_to_data[future]
+                try:
+                    future.result()
+                except Exception as exc:
+                    print(f'{data_name} generated an exception: {exc}')
+        # scrape_economic_calenders(
+        #     calender_url=self.technical_indicators_websites[self.currency_pair]["calender"]
+        # )
+        # scrape_technical_indicators(
+        # indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
+        # )
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
+        ti.run()
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
+        ti.run()
 
     def get_economic_indicators(self) -> Dict:
         te_scrapper = TradingEconomicsScraper()
@@ -250,19 +273,15 @@ class KnowledgeBase:
         return results
     
     def get_technical_analysis(self) -> str:
-        scrape_technical_indicators(
-        indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
-        )
-
-        scrape_aastocks_chart(
-            url=self.technical_indicators_websites[self.currency_pair]["chart"]
-        )
         ta_scrapper = TechnicalAnalysis(
         currency_pair=self.currency_pair,
         ticker=self.currency_ticker
         )
         results = asyncio.run(ta_scrapper.run())
-        return results
+        analysis = results["analysis_5min"]
+        strategy = results["strategy"]
+        final = f"{analysis}\n{strategy}"
+        return final
     
     def get_central_bank(self) -> List[str]:
         bank_a = self.central_banks[self.currency_a]
@@ -273,14 +292,12 @@ class KnowledgeBase:
         return results
     
     def get_economic_events(self) -> str:
-        scrape_economic_calenders(
-            calender_url=self.technical_indicators_websites[self.currency_pair]["calender"]
-        )
         ec = EconomicCalenders(currency_pair=self.currency_pair)
         results = ec.run()
         return results
     
     def get_all_data(self):
+        self.prepare_figures()
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
                 executor.submit(self.get_economic_indicators): "Economic Indicators",
@@ -302,6 +319,7 @@ class KnowledgeBase:
             return results
     
     def get_partial_data(self):
+        self.prepare_figures()
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
                 #executor.submit(self.get_economic_indicators): "Economic Indicators",
@@ -323,15 +341,15 @@ class KnowledgeBase:
             return results
 
 if __name__ == "__main__":
-    import time
     kb = KnowledgeBase(
         #currency_pair="USD/JPY",
         currency_pair="EUR/USD"
     )
-    #kb.get_technical_analysis(is_local=True)
-    end_time = time.time()
-    knowledge = kb.get_technical_analysis()
-    print(knowledge)
+    kb.prepare_figures()
+    # knowledge = kb.get_partial_data()   
+    # print(knowledge)
+
+
 
 
     

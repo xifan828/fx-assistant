@@ -143,7 +143,7 @@ def main():
                     st.session_state["strategy"].append({"role": "user", "content": currency_pair + " Trading Plan"})
                     strategy = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["strategy"])
                     st.session_state["strategy"].append({"role": "assistant", "content": strategy})
-                    st.chat_message("assistant").write(strategy)
+                    st.chat_message("assistant", avatar="📈").write(strategy)
                 with tab2:
                     st.write(st.session_state["economic_indicators"])
                 with tab3:

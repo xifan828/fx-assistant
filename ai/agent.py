@@ -330,7 +330,7 @@ if __name__ == "__main__":
     )
     #kb.get_technical_analysis(is_local=True)
     end_time = time.time()
-    knowledge = kb.get_partial_data()
+    knowledge = kb.get_technical_analysis()
     print(knowledge)
 
 

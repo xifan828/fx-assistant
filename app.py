@@ -64,7 +64,7 @@ def main():
             index=0
         )
 
-        run_process = st.sidebar.button("Run")
+        run_process = st.sidebar.button("Live Market Update")
         if run_process or st.session_state["process_initialized"]:
             if run_process:
                 st.session_state["process_initialized"] = True
@@ -96,7 +96,13 @@ def main():
             chart, chat = st.columns(2)
             with chart:
                 with st.container(height=350, border=True):
-                    st.bar_chart(np.random.randn(50, 3))
+                    tab1, tab2, tab3 = st.tabs(["5 minutes", "1 Hour", "4 Hours"])
+                    with tab1:
+                        st.image("data/chart/5min.png")
+                    with tab2:
+                        st.image("data/chart/1h.png")
+                    with tab3:
+                        st.image("data/chart/4h.png")
 
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])

@@ -255,10 +255,16 @@ class KnowledgeBase:
         # scrape_technical_indicators(
         # indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
         # )
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
-        ti.run()
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
-        ti.run()
+        ti_1h = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
+        #ti.run()
+        ti_1h.run_ibkr_data()
+        df_1h = ti_1h.df
+
+        ti_5min = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
+        #ti.run()
+        ti_5min.run_ibkr_data()
+        df_5min = ti_5min.df
+        return df_1h, df_5min
 
     def get_economic_indicators(self) -> Dict:
         te_scrapper = TradingEconomicsScraper()
@@ -342,8 +348,8 @@ class KnowledgeBase:
 
 if __name__ == "__main__":
     kb = KnowledgeBase(
-        #currency_pair="USD/JPY",
-        currency_pair="EUR/USD"
+        currency_pair="USD/JPY",
+        #currency_pair="EUR/USD"
     )
     kb.prepare_figures()
     # knowledge = kb.get_partial_data()   

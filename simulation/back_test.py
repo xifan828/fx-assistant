@@ -25,7 +25,7 @@ class BackTest:
     
     def get_price(self, output_size, end_date):
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=output_size, end_date=end_date)
-        price_data = ti.download_data()
+        price_data = ti.download_data_wo_ti()
         try:
             dt_index_berlin = price_data.index.tz_convert("Europe/Berlin")
         except:

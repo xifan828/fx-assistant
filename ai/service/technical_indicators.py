@@ -12,6 +12,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 from twelvedata import TDClient
 import time
+from ib_client import get_data
 
 # creqte a class for downloading and processing data from yfinance, calculate technical indicators and plot charts
 
@@ -26,16 +27,7 @@ class TechnicalIndicators:
         self.end_date = end_date
         self.start_date = start_date
         self.client = TDClient(apikey=os.environ["TD_API_KEY"])
-    
-    def download_data(self):
-        """Download data from yfinance"""
-        # if self.interval == "4h":
-        #     data = yf.download(self.ticker, period=self.period, interval="1h")
-        #     data = data.resample('4h').agg({'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'})
-        #     data = data.dropna(subset=["Open", "Close"])
-        # else:
-        #     data = yf.download(self.ticker, period=self.period, interval=self.interval)
-        ts = self.client.time_series(
+        self.ts = self.client.time_series(
             symbol=self.currency_pair,
             exchange=self.exchange,
             interval=self.interval,
@@ -43,8 +35,30 @@ class TechnicalIndicators:
             timezone="Europe/Berlin",
             end_date = self.end_date,
             start_date = self.start_date)
+        
+        self.ohlc = self.download_data_from_ibkr()
+        self.ohlc_with_ti = self.calculate_technical_indicators(self.ohlc)
+        
+    def download_data_from_ibkr(self):
+        df = get_data(currency_pair=self.currency_pair, interval=self.interval)
+        return df
+
+    def download_data_wo_ti(self):
+        df = self.ts.as_pandas()
+        df.columns = ["Open", "High", "Low", "Close"]
+        df = df[::-1]
+        return df
+    
+    def download_data_with_ti(self):
+        """Download data from yfinance"""
+        # if self.interval == "4h":
+        #     data = yf.download(self.ticker, period=self.period, interval="1h")
+        #     data = data.resample('4h').agg({'Open': 'first', 'High': 'max', 'Low': 'min', 'Close': 'last', 'Volume': 'sum'})
+        #     data = data.dropna(subset=["Open", "Close"])
+        # else:
+        #     data = yf.download(self.ticker, period=self.period, interval=self.interval)
         df = (
-                ts
+                self.ts
                 .with_ema(time_period=10)
                 .with_ema(time_period=20)
                 .with_ema(time_period=50)
@@ -57,15 +71,6 @@ class TechnicalIndicators:
             )
         df.columns = ["Open", "High", "Low", "Close", "EMA10", "EMA20", "EMA50", "EMA100", "upper_band", "middle_band", "lower_band", "MACD", "MACD_Signal", "MACD_Diff", "RSI14", "ROC12"]
         df = df[::-1]
-        df['Date'] = df.index
-        if self.interval == "15min" or self.interval=="5min":
-            df = df.tail(int(1.5*24*4))
-        elif self.interval == "1h":
-            df = df.tail(4*24)
-        elif self.interval == "4h":
-            df = df.tail(int(1*20*6))
-        self.df = df
-
         return df
     
     def get_current_price(self):
@@ -96,7 +101,7 @@ class TechnicalIndicators:
         return current_price
 
     
-    def calculate_technical_indicators(self, df):
+    def calculate_technical_indicators(self, df, sma=False, ema=True, rsi=True, macd=True, roc=True, bbands=True, atr=True):
         """
         Calculates various technical indicators using the 'ta' library.
 
@@ -112,156 +117,251 @@ class TechnicalIndicators:
             raise ValueError("DataFrame index must be a DateTimeIndex")
 
         # --- Simple Moving Average (SMA) ---
-        df['SMA10'] = ta.trend.sma_indicator(df['Close'], window=10)
-        df['SMA20'] = ta.trend.sma_indicator(df['Close'], window=20)
-        df['SMA50'] = ta.trend.sma_indicator(df['Close'], window=50)
-        df['SMA100'] = ta.trend.sma_indicator(df['Close'], window=100)
+        if sma:
+            df['SMA10'] = ta.trend.sma_indicator(df['Close'], window=10)
+            df['SMA20'] = ta.trend.sma_indicator(df['Close'], window=20)
+            df['SMA50'] = ta.trend.sma_indicator(df['Close'], window=50)
+            df['SMA100'] = ta.trend.sma_indicator(df['Close'], window=100)
 
         # --- Exponential Moving Average (EMA) ---
-        df['EMA10'] = ta.trend.ema_indicator(df['Close'], window=10)
-        df['EMA20'] = ta.trend.ema_indicator(df['Close'], window=20)
-        df['EMA50'] = ta.trend.ema_indicator(df['Close'], window=50)
-        df['EMA100'] = ta.trend.ema_indicator(df['Close'], window=100)
+        if ema:
+            df['EMA10'] = ta.trend.ema_indicator(df['Close'], window=10)
+            df['EMA20'] = ta.trend.ema_indicator(df['Close'], window=20)
+            df['EMA50'] = ta.trend.ema_indicator(df['Close'], window=50)
+            df['EMA100'] = ta.trend.ema_indicator(df['Close'], window=100)
 
         # --- Relative Strength Index (RSI) ---
-        df['RSI14'] = ta.momentum.rsi(df['Close'], window=14)
+        if rsi:
+            df['RSI14'] = ta.momentum.rsi(df['Close'], window=14)
 
         # --- Moving Average Convergence Divergence (MACD) ---
-        macd = ta.trend.MACD(df['Close'], window_slow=26, window_fast=12, window_sign=9)
-        df['MACD'] = macd.macd()
-        df['MACD_Signal'] = macd.macd_signal()
-        df['MACD_Diff'] = macd.macd_diff()  # This is the MACD Histogram
+        if macd:
+            macd = ta.trend.MACD(df['Close'], window_slow=26, window_fast=12, window_sign=9)
+            df['MACD'] = macd.macd()
+            df['MACD_Signal'] = macd.macd_signal()
+            df['MACD_Diff'] = macd.macd_diff()  # This is the MACD Histogram
 
         # --- Rate of Change (ROC) ---
-        df['ROC12'] = ta.momentum.roc(df['Close'], window=12)
-        
+        if roc:
+            df['ROC12'] = ta.momentum.roc(df['Close'], window=12)
+
+        # --- Bollinger Bands (Default: 20 SMA, ±2 std) ---
+        if bbands:
+            bollinger = ta.volatility.BollingerBands(close=df['Close'], window=20, window_dev=2)
+            df['BB_Mid']   = bollinger.bollinger_mavg()   # Middle band (20 SMA by default)
+            df['BB_Upper'] = bollinger.bollinger_hband()  # Upper band (+2 std)
+            df['BB_Lower'] = bollinger.bollinger_lband() 
+
+        # --- Average True Range (ATR) ---
+        if atr:
+            atr = ta.volatility.AverageTrueRange(high=df['High'], low=df['Low'], close=df['Close'], window=14)
+            df['ATR'] = atr.average_true_range()
+            
         df['Date'] = df.index
 
         #df = df.loc[df["Date"] <= "2025-01-06 15:55:00"]
         if self.interval == "15min" or self.interval=="5min":
-            df = df.tail(int(1.5*24*4))
+            #df = df.tail(int(1.5*24*4))
+            df = df.tail(int(1.5*24*2))
         elif self.interval == "1h":
-            df = df.tail(4*24)
+            #df = df.tail(4*24)
+            df = df.tail(2*24)
         elif self.interval == "4h":
             df = df.tail(int(1*20*6))
         self.df = df
         return df
     
-    def plot_chart(self, fx_data: pd.DataFrame):
-        fx_data = fx_data.copy()
+    def plot_chart(self, size: int = 20,
+               EMA10: bool = False,
+               EMA20: bool = False,
+               EMA50: bool = False,
+               EMA100: bool = False,
+               RSI14: bool = False,
+               MACD: bool = False,
+               MACD_Signal: bool = False,
+               MACD_Diff: bool = False,
+               ROC12: bool = False,
+               ATR14: bool = False,
+               shading: bool = False):
+        # collect current data
+        data = {}
+        decimal_places = 4 if self.currency_pair == "EUR/USD" else 2
 
-        fx_data.loc[:, 'Index'] = range(len(fx_data))  # New range index without gaps
+        # --- Data Preparation ---
+        fx_data = self.ohlc_with_ti.copy()
+        fx_data = fx_data.tail(size)
+        fx_data['Date'] = fx_data.index
+        data["Close"] = fx_data.iloc[-1]["Close"].round(decimal_places)
 
-        # --- Update OHLC Data for Candlestick ---
+        # Create a new sequential index column
+        fx_data.loc[:, 'Index'] = range(len(fx_data))
         ohlc_data = fx_data[['Index', 'Open', 'High', 'Low', 'Close']].copy()
 
-        # Create the figure and subplots
-        fig = plt.figure(figsize=(20, 15))
-        gs = fig.add_gridspec(12, 1)  # 10 rows for more granular control
-        ax1 = fig.add_subplot(gs[:6, :])  # Price chart takes up 6/10 of the height
-        ax2 = fig.add_subplot(gs[6:8, :])  # RSI takes up 1/10
-        ax3 = fig.add_subplot(gs[8:10, :])  # MACD takes up 1/10
-        ax4 = fig.add_subplot(gs[10:12, :])  # ROC takes up 1/10
-        axes = [ax1, ax2, ax3, ax4]
+        # --- Define the Indicator Settings from Input Parameters ---
+        indicators = {
+            'EMA10': EMA10,
+            'EMA20': EMA20,
+            'EMA50': EMA50,
+            'EMA100': EMA100,
+            'RSI14': RSI14,
+            'MACD': MACD,
+            'MACD_Signal': MACD_Signal,
+            'MACD_Diff': MACD_Diff,
+            'ROC12': ROC12,
+            "ATR14": ATR14
+        }
 
-        # --- Plot 1: Candlestick Chart with SMA ---
+        # Determine which additional subplots to create.
+        additional_indicators = []
+        if indicators.get('RSI14'):
+            additional_indicators.append('RSI')
+        if (indicators.get('MACD') and indicators.get('MACD_Signal') and indicators.get('MACD_Diff')):
+            additional_indicators.append('MACD')
+        if indicators.get('ROC12'):
+            additional_indicators.append('ROC')
+        if indicators.get('ATR14'):
+            additional_indicators.append('ATR')
+
+        # --- Figure Setup: Dynamic Subplots ---
+        # Fixed size for the candlestick chart and each additional indicator chart
+        price_chart_height_inch = 10      # Fixed height for the price chart
+        indicator_height_inch = 3         # Fixed height for each additional indicator
+        total_height = price_chart_height_inch + indicator_height_inch * len(additional_indicators)
+        n_subplots = 1 + len(additional_indicators)
+        height_ratios = [price_chart_height_inch] + [indicator_height_inch] * len(additional_indicators)
+
+        fig, axes = plt.subplots(nrows=n_subplots, figsize=(20, total_height),
+                                gridspec_kw={'height_ratios': height_ratios}, sharex=False)
+        if n_subplots == 1:
+            axes = [axes]
+        ax_price = axes[0]
+
+        # Map additional indicators to their dedicated axes in order (top to bottom)
+        indicator_axes = {}
+        for i, indicator in enumerate(additional_indicators):
+            indicator_axes[indicator] = axes[i + 1]
+
+        # --- Plot 1: Price Chart (Candlestick with Optional EMA Lines) ---
         lines = []
         labels = []
-        candlestick_ohlc(axes[0], ohlc_data.values, width=0.6, colorup='green', colordown='red', alpha=0.8)
-        if self.interval == "15min" or self.interval == "5min":
-            line, = axes[0].plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
+        candlestick_ohlc(ax_price, ohlc_data.values, width=0.6, colorup='green', colordown='red', alpha=0.8)
+        # adjust wick width
+        for line in ax_price.get_lines():
+            x_data = line.get_xdata()
+            # Check if the line is vertical (both x values are the same)
+            if len(x_data) == 2 and x_data[0] == x_data[1]:
+                line.set_linewidth(2.5) 
+
+        if indicators.get('EMA10'):
+            line, = ax_price.plot(fx_data['Index'], fx_data['EMA10'], label='EMA 10', color='blue', linewidth=2)
             lines.append(line)
             labels.append("EMA 10: blue")
-        if self.interval != "4h":
-            line, = axes[0].plot(fx_data['Index'], fx_data['EMA20'], label='EMA 20', color='orange', linewidth=2)
+            data["EMA10"] = fx_data.iloc[-1]["EMA10"].round(decimal_places)
+        if indicators.get('EMA20'):
+            line, = ax_price.plot(fx_data['Index'], fx_data['EMA20'], label='EMA 20', color='orange', linewidth=2)
             lines.append(line)
             labels.append("EMA 20: orange")
-        line, = axes[0].plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
-        lines.append(line)
-        labels.append("EMA 50: purple")
-        if self.interval != "15min" or self.interval != "5min":
-            line, = axes[0].plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
+            data["EMA20"] = fx_data.iloc[-1]["EMA20"].round(decimal_places)
+        if indicators.get('EMA50'):
+            line, = ax_price.plot(fx_data['Index'], fx_data['EMA50'], label='EMA 50', color='purple', linewidth=2)
+            lines.append(line)
+            labels.append("EMA 50: purple")
+            data["EMA50"] = fx_data.iloc[-1]["EMA50"].round(decimal_places)
+        if indicators.get('EMA100'):
+            line, = ax_price.plot(fx_data['Index'], fx_data['EMA100'], label='EMA 100', color='violet', linewidth=2)
             lines.append(line)
             labels.append("EMA 100: violet")
-        axes[0].legend(lines, labels, loc='upper left', fontsize=12)
-        axes[0].set_title(f"{self.currency_pair}-{self.interval}")
-        axes[0].grid(True)
+            data["EMA100"] = fx_data.iloc[-1]["EMA100"].round(decimal_places)
+        if lines:
+            ax_price.legend(lines, labels, loc='upper left', fontsize=12)
+        ax_price.set_title(f"{self.currency_pair}-{self.interval}")
+        ax_price.grid(True)
 
-        # --- Plot 2: RSI ---
-        axes[1].plot(fx_data['Index'], fx_data['RSI14'], label='RSI (14)', color='purple')
-        axes[1].axhline(70, color='red', linestyle='--')
-        axes[1].axhline(30, color='green', linestyle='--')
-        axes[1].legend(loc='upper left')
-        axes[1].grid(True)
+        # --- Plot Additional Indicators ---
+        # RSI Plot
+        if 'RSI' in indicator_axes:
+            ax_rsi = indicator_axes['RSI']
+            ax_rsi.plot(fx_data['Index'], fx_data['RSI14'], label='RSI (14)', color='purple')
+            ax_rsi.axhline(70, color='red', linestyle='--')
+            ax_rsi.axhline(30, color='green', linestyle='--')
+            ax_rsi.legend(loc='upper left')
+            ax_rsi.grid(True)
+            data["RSI14"] = fx_data.iloc[-1]["RSI14"].round(2)
+        # MACD Plot
+        if 'MACD' in indicator_axes:
+            ax_macd = indicator_axes['MACD']
+            lines = []
+            labels = []
+            line, = ax_macd.plot(fx_data['Index'], fx_data['MACD'], label='MACD', color='red')
+            lines.append(line)
+            labels.append("MACD: red")
+            line, = ax_macd.plot(fx_data['Index'], fx_data['MACD_Signal'], label='Signal', color='green')
+            lines.append(line)
+            labels.append("Signal: green")
+            macd_diff = fx_data['MACD_Diff']
+            pos_diff = macd_diff.copy()
+            neg_diff = macd_diff.copy()
+            pos_diff[pos_diff <= 0] = 0  # Only positive values
+            neg_diff[neg_diff >= 0] = 0  # Only negative values
+            ax_macd.bar(fx_data['Index'], pos_diff, color='peru', label='Divergence', width=0.6)
+            ax_macd.bar(fx_data['Index'], neg_diff, color='black', width=0.6)
+            ax_macd.legend(lines, labels, loc='upper left', fontsize=12)
+            ax_macd.grid(True)
+            data["MACD"] = fx_data.iloc[-1]["MACD"].round(decimal_places)
+            data["MACD_Signal"] = fx_data.iloc[-1]["MACD_Signal"].round(decimal_places)
+            data["MACD_Diff"] = fx_data.iloc[-1]["MACD_Diff"].round(decimal_places)
+        # ROC Plot
+        if 'ROC' in indicator_axes:
+            ax_roc = indicator_axes['ROC']
+            ax_roc.plot(fx_data['Index'], fx_data['ROC12'], label='ROC (12)', color='green')
+            ax_roc.axhline(0, color='black', linestyle='--')
+            ax_roc.legend(loc='upper left')
+            ax_roc.grid(True)
+            data["ROC12"] = fx_data.iloc[-1]["ROC12"].round(2)
+        # ATR Plot
+        if 'ATR' in indicator_axes:
+            ax_atr = indicator_axes['ATR']
+            ax_atr.plot(fx_data['Index'], fx_data['ATR'], label='ATR (14)', color='blue')
+            ax_atr.legend(loc='upper left')
+            ax_atr.grid(True)
+            data["ATR14"] = fx_data.iloc[-1]["ATR"].round(decimal_places)
 
-        # --- Plot 3: MACD ---
-        lines = []
-        labels = []
-        line, = axes[2].plot(fx_data['Index'], fx_data['MACD'], label='MACD', color='red')
-        lines.append(line)
-        labels.append("MACD: red")
-        line, = axes[2].plot(fx_data['Index'], fx_data['MACD_Signal'], label='EMA (9)', color='green')
-        lines.append(line)
-        labels.append("Signal: green")
-
-        # Calculate histogram data
-        macd_diff = fx_data['MACD_Diff']
-        pos_diff = macd_diff.copy()
-        neg_diff = macd_diff.copy()
-        pos_diff[pos_diff <= 0] = 0  # Set negative values to 0 for positive bars
-        neg_diff[neg_diff >= 0] = 0  # Set positive values to 0 for negative bars
-
-        line = axes[2].bar(fx_data['Index'], pos_diff, color='peru', label='Divergence', width=0.6)
-        lines.append(line)
-        labels.append("Divergence (negative: black, positive: peru)")
-        axes[2].bar(fx_data['Index'], neg_diff, color='black', width=0.6)
-
-        axes[2].legend(lines, labels, loc='upper left', fontsize=12)
-        axes[2].grid(True)
-
-        # --- Plot 4: ROC ---
-        if self.interval != "4h":
-            axes[3].plot(fx_data['Index'], fx_data['ROC12'], label='ROC (12)', color='green')
-            axes[3].axhline(0, color='black', linestyle='--')
-            axes[3].legend(loc='upper left')
-            axes[3].grid(True)
-
-        # --- Formatting ---
+        # --- Formatting: Axis Labels, Ticks, and Grids ---
         if self.currency_pair == "EUR/USD":
-            def price_formatter(x, p):
+            def price_formatter(x, pos):
                 return f"{x:.4f}"
-        if self.currency_pair == "USD/JPY":
-            def price_formatter(x, p):
+        elif self.currency_pair == "USD/JPY":
+            def price_formatter(x, pos):
                 return f"{x:.1f}"
+        else:
+            def price_formatter(x, pos):
+                return str(x)
 
-        # Calculate y-axis limits and ticks for the first subplot
-        y_min, y_max = ax1.get_ylim()
-        # Round to nearest 5 pips below and above
-        pip_interval_dict = {"EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
-                             "USD/JPY": {'5min': 10 / 100,'15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}}
+        # Calculate y-axis ticks for the price chart.
+        y_min, y_max = ax_price.get_ylim()
+        pip_interval_dict = {
+            "EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
+            "USD/JPY": {'5min': 10 / 100, '15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}
+        }
         pip_interval = pip_interval_dict[self.currency_pair][self.interval]
-
         y_min = round(y_min / pip_interval) * pip_interval
         y_max = round(y_max / pip_interval) * pip_interval
-        # Create ticks at 5 pip intervals
         y_ticks = np.arange(y_min, y_max + pip_interval, pip_interval)
 
         def date_formatter(x, pos):
             index = int(round(x))
             if index < len(fx_data):
-                return fx_data['Date'].iloc[index].strftime('%m-%d %H:%M')  # Format as 'Hour:Minute'
+                return fx_data['Date'].iloc[index].strftime('%m-%d %H:%M')
             return ''
 
-        for i, ax in enumerate(axes):
+        # Combine all axes (price chart + additional) for common formatting.
+        all_axes = [ax_price] + [indicator_axes[ind] for ind in additional_indicators]
+        for i, ax in enumerate(all_axes):
             ax.xaxis.set_major_formatter(FuncFormatter(date_formatter))
             ax.xaxis.set_major_locator(MaxNLocator(integer=True, prune='both', nbins=20))
-            ax.set_xlim(0, len(fx_data) + 5)
-
+            ax.set_xlim(0, len(fx_data) + 1)
             ax.yaxis.tick_right()
             ax.yaxis.set_label_position("right")
-            
-
-            # Special formatting for the first subplot (price chart)
             if i == 0:
                 ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
                 ax.set_yticks(y_ticks)
@@ -269,38 +369,23 @@ class TechnicalIndicators:
             else:
                 ax.set_xticklabels([])
                 ax.tick_params(axis='x', length=0)
-            
             ax.grid(True, alpha=0.4)
 
-        #------------------- Shading Added Here ------------------------------------------
-        # Calculate the starting index for shading. Based on time interval.
-        time_intervals_dict = {"5min": 12, "15min": 6, "1h": 5, "4h": 5} # Number of bars to mark
-        bars_to_mark = time_intervals_dict[self.interval]
+        # --- Shading ---
+        if shading:
+            time_intervals_dict = {"5min": 0, "15min": 0, "1h": 6, "4h": 5}
+            bars_to_mark = time_intervals_dict[self.interval]
+            start_shade = max(0, len(fx_data) - bars_to_mark)
+            end_shade = len(fx_data)
+            for ax in all_axes:
+                ax.axvspan(start_shade, end_shade, facecolor='blue', alpha=0.2, zorder=-1)
 
-        start_shade = max(0, len(fx_data) - bars_to_mark)
-        end_shade = len(fx_data)
-
-        # Add shaded area
-        for ax in axes:
-            ax.axvspan(start_shade, end_shade, facecolor='grey', alpha=0.2, zorder=-1)
-
-        # Add Text Annotation
-        # time_unit = "minutes"
-        # if self.interval == "1h" or self.interval == "4h":
-        #     time_unit = "hours"
-        
-        # text_annotation = f"Last {bars_to_mark * int(self.interval.replace('min', '').replace('h', ''))} {time_unit}"
-        
-        # text_x = (start_shade + end_shade) / 2
-        # text_y = ax1.get_ylim()[1] - (ax1.get_ylim()[1] - ax1.get_ylim()[0]) / 10  # Place text near the top
-        # ax1.text(text_x, text_y, text_annotation, ha='center', va='bottom', fontsize=12)
-
-        # Adjust layout to prevent label cutoff
+        # Save and close the figure
         plt.tight_layout()
         fig.savefig(os.path.join(self.chart_root_path, f"{self.interval}.png"))
         plt.close(fig)
-        return 
-    
+        return data
+        
     def crop_image(self):
         img_path = os.path.join(self.chart_root_path, f"{self.interval}.png")   
         partition_height = 720
@@ -356,10 +441,46 @@ class TechnicalIndicators:
             img.save(os.path.join(self.chart_root_path, f"{self.interval}_ti.png"))
         return
 
-    
+    def determine_market_condition(self, adx_threshold=20):
+        """
+        Determines whether the current market is trending or range-bound for intraday forex CFD trading
+        using a combination of ADX and Bollinger Band width ratio.
+
+        Args:
+            df: Pandas DataFrame with 'High', 'Low', 'Close' columns on a 15-min interval.
+
+        Returns:
+            A string "Trending" or "Range-bound" based on the computed indicators.
+        """
+        # get df
+        df = self.download_data_from_ibkr()
+
+        # Calculate ADX using a 14-period window
+        adx_series = ta.trend.adx(df['High'], df['Low'], df['Close'], window=14)
+        current_adx = adx_series.iloc[-1]
+
+        # Calculate Bollinger Bands (20 SMA, ±2 std)
+        # bollinger = ta.volatility.BollingerBands(close=df['Close'], window=20, window_dev=2)
+        # bb_upper = bollinger.bollinger_hband().iloc[-1]
+        # bb_lower = bollinger.bollinger_lband().iloc[-1]
+        # sma20 = bollinger.bollinger_mavg().iloc[-1]
+        
+        # Calculate Bollinger Band Width Ratio as a percentage
+        #bbwr = (bb_upper - bb_lower) / sma20 * 100
+
+        if current_adx > adx_threshold:
+            return "Trending"
+        else:
+            return "Range-bound"
+
+    def run_ibkr_data(self):
+        data = self.download_data_from_ibkr()
+        data = self.calculate_technical_indicators(data)
+        self.plot_chart(data)
+        return data
 
     def run(self):
-        data = self.download_data()
+        data = self.download_data_with_ti()
         self.plot_chart(data)
         #self.crop_image()
         return data
@@ -367,12 +488,18 @@ class TechnicalIndicators:
 
 if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
-    currency_pair = "EUR/USD"
-    #currency_pair = "USD/JPY"
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
-    data = ti.run()
+    #currency_pair = "EUR/USD"
+    currency_pair = "USD/JPY"
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
-    data = ti.run()
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="5min")
-    data = ti.run()
-    print(ti.get_current_price())
+    data = ti.plot_chart(size=20, ATR14=True)
+    print(data)
+    # data = ti.run()
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    # data = ti.run()
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
+    # ti.run_ibkr_data()
+
+    #print(ti.get_current_price())
+
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
+    # print(ti.determine_market_condition())

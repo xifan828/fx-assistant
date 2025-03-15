@@ -87,50 +87,98 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 """
 
         self.system_prompt_hourly_analysis = f"""
-**Role:** You are a highly skilled forex {self.currency_pair} technical analyst specializing in understanding medium-term trends and identifying key support and resistance levels.
+### **Role**  
+You are a highly skilled forex {self.currency_pair} trader specializing in **technical analysis**.
 
-**Context (Inputs):**
-- Hourly price chart with technical indicators.
+### **Objective**  
+Provide a **medium-term** technical analysis of EUR/USD, focusing on **price action** and the following indicators on the **hourly chart**:
 
-**Goal:** To provide a comprehensive technical analysis of the medium-term trend that will serve as context for shorter-term analysis by another agent.
+- **Moving Averages** (directional bias, potential crossovers)  
+- **RSI** (momentum, overbought/oversold levels)  
+- **MACD** (momentum shifts, crossovers, divergence)  
+- **ROC** (rate of change for momentum confirmation)
 
-**Tasks (Analytical Focus):**
-- Identify the prevailing trends with presented price actions, moving averages and other technical indicators.
-- Analyze the momentum and character of **recent** price action within the shaded area. 
-- Identify potential points or zones where the prevailing trend might change direction.
-- Determine key support and resistance zones, providing specific price levels where possible.
-- Analyze signals from relevant technical indicators included in the data.
+Your analysis will serve as context for a **short-term** (intraday) analysis by another agent.
 
-**Guidelines for Output:**
-- Be concise and focus on the most impactful observations for understanding the medium-term context.
-- Provide specific numerical values for key support and resistance levels/zones where possible.
-- Remember that your analysis will be used by another agent for further short-term analysis.
+### **Context**
+
+1. **Chart Overview**  
+   - Hourly price chart with a **blue-shaded area** representing the **most recent** price action.  
+   - “Before” the blue area indicates the **prevailing trend**; “within” it indicates the **latest developments**.
+
+### **Tasks**
+
+1. **Trend Identification**  
+   - **Prevailing Trend (before blue shading):**  
+     - Summarize direction (bullish/bearish/range) using price structure and indicators.  
+   - **Most Recent Trend (blue shading):**  
+     - Note any change in direction, crossovers, divergence, etc.
+
+2. **Trend Confirmation vs. Contradiction**  
+   - Compare the most recent trend to the prevailing trend.  
+   - State whether indicators reinforce or dispute the previous bias.
+
+3. **Support & Resistance**  
+   - Highlight key levels or zones, providing **specific price points** where possible.
+
+### **Guidelines**
+
+- **Be concise** yet thorough in analyzing price action and each indicator.  
+- Include **numerical values** (indicator readings, price levels) wherever it clarifies your points.  
+- Remember, **another agent** will use your analysis to inform a shorter-term strategy.
 """
         self.system_prompt_5_min_analysis = f"""
-**Role:** You are a skilled forex {self.currency_pair} technical analyst specializing in providing short-term trading outlooks based on recent price action.
+## **Role**  
+You are a **skilled forex {self.currency_pair} technical analyst** specializing in **short-term trading outlooks**.
 
-**Context (Inputs):**
-- Current 5-minute interval price chart with technical indicators
-- 15-minute interval pivot points
-- Exact current price
-- Previous hourly chart analysis
+---
 
-**Goal:** To synthesize the provided information to understand the immediate trend of the {self.currency_pair} pair and provide a short-term trading outlook for the next few hours.
+## **Context (Inputs)**
+1. **Current 5-minute interval price chart** with technical indicators (Moving Averages, RSI, MACD, ROC)  
+2. **15-minute interval pivot points**  
+3. **Exact current price**  
+4. **Previous hourly chart analysis** (providing a medium-term perspective)
 
-**Tasks (Analytical Focus):**
-- Identify the prevailing trends with presented price actions, moving averages and other technical indicators.
-- Analyze the momentum and character of **recent** price action within the shaded area.
-- Identify immediate support and resistance levels, considering both price action on the 5-minute chart and the provided 15-minute pivot points.
-- Identify potential entry and exit points for short-term trades.
-- Confirm or contradict the trends and key levels identified in the previous hourly chart analysis.
-- Analyze how the current price relates to the identified support and resistance levels, as well as the 15-minute pivot points and recent 5-minute price action.
+---
 
-**Guidelines for Output:**
-- Be specific and actionable in your outlook, providing concrete levels or price areas to watch.
-- Remember to always consider the context provided by the previous hourly analysis.
-- Conclude your analysis by stating whether, based on the available information, a trade (either long or short) can be confidently executed at this time or not.
-- If a trade cannot be confidently executed, explain what specific observations or signals would be needed to increase confidence in a potential trade in the near future.
-- In the end, provide a concise summary of your analysis and your outlook for the {self.currency_pair} based on the combined insights from price action, EMAs, indicators, pivot points and previous 1-hour interval analysis. Using the following format:
+## **Goal**  
+- **Synthesize** all provided information to determine the **immediate trend** of {self.currency_pair}  
+- Offer a **short-term trading outlook** for the **next few hours**.
+
+---
+
+## **Tasks**
+
+1. **Chart Analysis**  
+   - Examine the **5-minute price action** and the **technical indicators** to identify the **prevailing short-term trend** or signs of a **potential trend reversal**.
+
+2. **Support and Resistance**  
+   - Determine **key support and resistance levels** based on the 5-minute chart.  
+   - Integrate the **15-minute pivot points** into this analysis for additional confirmation or adjustments.
+
+3. **Incorporate Hourly Analysis**  
+   - Compare findings from the 5-minute chart with **insights from the previous hourly chart analysis**.  
+   - Highlight any confirmations or contradictions in the short-term vs. medium-term trends.
+
+4. **Actionable Outlook**  
+   - Clearly state if a **short-term trade** (long or short) is viable given current conditions.  
+   - If a trade is **not** recommended now, specify **which signals or conditions** would be needed to warrant a future trade.
+   
+5. **Potential Trade Setup**  
+   - Based on the identified trend and support/resistance levels, propose **potential entry and exit points** for a short-term trade.
+   - Always choose a **limit order** for the trade. Ensure that for a buy order, the entry price is lower than the current price, and for a short order, the entry price is higher than the current price.
+
+---
+
+## **Guidelines for Output**
+
+- **Clarity and Actionability**: Provide **specific** price levels or indicators (e.g., MA crossovers, RSI extremes, MACD/ROC signals) that inform your short-term outlook.
+- **Contextual Integration**: Show how the new short-term findings **align with** or **deviate from** the previous hourly analysis.
+- **Decision Justification**: If you suggest a trade, **justify** it with clear reasoning (trend, momentum, key levels). If you advise waiting, specify what **further evidence** (e.g., break of support/resistance, pivot confirmation, indicator crossover) is needed.
+- **Entry Point and Order Type**: 
+    - Clearly state the recommended **entry point**.  
+    - For a **limit order**, ensure that the entry price is set according to the trade direction (buy: below current price; short: above current price).
+- **Summary Format**: Conclude with a concise summary, for example:
     **Summary:**
     etc.
 """
@@ -242,7 +290,7 @@ Below are the technical indicators with an interval of {ti_interval}.
     
     async def extract_technical_indicators_with_gemini(self):
         generation_config = {
-            "temperature": 0.1,
+            "temperature": 0.5,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 4096,
@@ -274,7 +322,7 @@ Below are the technical indicators with an interval of {ti_interval}.
 
     async def get_technical_analysis(self, client, image_path, previous_analysis = None, current_price = None, pivit_points = None):
         query_prefix = (
-        "The candlestick chart is uploaded. The **latest** price actions are shaded in grey.\n",
+        "The candlestick chart is uploaded.\n",
         )
 
         query_suffix = ("Start your analysis.",)
@@ -285,7 +333,7 @@ Below are the technical indicators with an interval of {ti_interval}.
                         f"{previous_analysis}\n",
                         "</Previous longer time frame analysis>\n"
             )
-            query_suffix += new_text
+            query_prefix += new_text
         
         if current_price and pivit_points:
             new_text = (
@@ -315,7 +363,7 @@ Below are the technical indicators with an interval of {ti_interval}.
     async def create_gemini_analysis(self, pivot_points, current_price):
         model_name = self.gemini_model
         generation_config = {
-            "temperature": 0.1,
+            "temperature": 0.2,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
@@ -346,12 +394,14 @@ Below are the technical indicators with an interval of {ti_interval}.
         query = """Based on your analysis, please output a trading strategy in json format. Using the following format:
         ```json
         {
-            "strategy": "buy", "sell" or "wait"
+            "strategy": "buy", "sell" or "wait",
+            "order_type": "limit" or "market" if strategy is "buy" or "sell" else null
             "entry_point": float, if strategy is "buy" or "sell" else null
             "stop_loss": float, if strategy is "buy" or "sell" else null 
             "take_profit": float, if strategy is "buy" or "sell" else null
         }
         ```
+        For entry_point, stop_loss and take_profit, output one single float number.
         """
         response_json = await chat_session.send_message(query)
         response_json = response_json.text
@@ -371,9 +421,11 @@ Below are the technical indicators with an interval of {ti_interval}.
 
 if __name__ == "__main__":
     ta = TechnicalAnalysis(
-        currency_pair="EUR/USD",
-        #currency_pair="USD/JPY",
-        gemini_model="gemini-2.0-flash-exp"
+        #currency_pair="EUR/USD",
+        currency_pair="USD/JPY",
+        gemini_model="gemini-2.0-flash",
+        #gemini_model="gemini-2.0-flash-thinking-exp-01-21",
+        gemini_api_key=os.environ["GEMINI_API_KEY_KIEN"]
     )
 
     ans = asyncio.run(ta.run())

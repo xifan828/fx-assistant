@@ -163,3 +163,9 @@ cython_debug/
 
 # notebooks
 notebooks/
+
+tws_api/
+
+simulation/back_test/
+
+simulation/forward_test/

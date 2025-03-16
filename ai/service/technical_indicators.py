@@ -59,11 +59,11 @@ class TechnicalIndicators:
         df = df[::-1]
         df['Date'] = df.index
         if self.interval == "15min" or self.interval=="5min":
-            df = df.tail(int(1.5*24*4))
+            df = df.tail(int(1.5*24*2))
         elif self.interval == "1h":
-            df = df.tail(4*24)
+            df = df.tail(2*24)
         elif self.interval == "4h":
-            df = df.tail(int(1*20*6))
+            df = df.tail(int(1*20*3))
         self.df = df
 
         return df

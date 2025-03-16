@@ -1,9 +1,11 @@
 import asyncio
-from ai.config import Config, GeminiClient
-import os
+from ai.agents.GeminiChartAgent import GeminiChartAgent
 
-class VolatilityAgent:
-    system_message = """
+class VolatilityAgent(GeminiChartAgent):
+
+    @property
+    def system_message(self):
+        return """
 **System Role**:  
 You are an AI trading assistant specialized in technical analysis of intraday forex charts.
 
@@ -52,30 +54,10 @@ The user will provide:
    - Summarize in 2–3 sentences the overall market condition and key action points.  
 """
 
-    def __init__(self, gemini_model = None, gemini_api_key = None):
-        self.gemini_model = gemini_model if gemini_model is not None else "gemini-2.0-flash"
-        self.gemini_api_key = gemini_api_key if gemini_api_key is not None else os.environ["GEMINI_API_KEY_XIFAN"]
-
-    async def analyze_volatility(self, file_path: str):
-        generation_config = {
-            "temperature": 0.1,
-            "top_p": 0.95,
-            "top_k": 40,
-            "max_output_tokens": 8192,
-            "response_mime_type": "text/plain",
-        }
-        client = GeminiClient(
-            model_name=self.gemini_model,
-            generation_config=generation_config,
-            api_key=self.gemini_api_key,
-            system_instruction=self.system_message
-        )
-        response, _ = await client.call_gemini_vision_api(
-            user_message="The chart is provided. Please start your analysis",
-            image_path=file_path
-        )
-        return response
 
 if __name__ == "__main__":
-    agent = VolatilityAgent()
-    print(asyncio.run(agent.analyze_volatility("data/chart/1h.png")))
+    agent = VolatilityAgent(
+        gemini_model="gemini-2.0-flash",
+        chart_path="data/chart/1h.png"
+    )
+    print(asyncio.run(agent.run()))

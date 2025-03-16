@@ -160,15 +160,15 @@ class TechnicalIndicators:
         df['Date'] = df.index
 
         #df = df.loc[df["Date"] <= "2025-01-06 15:55:00"]
-        if self.interval == "15min" or self.interval=="5min":
-            #df = df.tail(int(1.5*24*4))
-            df = df.tail(int(1.5*24*2))
-        elif self.interval == "1h":
-            #df = df.tail(4*24)
-            df = df.tail(2*24)
-        elif self.interval == "4h":
-            df = df.tail(int(1*20*6))
-        self.df = df
+        # if self.interval == "15min" or self.interval=="5min":
+        #     #df = df.tail(int(1.5*24*4))
+        #     df = df.tail(int(1.5*24*2))
+        # elif self.interval == "1h":
+        #     #df = df.tail(4*24)
+        #     df = df.tail(2*24)
+        # elif self.interval == "4h":
+        #     df = df.tail(int(1*20*6))
+        # self.df = df
         return df
     
     def plot_chart(self, size: int = 20,
@@ -178,8 +178,6 @@ class TechnicalIndicators:
                EMA100: bool = False,
                RSI14: bool = False,
                MACD: bool = False,
-               MACD_Signal: bool = False,
-               MACD_Diff: bool = False,
                ROC12: bool = False,
                ATR14: bool = False,
                shading: bool = False):
@@ -205,8 +203,6 @@ class TechnicalIndicators:
             'EMA100': EMA100,
             'RSI14': RSI14,
             'MACD': MACD,
-            'MACD_Signal': MACD_Signal,
-            'MACD_Diff': MACD_Diff,
             'ROC12': ROC12,
             "ATR14": ATR14
         }
@@ -215,7 +211,7 @@ class TechnicalIndicators:
         additional_indicators = []
         if indicators.get('RSI14'):
             additional_indicators.append('RSI')
-        if (indicators.get('MACD') and indicators.get('MACD_Signal') and indicators.get('MACD_Diff')):
+        if indicators.get('MACD'):
             additional_indicators.append('MACD')
         if indicators.get('ROC12'):
             additional_indicators.append('ROC')
@@ -490,9 +486,13 @@ if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
     #currency_pair = "EUR/USD"
     currency_pair = "USD/JPY"
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
-    data = ti.plot_chart(size=20, ATR14=True)
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
+    data = ti.plot_chart(size=24, EMA20=True, EMA50=True, EMA100=True, RSI14=True, MACD=True)
     print(data)
+
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    # data = ti.plot_chart(size=100, EMA20=True, EMA50=True, MACD=True)
+    # print(data)
     # data = ti.run()
     # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
     # data = ti.run()

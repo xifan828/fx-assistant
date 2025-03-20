@@ -46,7 +46,8 @@ async def generate_trading_strategy_new(root_path: str, currency_pair: str, gemi
     # generate analysis
     coroutines = []
     #for api_key in [os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"], os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"], os.environ["GEMINI_API_KEY_XIFAN"]]:
-    for api_key in [os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"]]:
+    #for api_key in [os.environ["GEMINI_API_KEY_KIEN"], os.environ["GEMINI_API_KEY_CONG"], os.environ["GEMINI_API_KEY_XIFAN"]]:
+    for api_key in ["AIzaSyBPQypiUjIWK_QXyHdyESXZaRGHnioqftc", "AIzaSyBwlSjIiGZRx3GbFhMk-JpahBCvJlkWMHE", "AIzaSyBrRPixOCI5IOL4QpH93yzBA-VWEFTEOSM"]:
         TA = TechnicalAnalysis(currency_pair=currency_pair, gemini_model=gemini_model, gemini_api_key=api_key)
         coroutines.append(TA.create_gemini_analysis(
             pivot_points=technical_indicators,

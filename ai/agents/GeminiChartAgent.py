@@ -4,7 +4,7 @@ from ai.config import GeminiClient
 
 class GeminiChartAgent(ABC):
 
-    def __init__(self, chart_path: str, gemini_model: str = None, gemini_api_key: str = None, generation_config: dict = None, user_message: str = None):
+    def __init__(self, chart_path: str, interval: str, gemini_model: str = None, gemini_api_key: str = None, generation_config: dict = None, user_message: str = None):
         self.gemini_model = gemini_model if gemini_model is not None else "gemini-2.0-flash"
 
         self.gemini_api_key = gemini_api_key if gemini_api_key is not None else os.environ["GEMINI_API_KEY_XIFAN"]
@@ -21,6 +21,8 @@ class GeminiChartAgent(ABC):
             self.generation_config = generation_config
 
         self.chart_path = chart_path
+        
+        self.interval = interval
 
         self.user_message = user_message if user_message is not None else "The chart is provided. Please start your analysis."
 

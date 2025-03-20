@@ -1,11 +1,12 @@
 import asyncio
 from ai.agents.GeminiChartAgent import GeminiChartAgent
+from ai.service.technical_indicators import TechnicalIndicators
 
-class VolatilityAgent(GeminiChartAgent):
+class ATRAgent(GeminiChartAgent):
 
     @property
     def system_message(self):
-        return """
+        return f"""
 **System Role**:  
 You are an AI trading assistant specialized in technical analysis of intraday forex charts.
 
@@ -14,7 +15,7 @@ You are an AI trading assistant specialized in technical analysis of intraday fo
 ## User Context
 
 The user will provide:
-1. A **1‑hour candlestick chart**. 
+1. A **{self.interval} candlestick chart**. 
 2. An **ATR (14) plot** corresponding to the candles.
 
 ---
@@ -31,9 +32,9 @@ The user will provide:
 ## Instructions
 
 1. **Interpret the Chart**  
-   - Examine the 14 hourly candles: note their size, direction (up or down), and relative consistency or variability.  
+   - Examine the hourly candles: note their size, direction (up or down), and relative consistency or variability.  
    - Look at the ATR(14) line below the chart:
-     - Determine if the current ATR reading is higher, lower, or about average compared to its range over the last 14 hours.
+     - Determine if the current ATR reading is higher, lower, or about average compared to its range over the last periods.
      - Note if the ATR has been rising or falling recently.
 
 2. **Determine Volatility Level**  
@@ -54,10 +55,13 @@ The user will provide:
    - Summarize in 2–3 sentences the overall market condition and key action points.  
 """
 
+async def generate_atr_analysis(currency_pair: str, interval: str, chart_name: str, size: int = 40):
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval=interval)
+    data = ti.plot_chart(chart_name=chart_name, size=size, ATR14=True)
+    user_message = f"The chart is uploaded. Current data of the last bar: {data}. \n Start you analysis."
+    agent = ATRAgent(user_message=user_message, chart_path=f"data/chart/{chart_name}.png", interval=interval)
+    return await agent.run()
+
 
 if __name__ == "__main__":
-    agent = VolatilityAgent(
-        gemini_model="gemini-2.0-flash",
-        chart_path="data/chart/1h.png"
-    )
-    print(asyncio.run(agent.run()))
+    print(asyncio.run(generate_atr_analysis("EUR/USD", "1h", "EURUSD_1h_ATR")))

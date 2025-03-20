@@ -49,7 +49,7 @@ For the synthesized analysis:
 - Provide a comprehensive short to medium-term outlook for {self.currency_pair}.
 Deliver a clear, concise, and actionable synthesis. Prioritize the most significant insights that emerge from combining multiple analyses. Use professional terminology with brief explanations when necessary. AVOID discussing forex trading risks and the importance of personal research."""
         
-        self.system_prompt_template_techncial_indicators = """**Role:** You are a highly skilled forex technical analyst specializing in interpreting MACD, RSI, and ROC indicators to understand market momentum and potential trend reversals.
+        self.system_prompt_template_techncial_indicators = """**Role:** You are a highly skilled forex technical analyst specializing in interpreting MACD, RSI indicators to understand market momentum and potential trend reversals.
 
 **Context (Inputs):**
 - A chart displaying the {interval} interval MACD, RSI, and ROC (maybe missing from the chart) for the {currency_pair} currency pair.
@@ -90,35 +90,32 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
 ### **Role**  
 You are a highly skilled forex {self.currency_pair} trader specializing in **technical analysis**.
 
+### **Context**
+The user will provide:
+- Hourly candle stick chart with moving averages lines.  
+- RSI plot corresponding to the candles.
+- MACD plot corresponding to the candles.
+
 ### **Objective**  
-Provide a **medium-term** technical analysis of EUR/USD, focusing on **price action** and the following indicators on the **hourly chart**:
+Provide a **medium-term** technical analysis of {self.currency_pair}, focusing on **price action** and the technical indicators on the **hourly chart**:
 
 - **Moving Averages** (directional bias, potential crossovers)  
 - **RSI** (momentum, overbought/oversold levels)  
 - **MACD** (momentum shifts, crossovers, divergence)  
-- **ROC** (rate of change for momentum confirmation)
 
-Your analysis will serve as context for a **short-term** (intraday) analysis by another agent.
-
-### **Context**
-
-1. **Chart Overview**  
-   - Hourly price chart with a **blue-shaded area** representing the **most recent** price action.  
-   - “Before” the blue area indicates the **prevailing trend**; “within” it indicates the **latest developments**.
+Your analysis will serve as context for a **short-term** 5-min timeframe analysis by another agent.
 
 ### **Tasks**
+1. **Candlestick Patterns**
+    - Identify any significant **price patterns** or **candlestick formations**. Examples include bullish or bearish engulfing, doji, hammer, etc.
 
-1. **Trend Identification**  
-   - **Prevailing Trend (before blue shading):**  
-     - Summarize direction (bullish/bearish/range) using price structure and indicators.  
-   - **Most Recent Trend (blue shading):**  
-     - Note any change in direction, crossovers, divergence, etc.
+2. **Trend Analysis**
+    - Evaluate how the price interacts with the moving averages, RSI, and MACD to identify the current trend. Discuss whether the trend is bullish, bearish, or neutral based on the convergence or divergence of price from these indicators.
 
-2. **Trend Confirmation vs. Contradiction**  
-   - Compare the most recent trend to the prevailing trend.  
-   - State whether indicators reinforce or dispute the previous bias.
+3. **Trend Confirmation vs. Contradiction**  
+   - Compare the signals from different indicators to confirm or contradict the identified trend. For example, if moving averages and MACD suggest an uptrend but RSI indicates overbought conditions, discuss the potential for a trend reversal or continuation.
 
-3. **Support & Resistance**  
+4. **Support & Resistance**  
    - Highlight key levels or zones, providing **specific price points** where possible.
 
 ### **Guidelines**
@@ -134,7 +131,7 @@ You are a **skilled forex {self.currency_pair} technical analyst** specializing 
 ---
 
 ## **Context (Inputs)**
-1. **Current 5-minute interval price chart** with technical indicators (Moving Averages, RSI, MACD, ROC)  
+1. **Current 15-minute interval candlestick chart** with technical indicators (Moving Averages, MACD)  
 2. **15-minute interval pivot points**  
 3. **Exact current price**  
 4. **Previous hourly chart analysis** (providing a medium-term perspective)
@@ -150,12 +147,13 @@ You are a **skilled forex {self.currency_pair} technical analyst** specializing 
 ## **Tasks**
 
 1. **Chart Analysis**  
-   - Examine the **5-minute price action** and the **technical indicators** to identify the **prevailing short-term trend** or signs of a **potential trend reversal**.
+    - Identify any significant **price patterns** or **candlestick formations**.
+    - **Trend Analysis**: Evaluate how the price interacts with the moving averages, RSI, and MACD to identify the current trend. Discuss whether the trend is bullish, bearish, or neutral based on the convergence or divergence of price from these indicators.
+    - **Trend Confirmation vs. Contradiction**: Compare the signals from different indicators to confirm or contradict the identified trend. 
 
-2. **Support and Resistance**  
-   - Determine **key support and resistance levels** based on the 5-minute chart.  
-   - Integrate the **15-minute pivot points** into this analysis for additional confirmation or adjustments.
-
+2. **Price Levels**
+    - Compare the current price to the **pivot points** and hourly analysis identified supports and resistance levels to identify potential **support and resistance levels**.
+    
 3. **Incorporate Hourly Analysis**  
    - Compare findings from the 5-minute chart with **insights from the previous hourly chart analysis**.  
    - Highlight any confirmations or contradictions in the short-term vs. medium-term trends.
@@ -370,7 +368,7 @@ Below are the technical indicators with an interval of {ti_interval}.
             "response_mime_type": "text/plain",
         }
         
-        chart_files = ["data/chart/1h.png", "data/chart/5min.png"]
+        chart_files = ["data/chart/1h.png", "data/chart/15min.png"]
         # hourly analysis
         client = GeminiClient(
             model_name=model_name,

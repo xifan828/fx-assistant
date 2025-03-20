@@ -23,7 +23,7 @@ def back_test(currency_pair, strategy_file_path):
     back_test.write_strategy(updated_strategy)
 
 class StrategyExecutor:
-    def __init__(self, currency_pair: str, root_path: str, sl_pips: float = 15, tp_pips: float = 25, trailing_pips: float = 15):
+    def __init__(self, currency_pair: str, root_path: str, sl_pips: float = 15, tp_pips: float = 30, trailing_pips: float = 15):
         self.currency_pair = currency_pair
         self.symbol = currency_pair.split("/")[0]
         self.currency = currency_pair.split("/")[1]
@@ -37,9 +37,9 @@ class StrategyExecutor:
         self.trailing_pips = trailing_pips
     
     def determine_market_condition(self):
-        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="15min")
-        return ti.determine_market_condition()
-        #return "Trending"
+        # ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="15min")
+        # return ti.determine_market_condition()
+        return "Trending"
 
     def generate_strategy(self):
         strategy = asyncio.run(generate_trading_strategy_new(root_path=self.root_path, currency_pair=self.currency_pair, gemini_model="gemini-2.0-flash"))
@@ -48,18 +48,18 @@ class StrategyExecutor:
     def check_last_two_strategies(self):
         df = pd.read_csv(self.strategy_file_path, parse_dates=["time"])
         
-        if len(df) < 2:
-            return False
+        # if len(df) < 2:
+        #     return False
     
         last_row = df.iloc[-1]
-        prev_row = df.iloc[-2]
+        #prev_row = df.iloc[-2]
 
-        time_diff = last_row["time"] - prev_row["time"]
+        #time_diff = last_row["time"] - prev_row["time"]
 
         if (
-            last_row["strategy"] == "wait" or
-            last_row["strategy"] != prev_row["strategy"] or
-            time_diff > timedelta(minutes=20)
+            last_row["strategy"] == "wait" 
+            #last_row["strategy"] != prev_row["strategy"] or
+            #time_diff > timedelta(minutes=20)
         ):
             return False
 
@@ -125,7 +125,7 @@ class StrategyExecutor:
                 print("Close all positions, open orders")
             
             # place order if current positions < 300000
-            if abs(positions) < 200000:
+            if abs(positions) < 300000:
                 self.place_order(new_strategy, client)
             
             time.sleep(2)
@@ -148,9 +148,9 @@ class StrategyExecutor:
 
 def main():
     load_dotenv() 
-    root_path = r"simulation\forward_test\2025_03_10"
+    root_path = r"simulation\forward_test\2025_03_17"
     for currency_pair in ["EUR/USD", "USD/JPY"]:
-        executor = StrategyExecutor(currency_pair=currency_pair, root_path=root_path, trailing_pips=None)
+        executor = StrategyExecutor(currency_pair=currency_pair, root_path=root_path, sl_pips=15, tp_pips=30, trailing_pips=None)
         executor.execute()
         time.sleep(60)
     

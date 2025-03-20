@@ -19,6 +19,8 @@ class IBClient(EWrapper, EClient):
         self.historical_bars = []
         self.historical_data_received = False
 
+        self.market_depth_data = {}
+
         self.positions_event = Event()
         self.open_orders_event = Event()
 
@@ -107,6 +109,9 @@ class IBClient(EWrapper, EClient):
         elif interval == "1h":
             barsize = "1 hour"
             duration = "10 D"
+        elif interval == "4h":
+            barsize = "4 hours"
+            duration = "40 D"
         elif interval == "1min":
             barsize = "1 min"
             duration = "1 D"
@@ -151,6 +156,85 @@ class IBClient(EWrapper, EClient):
         #print(df.index)
 
         return df
+    
+    def request_mkt_depth(self, contract, num_rows=10):
+        """
+        Request market depth for the given contract.
+        num_rows determines how many levels of depth to retrieve.
+        """
+        # Typically, for forex, you'd use the 'IDEALPRO' exchange, but IB may also
+        # use 'SMART' for some pairs. Be sure your contract details are correct.
+        self.market_depth_data.clear()
+        self.reqMktDepth(
+            reqId=1002,              # an arbitrary ID - just ensure it's unique
+            contract=contract,
+            numRows=num_rows,
+            isSmartDepth=False,      # set True if you'd like to get SMART-routed depth
+            mktDepthOptions=[]
+        )
+        print(f"Requested Market Depth for {contract.symbol}/{contract.currency}")
+    
+    def updateMktDepth(self, reqId: int, position: int, operation: int, side: int,
+                       price: float, size: float):
+        """
+        Called when TWS receives Level I depth updates.
+        
+        operation: 0 = insert, 1 = update, 2 = delete
+        side: 0 = bid, 1 = ask
+        position: which level (0 = best bid/ask)
+        """
+        if reqId not in self.market_depth_data:
+            self.market_depth_data[reqId] = []
+
+        # Simplify operation and side to strings:
+        op_str = {0: "insert", 1: "update", 2: "delete"}.get(operation, "unknown")
+        side_str = {0: "bid", 1: "ask"}.get(side, "unknown")
+
+        # We'll store each update as a dict. You could also store in a DataFrame.
+        update_entry = {
+            "position": position,
+            "operation": op_str,
+            "side": side_str,
+            "price": price,
+            "size": size
+        }
+
+        # Store or update the record
+        self.market_depth_data[reqId].append(update_entry)
+
+        # Here, we simply print the update, but you can handle it more elaborately:
+        print(f"[updateMktDepth] reqId={reqId} pos={position} side={side_str} "
+              f"op={op_str} price={price} size={size}")
+
+    def updateMktDepthL2(self, reqId: int, position: int, marketMaker: str,
+                         operation: int, side: int, price: float, size: float,
+                         isSmartDepth: bool):
+        """
+        Called when TWS receives Level II depth updates.
+        
+        Similar parameters to updateMktDepth, but includes the market maker ID.
+        """
+        if reqId not in self.market_depth_data:
+            self.market_depth_data[reqId] = []
+
+        op_str = {0: "insert", 1: "update", 2: "delete"}.get(operation, "unknown")
+        side_str = {0: "bid", 1: "ask"}.get(side, "unknown")
+
+        update_entry = {
+            "position": position,
+            "marketMaker": marketMaker,
+            "operation": op_str,
+            "side": side_str,
+            "price": price,
+            "size": size,
+            "isSmartDepth": isSmartDepth
+        }
+
+        self.market_depth_data[reqId].append(update_entry)
+
+        # Print the update (or handle it as needed):
+        print(f"[updateMktDepthL2] reqId={reqId} pos={position} mm={marketMaker} "
+              f"side={side_str} op={op_str} price={price} size={size} smart={isSmartDepth}")
 
 
 
@@ -242,7 +326,7 @@ def create_bracket_order(parent_order_id: int,
 
 def execute_order(client: IBClient, currency_pair: str, action, entry_order_type, entry_price, stop_price, take_profit_price, trailing_pips = None, pip_size = 0.0001, quantity = 100000):
 
-    expiration_datetime = datetime.utcnow() + timedelta(minutes=30)
+    expiration_datetime = datetime.utcnow() + timedelta(minutes=45)
     gtd_str = expiration_datetime.strftime("%Y%m%d-%H:%M:%S")
 
     contract = create_contract(currency_pair, type="CFD", exchange="SMART")
@@ -303,41 +387,8 @@ if __name__ == "__main__":
     while client.next_order_id is None:
         time.sleep(0.2)
     
-    execute_order(
-            client=client,
-            currency_pair="EUR/USD",
-            action="SELL",
-            entry_order_type="LMT",
-            entry_price=1.09,
-            stop_price=1.10,
-            take_profit_price=1.07,
-            trailing_pips=15,
-            pip_size=0.0001,
-            quantity=100000
-        )
+    client.reqPositions()
+    client.positions_event.wait(timeout=10)
+    positions = client.get_position_quantiy("EUR")
+    print(positions)
     client.disconnect()
-    
-    # execute_order(
-    #         currency_pair="USD/JPY",
-    #         action="SELL",
-    #         entry_order_type="LMT",
-    #         entry_price=149,
-    #         stop_price=150,
-    #         take_profit_price=147,
-    #         quantity=1000
-    #     )
-    # client = IBClient("127.0.0.1", 7497, 1)
-    # while client.next_order_id is None:
-    #     time.sleep(0.2)
-    # contract = create_contract("USD/JPY", "CFD", "SMART")
-    # order = Order()
-    # order.action = "BUY"
-    # order.orderType = "MKT"
-    # order.totalQuantity = 1000
-    # client.placeOrder(client.next_order_id, contract, order)
-    # time.sleep(5)
-    # client.disconnect()
-
-    close_all(symbol="EUR")
-    #get_data("EUR/USD", "5min")
-    

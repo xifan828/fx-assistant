@@ -255,16 +255,11 @@ class KnowledgeBase:
         # scrape_technical_indicators(
         # indicator_url=self.technical_indicators_websites[self.currency_pair]["indicator"]
         # )
-        ti_1h = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
-        #ti.run()
-        ti_1h.run_ibkr_data()
-        df_1h = ti_1h.df
-
-        ti_5min = TechnicalIndicators(currency_pair=self.currency_pair, interval="5min")
-        #ti.run()
-        ti_5min.run_ibkr_data()
-        df_5min = ti_5min.df
-        return df_1h, df_5min
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="15min")
+        latest_data_5min = ti.plot_chart(chart_name="15min", size=40, EMA20=True, EMA50=True, EMA100=True, RSI14=True, MACD=True)
+        ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1h")
+        latest_data_1h = ti.plot_chart(chart_name="1h", size=40, EMA20=True, EMA50=True, EMA10=True, RSI14=True, MACD=True)
+        return latest_data_1h, latest_data_5min
 
     def get_economic_indicators(self) -> Dict:
         te_scrapper = TradingEconomicsScraper()

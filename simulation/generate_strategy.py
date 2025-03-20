@@ -32,13 +32,9 @@ async def generate_trading_strategy_new(root_path: str, currency_pair: str, gemi
 
     # prepare charts, pivot points, current price
     kb = KnowledgeBase(currency_pair=currency_pair)
-    df_1h, df_5min = kb.prepare_figures()
-    
-    rounding_rules = {"Close": decimal_points, "EMA10": decimal_points, "EMA20": decimal_points, "EMA50": decimal_points, "EMA100": decimal_points, "RSI14": 1, "ROC12": 2}
-    df_5min = df_5min.round(rounding_rules)
-    df_1h = df_1h.round(rounding_rules)
+    latest_data_1h, latest_data_5min = kb.prepare_figures()
 
-    current_price = df_5min.iloc[-1]["Close"].round(decimal_points)
+    current_price = latest_data_5min["Close"].round(decimal_points)
     print(current_price)
 
     save_chart(analysis_dir_path, today_hour)

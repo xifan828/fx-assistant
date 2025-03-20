@@ -171,7 +171,7 @@ class TechnicalIndicators:
         # self.df = df
         return df
     
-    def plot_chart(self, size: int = 20,
+    def plot_chart(self, chart_name: str, size: int = 20,
                EMA10: bool = False,
                EMA20: bool = False,
                EMA50: bool = False,
@@ -378,7 +378,7 @@ class TechnicalIndicators:
 
         # Save and close the figure
         plt.tight_layout()
-        fig.savefig(os.path.join(self.chart_root_path, f"{self.interval}.png"))
+        fig.savefig(os.path.join(self.chart_root_path, f"{chart_name}.png"))
         plt.close(fig)
         return data
         
@@ -484,11 +484,18 @@ class TechnicalIndicators:
 
 if __name__ == "__main__":
     #print(pd.Timestamp.now().date() - pd.Timedelta(days=2))
-    #currency_pair = "EUR/USD"
-    currency_pair = "USD/JPY"
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval="15min")
-    data = ti.plot_chart(size=24, EMA20=True, EMA50=True, EMA100=True, RSI14=True, MACD=True)
+    currency_pair = "EUR/USD"
+    #currency_pair = "USD/JPY"
+
+    ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+
+    data = ti.plot_chart(chart_name="1h", size=40, EMA20=True, EMA50=True, EMA100=True)
+
     print(data)
+
+
+    # ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")
+    # data = ti.plot_chart(chart_name="4h", size=24, EMA20=True, EMA50=True, EMA100=True, RSI14=True, MACD=True)
 
     # ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
     # data = ti.plot_chart(size=100, EMA20=True, EMA50=True, MACD=True)

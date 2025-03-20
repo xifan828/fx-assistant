@@ -67,7 +67,7 @@ class GeminiClient:
         
         except Exception as e:
             print(f"Error in call_api: {e}, api is {self.api_key}")
-            return None
+            raise e
 
 
 async def main():

@@ -376,7 +376,7 @@ def scrape_aastocks_chart(url: str):
     driver.quit()
 if __name__ == "__main__":
 
-    from ai.parameters import TECHNICAL_INDICATORS_WEBSITES
+    from backend.parameters import TECHNICAL_INDICATORS_WEBSITES
 
     currency_pair = "EUR/USD"
 

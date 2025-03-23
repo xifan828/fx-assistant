@@ -2,9 +2,9 @@
 from simulation.generate_strategy import generate_trading_strategy_new, generate_back_test_strategies
 from simulation.back_test import BackTest
 import time 
-from ai.agent import KnowledgeBase
+from backend.agent import KnowledgeBase
 import asyncio
-from ai.service.technical_indicators import TechnicalIndicators
+from backend.service.data_collection import TechnicalIndicators
 import os
 from dotenv import load_dotenv
 from ib_client import execute_order, IBClient
@@ -148,7 +148,7 @@ class StrategyExecutor:
 
 def main():
     load_dotenv() 
-    root_path = r"simulation\forward_test\2025_03_17"
+    root_path = r"simulation\forward_test\2025_03_24"
     for currency_pair in ["EUR/USD", "USD/JPY"]:
         executor = StrategyExecutor(currency_pair=currency_pair, root_path=root_path, sl_pips=15, tp_pips=30, trailing_pips=None)
         executor.execute()

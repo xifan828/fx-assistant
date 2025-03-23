@@ -1,8 +1,8 @@
 import asyncio
-from ai.service.technical_indicators import TechnicalIndicators
-from ai.agents.ATRAgent import ATRAgent
-from ai.agents.MACDAgent import MACDAgent
-from ai.agents.MAAgent import MAAgent
+from backend.service.data_collection import TechnicalIndicators
+from backend.agents.ATRAgent import ATRAgent
+from backend.agents.MACDAgent import MACDAgent
+from backend.agents.MAAgent import MAAgent
 
 async def main(currency_pair: str, interval: str, size: int = 40):
     symbol = currency_pair.split("/")[0]

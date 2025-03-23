@@ -1,4 +1,4 @@
-from ai.agent import NaiveStrategyAgent, KnowledgeBase
+from backend.agent import NaiveStrategyAgent, KnowledgeBase
 from datetime import datetime
 from dotenv import load_dotenv
 import os
@@ -6,8 +6,8 @@ import pandas as pd
 import pytz
 import re
 import json
-from ai.service.technical_analysis import TechnicalAnalysis
-from ai.service.technical_indicators import TechnicalIndicators
+from backend.service.technical_analysis import TechnicalAnalysis
+from backend.service.data_collection import TechnicalIndicators
 import asyncio
 from datetime import datetime
 import time 

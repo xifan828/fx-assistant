@@ -1,5 +1,5 @@
 import datetime
-from ai.service.central_banks import FED, ECB, BOJ
+from backend.service.central_banks import FED, ECB, BOJ
 
 # Get the current date
 CURRENT_DATE = datetime.datetime.now()

@@ -1,10 +1,10 @@
 import os
-from ai.config import Config
+from backend.config import Config
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import base64
 from langchain_core.messages import HumanMessage, SystemMessage
-from ai.service.technical_indicators import TechnicalIndicators
+from backend.service.data_collection import TechnicalIndicators
 from datetime import datetime
 from langchain_core.pydantic_v1 import BaseModel, Field
 from zoneinfo import ZoneInfo

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from ai.config import GeminiClient
+from backend.config import GeminiClient
 
 class GeminiChartAgent(ABC):
 

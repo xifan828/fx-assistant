@@ -1,6 +1,6 @@
 import asyncio
-from ai.agents.GeminiChartAgent import GeminiChartAgent
-from ai.service.technical_indicators import TechnicalIndicators
+from backend.agents.GeminiChartAgent import GeminiChartAgent
+from backend.service.data_collection import TechnicalIndicators
 
 class MACDAgent(GeminiChartAgent):
 

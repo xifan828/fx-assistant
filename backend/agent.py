@@ -1,17 +1,17 @@
 from openai import OpenAI
-from ai.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
-from ai.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
-from ai.service.technical_analysis import TechnicalAnalysis
-from ai.service.technical_indicators import TechnicalIndicators
-from ai.service.economic_calenders import EconomicCalenders
-from ai.parameters import *
-from ai.config import Config
+from backend.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
+from backend.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
+from backend.service.technical_analysis import TechnicalAnalysis
+from backend.service.data_collection import TechnicalIndicators
+from backend.service.economic_calenders import EconomicCalenders
+from backend.parameters import *
+from backend.config import Config
 import asyncio
 from typing import List, Dict, Literal
 from langchain_core.pydantic_v1 import BaseModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
-from ai.models.data_model import TradingReasoning
+from backend.models.data_model import TradingReasoning
 import os
 
 class FXAgent():

@@ -1,6 +1,6 @@
 import asyncio
-from ai.agents.GeminiChartAgent import GeminiChartAgent
-from ai.service.technical_indicators import TechnicalIndicators
+from backend.agents.GeminiChartAgent import GeminiChartAgent
+from backend.service.data_collection import TechnicalIndicators
 
 class MAAgent(GeminiChartAgent):
 
@@ -23,7 +23,7 @@ The user will provide:
 
 1. **Identifying Trends and Momentum**
     - Determine whether price action is predominantly bullish, bearish, or range-bound.
-    - Highlight momentum shifts using EMA crossovers and candlestick formations.
+    - Highlight momentum shifts using MA crossovers and candlestick formations.
 
 2. **Spotting Key Signals and Patterns**
     - Point out potential reversal or continuation patterns (e.g., double tops, engulfing candles).

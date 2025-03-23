@@ -1,6 +1,6 @@
 import streamlit as st
 
-from ai.agent import FXAgent, KnowledgeBase
+from backend.agent import FXAgent, KnowledgeBase
 from PIL import Image
 #from st.chat_message import message
 import os

@@ -8,11 +8,61 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 from selenium.webdriver.common.action_chains import ActionChains
 
 from webdriver_manager.chrome import ChromeDriverManager
-
-
 import time
 from PIL import Image, ImageDraw, ImageFont
 import os
+
+class SeleniumScrapper:
+
+    def __init__(self, driver_path = None, is_headless = True):
+        self.driver = self.init_driver(driver_path, is_headless)
+    
+    def init_driver(self, driver_path, is_headless):
+        chrome_options = Options()
+        if is_headless:
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")  # Especially on Windows
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
+        chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
+
+        if driver_path is None:
+            try:
+                chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
+                service = Service(chrome_driver_path)
+                return webdriver.Chrome(service=service, options=chrome_options)
+            except:
+                chrome_path = '/usr/bin/chromium'
+                chromedriver_path = '/usr/bin/chromedriver'
+                chrome_options.binary_location = chrome_path
+                service = Service(chromedriver_path)
+                return webdriver.Chrome(service=service, options=chrome_options)
+        else:
+            service = Service(driver_path)
+            return webdriver.Chrome(service=service, options=chrome_options)
+    
+    def close_ads(self):
+        try:
+            # Look for common ad elements
+            potential_ads = self.driver.find_elements(By.XPATH, "//*[contains(@style, 'z-index')]")
+            
+            for ad in potential_ads:
+                try:
+                    close_button = ad.find_element(By.XPATH, ".//*[contains(text(), '×') or contains(@class, 'close') or contains(@id, 'close')]")
+                    close_button.click()
+                    print("Ad closed.")
+                    return 
+                except NoSuchElementException:
+                    continue 
+        except Exception as e:
+            print(f"Error while attempting to close ads: {e}")
+    
+    def quit_driver(self):
+        self.driver.quit()
+
 
 
 # Set up Chrome options
@@ -40,54 +90,12 @@ def scrape_technical_indicators(indicator_url: str):
         service = Service(chromedriver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    # Navigate to the website
-    # url = "https://www.google.com/finance/quote/EUR-USD?sa=X&ved=2ahUKEwiYxI_g9L2HAxWaa0EAHb1zGVIQmY0JegQIGRAw"  # Replace with the website you want to scrape
-    # driver.get(url)
-
-    # time.sleep(2)
-    # try:
-    #     consent_button = WebDriverWait(driver, 10).until(
-    #         EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all')]"))
-    #     )
-    #     consent_button.click()
-    #     print("Cookie consent accepted")
-    #     time.sleep(2)  # Wait for the page to reload after accepting cookies
-    # except TimeoutException:
-    #     print("Cookie consent button not found or not needed")
-
-    # # Set window size to full page size
-    # driver.set_window_size(1920, 1080)
-    # driver.save_screenshot("data/eur_usd_chart_1_day.png")
-
-    # second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="5dayTab"]'
-    # second_button = driver.find_element("xpath", second_button_xpath)
-    # driver.execute_script("arguments[0].click();", second_button)
-    # time.sleep(1.5)
-    # driver.save_screenshot("data/eur_usd_chart_5_days.png")
-
-    # second_button_xpath = '//div[@class="VfPpkd-AznF2e-LUERP-vJ7A6b VfPpkd-AznF2e-LUERP-vJ7A6b-OWXEXe-XuHpsb"]//button[@id="1monthTab"]'
-    # second_button = driver.find_element("xpath", second_button_xpath)
-    # driver.execute_script("arguments[0].click();", second_button)
-    # time.sleep(1.5)
-    # driver.save_screenshot("data/eur_usd_chart_1_month.png")
-
     driver.get(indicator_url)
     close_ads(driver)
     
     driver.execute_script("window.scrollBy(0, 550);")
     time.sleep(2)
     driver.set_window_size(1920, 1920)
-    # driver.save_screenshot("data/technical_indicators/technicals_1_day_interval.png")
-
-    # second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="1h"]'
-    # second_button = driver.find_element("xpath", second_button_xpath)
-    # driver.execute_script("arguments[0].scrollIntoView(true);", second_button)
-    # time.sleep(1)  # wait a bit for scrolling
-    # driver.execute_script("arguments[0].click();", second_button)
-    # # Wait for any potential page changes to take effect
-    # time.sleep(3)
-    # driver.execute_script("window.scrollBy(0, -100);")
-    # driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval.png")
 
     second_button_xpath = '//div[@data-name="square-tabs-buttons"]//button[@id="15m"]'
     second_button = driver.find_element("xpath", second_button_xpath)
@@ -122,31 +130,6 @@ def scrape_technical_indicators(indicator_url: str):
                     pivot_img = img.crop((0, pivot_top_crop, width-pivot_right_crop, width-pivot_bottom_crop))
                     pivot_file_name = file_name.replace("technicals", "pivot")
                     pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
-
-
-    # with Image.open("data/calender/today.png") as img:
-    #     cropped_img = img.crop((0, 0, width, height - 200))
-    #     cropped_img.save(f"data/calender/today.png")
-    # with Image.open("data/calender/upcoming.png") as img:
-    #     cropped_img = img.crop((0, 0, width, height - 200))
-    #     cropped_img.save(f"data/calender/upcoming.png")
-
-
-    # investing_url = "https://www.investing.com/currencies/eur-usd-technical"
-    # driver.get(investing_url)
-    # try:
-    #     accept_button = WebDriverWait(driver, 2).until(
-    #         EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'I Accept')]"))
-    #     )
-    #     accept_button.click()
-    #     print("Accepted cookie policy")
-    # except Exception as e:
-    #     print("No cookie consent popup found or issue with finding the button:", e)
-
-    # driver.execute_script("window.scrollBy(0, 400);")
-    # time.sleep(2)
-    # driver.set_window_size(1920, 1920)
-    # driver.save_screenshot("data/technical_indicators/technicals_1_hour_interval_investing.png")
 
     driver.quit()
 
@@ -229,6 +212,43 @@ def close_ads(driver):
 
     except Exception as e:
         print(f"Error while attempting to close ads: {e}")
+
+def scrape_trading_view_news(news_url: str):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run headless to avoid opening a browser window
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1920,1080")
+
+    try:
+        chrome_driver_path = r"C:\Windows\chromedriver.exe"
+        service = Service(chrome_driver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    except:
+        chrome_path = '/usr/bin/chromium'
+        chromedriver_path = '/usr/bin/chromedriver'
+        chrome_options.binary_location = chrome_path
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    driver.get(news_url)
+    driver.execute_script("window.scrollBy(0, 400);")
+    time.sleep(2)
+
+    wait = WebDriverWait(driver, 10)
+    container = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.list-iTt_Zp4a")))
+
+    container_html = container.get_attribute("innerHTML")
+    #print("Container HTML:\n", container_html)
+    link_elements = container.find_elements(By.TAG_NAME, "a")
+    links = [link.get_attribute("href") for link in link_elements]
+    #print(link_elements)
+    print(links[:10])
+
+
+    driver.quit()
+    return links
 
 def scrape_aastocks_chart(url: str):
     chrome_options = Options()
@@ -376,17 +396,19 @@ def scrape_aastocks_chart(url: str):
     driver.quit()
 if __name__ == "__main__":
 
-    from backend.parameters import TECHNICAL_INDICATORS_WEBSITES
+    from backend.utils.parameters import TECHNICAL_INDICATORS_WEBSITES
 
-    currency_pair = "EUR/USD"
+    #currency_pair = "EUR/USD"
 
     # scrape_economic_calenders(
     #     calender_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["calender"]
     # )
-    scrape_technical_indicators(
-        indicator_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["indicator"]
-    )
+    # scrape_technical_indicators(
+    #     indicator_url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["indicator"]
+    # )
 
     # scrape_aastocks_chart(
     #     url=TECHNICAL_INDICATORS_WEBSITES[currency_pair]["chart"]
     # )
+
+    scrape_trading_view_news("https://www.tradingview.com/symbols/EURUSD/news/")

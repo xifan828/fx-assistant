@@ -53,6 +53,8 @@ The user will provide:
 
 5. **Provide a Short Summary**  
    - Summarize in 2–3 sentences the overall market condition and key action points.  
+
+**Go deep** with your analysis, do not just state the superficial observations.
 """
 
 async def generate_atr_analysis(currency_pair: str, interval: str, chart_name: str, size: int = 40):

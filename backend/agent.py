@@ -1,11 +1,11 @@
 from openai import OpenAI
 from backend.service.web_scrapping import TradingEconomicsScraper, TechnicalNewsScrapper
-from backend.service.web_scrapping_image import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
+from backend.service.SeleniumScrapper import scrape_economic_calenders, scrape_technical_indicators, scrape_aastocks_chart
 from backend.service.technical_analysis import TechnicalAnalysis
 from backend.service.data_collection import TechnicalIndicators
 from backend.service.economic_calenders import EconomicCalenders
-from backend.parameters import *
-from backend.config import Config
+from backend.utils.parameters import *
+from backend.utils.llm_helper import Config
 import asyncio
 from typing import List, Dict, Literal
 from langchain_core.pydantic_v1 import BaseModel

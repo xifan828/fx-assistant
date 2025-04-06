@@ -1,6 +1,6 @@
 import pandas as pd
 from backend.service.data_collection import TechnicalIndicators
-from backend.parameters import CURRENCY_TICKERS
+from backend.utils.parameters import CURRENCY_TICKERS
 
 class BackTest:
     def __init__(self, currency_pair: str, strategy_file_path: str, test_result_file_path:str,  custom: bool = False, profit_pips = None, loss_pips = None, fill_period = 2):

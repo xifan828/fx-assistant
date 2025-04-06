@@ -148,8 +148,8 @@ class StrategyExecutor:
 
 def main():
     load_dotenv() 
-    root_path = r"simulation\forward_test\2025_03_24"
-    for currency_pair in ["EUR/USD", "USD/JPY"]:
+    root_path = r"simulation\forward_test\2025_03_31"
+    for currency_pair in ["EUR/USD", "USD/JPY"]:   
         executor = StrategyExecutor(currency_pair=currency_pair, root_path=root_path, sl_pips=15, tp_pips=30, trailing_pips=None)
         executor.execute()
         time.sleep(60)

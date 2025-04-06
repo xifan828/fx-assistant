@@ -36,6 +36,7 @@ class TechnicalIndicators:
             end_date = self.end_date,
             start_date = self.start_date)
         
+        self.td_ohlc = self.download_data_wo_ti()
         self.ohlc = self.download_data_from_ibkr()
         self.ohlc_with_ti = self.calculate_technical_indicators(self.ohlc)
         
@@ -488,10 +489,11 @@ if __name__ == "__main__":
     #currency_pair = "USD/JPY"
 
     ti = TechnicalIndicators(currency_pair=currency_pair, interval="1h")
+    print(ti.td_ohlc.tail())
 
-    data = ti.plot_chart(chart_name="1h", size=40, EMA20=True, EMA50=True, EMA100=True)
+    #data = ti.plot_chart(chart_name="1h", size=40, EMA20=True, EMA50=True, EMA100=True)
 
-    print(data)
+    #print(data)
 
 
     # ti = TechnicalIndicators(currency_pair=currency_pair, interval="4h")

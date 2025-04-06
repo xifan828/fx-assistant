@@ -1,5 +1,5 @@
 import os
-from backend.config import Config
+from backend.utils.llm_helper import Config
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import base64

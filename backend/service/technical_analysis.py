@@ -1,12 +1,12 @@
 import os
-from backend.config import Config, GeminiClient
+from backend.utils.llm_helper import Config, GeminiClient
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import base64
 from langchain_core.messages import HumanMessage, SystemMessage
 from backend.service.data_collection import TechnicalIndicators
 from datetime import datetime
-from backend.parameters import CURRENCY_TICKERS
+from backend.utils.parameters import CURRENCY_TICKERS
 import asyncio
 
 

@@ -68,6 +68,21 @@ class GeminiClient:
         except Exception as e:
             print(f"Error in call_api: {e}, api is {self.api_key}")
             raise e
+    
+    async def call_gemini_api(self, user_message, history=[]):
+        try:
+            chat_session = self.client.aio.chats.create(
+                history=history,
+                model=self.model_name,
+                config=self.generation_config
+            )
+            response = await chat_session.send_message(user_message) # Pass user_message directly
+            response_text = response.text
+            return response_text, chat_session
+
+        except Exception as e:
+            print(f"Error in call_gemini_api: {e}, api key is {self.api_key}")
+            raise e
 
 
 async def main():
@@ -80,7 +95,7 @@ async def main():
             "response_mime_type": "text/plain",
         }
     
-    model_name = "gemini-2.0-flash-exp"
+    model_name = "gemini-2.0-flash-thinking-exp-01-21"
 
     system_instruction = "Call the user as Dr. Wang."
 
@@ -90,11 +105,18 @@ async def main():
         system_instruction=system_instruction,
         api_key=os.environ["GEMINI_API_KEY_XIFAN"]
     )
-    image_path = "data/chart/1h.png"
+    # image_path = "data/chart/1h.png"
 
-    response, chat_session = await client.call_gemini_vision_api(
-        user_message="describe this image briefly.", image_path=image_path
+    # response, chat_session = await client.call_gemini_vision_api(
+    #     user_message="describe this image briefly.", image_path=image_path
+    # )
+
+    response, chat_session = await client.call_gemini_api(
+        user_message="What is quantitative trading ?"
     )
+
+    print(response)
+    return response, chat_session
 
 
 if __name__ == "__main__":

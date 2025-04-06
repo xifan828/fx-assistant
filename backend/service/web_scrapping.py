@@ -7,8 +7,8 @@ from typing import List, Dict
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
-from backend.config import Config
-from backend.parameters import ECONOMIC_INDICATORS_WEBSITES, INVESTING_NEWS_ROOT_WEBSITE
+from backend.utils.llm_helper import Config
+from backend.utils.parameters import ECONOMIC_INDICATORS_WEBSITES, INVESTING_NEWS_ROOT_WEBSITE
 import time
 
 # economic indicators
@@ -17,7 +17,7 @@ class TradingEconomicsScraper:
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         }
-
+ 
     async def fetch_content(self, session, name, url):
         try:
             async with session.get(url, headers=self.headers) as response:
@@ -269,7 +269,7 @@ if __name__ == "__main__":
     # scraped_data = asyncio.run(scraper.scrape_websites(ECONOMIC_INDICATORS_WEBSITES))
     # print(scraped_data)
     scrapper = TechnicalNewsScrapper(top_k=5)
-    print(scrapper.scrape_investing_news())
+    print(scrapper.scrape_root_page())
     # print(scrapper.scrape_root_page())
     # results = scrapper.scrape_news()
     # print(results)

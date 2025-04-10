@@ -89,7 +89,7 @@ def main():
                 if "technical_analysis" not in st.session_state:
                     st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
                 if "risk_sentiment" not in st.session_state:
-                    st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
+                    st.session_state["risk_sentiment"] = "None"
                     
             chart, chat = st.columns(2)
             with chart:
@@ -107,6 +107,7 @@ def main():
                     st.session_state["news"], 
                     st.session_state["technical_analysis"],
                     st.session_state["risk_sentiment"]
+                    #st.session_state["risk_sentiment"]
                 )
             if "messages" not in st.session_state:
                 st.session_state["messages"] = [

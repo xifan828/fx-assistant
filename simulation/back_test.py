@@ -1,6 +1,6 @@
 import pandas as pd
-from ai.service.technical_indicators import TechnicalIndicators
-from ai.parameters import CURRENCY_TICKERS
+from backend.service.data_collection import TechnicalIndicators
+from backend.utils.parameters import CURRENCY_TICKERS
 
 class BackTest:
     def __init__(self, currency_pair: str, strategy_file_path: str, test_result_file_path:str,  custom: bool = False, profit_pips = None, loss_pips = None, fill_period = 2):
@@ -25,7 +25,7 @@ class BackTest:
     
     def get_price(self, output_size, end_date):
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=output_size, end_date=end_date)
-        price_data = ti.download_data()
+        price_data = ti.download_data_wo_ti()
         try:
             dt_index_berlin = price_data.index.tz_convert("Europe/Berlin")
         except:

@@ -49,7 +49,7 @@ For the synthesized analysis:
 - Provide a comprehensive short to medium-term outlook for {self.currency_pair}.
 Deliver a clear, concise, and actionable synthesis. Prioritize the most significant insights that emerge from combining multiple analyses. Use professional terminology with brief explanations when necessary. AVOID discussing forex trading risks and the importance of personal research."""
         
-        self.system_prompt_template_techncial_indicators = """**Role:** You are a highly skilled forex technical analyst specializing in interpreting MACD, RSI, and ROC indicators to understand market momentum and potential trend reversals.
+        self.system_prompt_template_techncial_indicators = """**Role:** You are a highly skilled forex technical analyst specializing in interpreting MACD, RSI indicators to understand market momentum and potential trend reversals.
 
 **Context (Inputs):**
 - A chart displaying the {interval} interval MACD, RSI, and ROC (maybe missing from the chart) for the {currency_pair} currency pair.
@@ -86,122 +86,100 @@ Deliver a clear, concise, and actionable synthesis. Prioritize the most signific
     etc.
 """
 
-        self.system_prompt_template_candlestick_4h = """**Role:** You are a highly skilled forex {currency_pair} technical analyst specializing in understanding long-term trends and identifying key support and resistance levels using price action and EMAs.
+        self.system_prompt_hourly_analysis = f"""
+### **Role**  
+You are a highly skilled forex {self.currency_pair} trader specializing in **technical analysis**.
 
-**Context (Inputs):**
-- 4 Hourly price chart data for {currency_pair} including candlestick patterns and EMAs over the last 2 months.
-- A detailed analysis of the MACD, RSI and ROC indicators for the same period, provided by another technical analyst agent.
+### **Context**
+The user will provide:
+- Hourly candle stick chart with moving averages lines.  
+- RSI plot corresponding to the candles.
+- MACD plot corresponding to the candles.
 
-**Goal:** To provide a comprehensive technical analysis of the long-term trend that will serve as context for medium-term analysis, integrating insights from the indicator analysis.
+### **Objective**  
+Provide a **medium-term** technical analysis of {self.currency_pair}, focusing on **price action** and the technical indicators on the **hourly chart**:
 
-**Tasks (Analytical Focus):**
-- **Trend Identification:**
-    - Identify the prevailing trends present in the 4 hourly chart data over the last 2 months.
-        - Describe the overall trend direction by looking at price actions.
-    - Analyze the the most **recent** price action.
-        - Describe the recent price movements and candlestick patterns.
-        - Analyze the interaction between price and moving averages. Are the EMAs sloping upwards or downwards? Is the price above or below the EMAs? What does this suggest about the trend?
-- **Support and Resistance:**
-    - Determine key support and resistance zones, providing specific price levels where possible. Explain why these levels are significant (e.g., previous highs/lows, areas of consolidation).
-- **Integration with Indicator Analysis:**
-    - Consider the technical indicators analysis provided by the other agent.
-    - How does the indicator analysis support or contradict your assessment of the trend based on price action and EMAs?
-    - Are there any areas where the indicators suggest a potential trend change that is not yet reflected in the price action?
-- **Potential Trend Reversals:**
-    - Identify potential points or zones where the prevailing trend might change direction, taking into account both price action/EMAs and the indicator analysis.
+- **Moving Averages** (directional bias, potential crossovers)  
+- **RSI** (momentum, overbought/oversold levels)  
+- **MACD** (momentum shifts, crossovers, divergence)  
 
-**Guidelines for Output:**
-- Be concise and focus on the most impactful observations for understanding the medium-term context.
-- Provide specific numerical values for key support and resistance levels/zones where possible.
-- Clearly explain how you are integrating the indicator analysis with your price action and EMA analysis.
-- In the end, provide a concise summary of your analysis and your outlook for the {currency_pair} based on the combined insights from price action, EMAs, and indicators. Using the following format:
+Your analysis will serve as context for a **short-term** 5-min timeframe analysis by another agent.
+
+### **Tasks**
+1. **Candlestick Patterns**
+    - Identify any significant **price patterns** or **candlestick formations**. Examples include bullish or bearish engulfing, doji, hammer, etc.
+
+2. **Trend Analysis**
+    - Evaluate how the price interacts with the moving averages, RSI, and MACD to identify the current trend. Discuss whether the trend is bullish, bearish, or neutral based on the convergence or divergence of price from these indicators.
+
+3. **Trend Confirmation vs. Contradiction**  
+   - Compare the signals from different indicators to confirm or contradict the identified trend. For example, if moving averages and MACD suggest an uptrend but RSI indicates overbought conditions, discuss the potential for a trend reversal or continuation.
+
+4. **Support & Resistance**  
+   - Highlight key levels or zones, providing **specific price points** where possible.
+
+### **Guidelines**
+
+- **Be concise** yet thorough in analyzing price action and each indicator.  
+- Include **numerical values** (indicator readings, price levels) wherever it clarifies your points.  
+- Remember, **another agent** will use your analysis to inform a shorter-term strategy.
+"""
+        self.system_prompt_5_min_analysis = f"""
+## **Role**  
+You are a **skilled forex {self.currency_pair} technical analyst** specializing in **short-term trading outlooks**.
+
+---
+
+## **Context (Inputs)**
+1. **Current 15-minute interval candlestick chart** with technical indicators (Moving Averages, MACD)  
+2. **15-minute interval pivot points**  
+3. **Exact current price**  
+4. **Previous hourly chart analysis** (providing a medium-term perspective)
+
+---
+
+## **Goal**  
+- **Synthesize** all provided information to determine the **immediate trend** of {self.currency_pair}  
+- Offer a **short-term trading outlook** for the **next few hours**.
+
+---
+
+## **Tasks**
+
+1. **Chart Analysis**  
+    - Identify any significant **price patterns** or **candlestick formations**.
+    - **Trend Analysis**: Evaluate how the price interacts with the moving averages, RSI, and MACD to identify the current trend. Discuss whether the trend is bullish, bearish, or neutral based on the convergence or divergence of price from these indicators.
+    - **Trend Confirmation vs. Contradiction**: Compare the signals from different indicators to confirm or contradict the identified trend. 
+
+2. **Price Levels**
+    - Compare the current price to the **pivot points** and hourly analysis identified supports and resistance levels to identify potential **support and resistance levels**.
+    
+3. **Incorporate Hourly Analysis**  
+   - Compare findings from the 5-minute chart with **insights from the previous hourly chart analysis**.  
+   - Highlight any confirmations or contradictions in the short-term vs. medium-term trends.
+
+4. **Actionable Outlook**  
+   - Clearly state if a **short-term trade** (long or short) is viable given current conditions.  
+   - If a trade is **not** recommended now, specify **which signals or conditions** would be needed to warrant a future trade.
+   
+5. **Potential Trade Setup**  
+   - Based on the identified trend and support/resistance levels, propose **potential entry and exit points** for a short-term trade.
+   - Always choose a **limit order** for the trade. Ensure that for a buy order, the entry price is lower than the current price, and for a short order, the entry price is higher than the current price.
+
+---
+
+## **Guidelines for Output**
+
+- **Clarity and Actionability**: Provide **specific** price levels or indicators (e.g., MA crossovers, RSI extremes, MACD/ROC signals) that inform your short-term outlook.
+- **Contextual Integration**: Show how the new short-term findings **align with** or **deviate from** the previous hourly analysis.
+- **Decision Justification**: If you suggest a trade, **justify** it with clear reasoning (trend, momentum, key levels). If you advise waiting, specify what **further evidence** (e.g., break of support/resistance, pivot confirmation, indicator crossover) is needed.
+- **Entry Point and Order Type**: 
+    - Clearly state the recommended **entry point**.  
+    - For a **limit order**, ensure that the entry price is set according to the trade direction (buy: below current price; short: above current price).
+- **Summary Format**: Conclude with a concise summary, for example:
     **Summary:**
     etc.
 """
-
-        self.system_prompt_template_candlestick_1h = """**Role:** You are a highly skilled forex {currency_pair} technical analyst specializing in refining the understanding of medium-term trends and identifying potential trade setups.
-
-**Context (Inputs):**
-- 1 Hourly price chart data for {currency_pair} including candlestick patterns and EMAs.
-- Detailed analysis of the MACD, RSI and ROC indicators for the same period and same interval, provided by another technical analyst agent.
-- Summary from the 4-hour interval price chart by another analysis agent.
-
-**Goal:** To provide a comprehensive technical analysis of the medium-term trend that will serve as context for short-term analysis, with the hourly chart data together with the technical indicators anaylsis and the previous 4-hour analysis. 
-Identify nearer-term structure, and pinpoint potential trade setups on the 1-hour timeframe. Your analysis will serve as a bridge to the shorter-term (15M/5M) analysis agent.
-
-**Tasks:**
-- **Trend Identification:**
-    - Identify the prevailing trends present in the 1 hourly chart data over the last 7 days.
-        - Describe the overall trend direction by looking at price actions.
-    - Analyze the the most **recent** price action.
-        - Describe the recent price movements and candlestick patterns.
-        - Analyze the interaction between price and moving averages. Are the EMAs sloping upwards or downwards? Is the price above or below the EMAs? What does this suggest about the trend?
-- **Support and Resistance:**
-    - Determine key support and resistance zones, providing specific price levels where possible. Explain why these levels are significant.
-- **Integration with Indicator Analysis:**
-    - Consider the technical indicators analysis provided by the other agent.
-    - How does the indicator analysis support or contradict your assessment of the trend based on price action and EMAs?
-    - Are there any areas where the indicators suggest a potential trend change that is not yet reflected in the price action?
-- Compare H1 Trend with H4 Trend:
-    - If H1 and H4 trends are aligned, state how this reinforces the established bias.
-    - If H1 contradicts H4, describe the nature of the contradiction.
-    - If both timeframes are sideways, characterize the range (e.g., "Both H4 and H1 are in a sideways range between [price] and [price].").
-- **Structure and Setup Identification:**
-    - Identify Intraday S/R: Look for if any newly formed support/resistance levels on the H1 chart not highlighted in the H4 analysis.
-    - Breakout/Pullback Scenarios: Describe potential trade setups based on price action:
-        - Breakout: "If price breaks above [price] with strong momentum, it might signal a continuation of the uptrend."
-        - Pullback: "If price pulls back to the 20 EMA or [support level] and shows a bullish reversal candle, it could offer a buying opportunity."
-
-**Guidelines for Output:**
-- Be concise and focus on actionable insights for the next stage (15M/5M analysis).
-- Provide specific price levels for identified support/resistance, pattern boundaries, and potential entry/exit points.
-- Clearly articulate the relationship between the H1 and H4 analyses.
-- Use clear and objective language, avoiding overly subjective or ambiguous statements.
-- In the end, provide a concise summary of your analysis and your outlook for the {currency_pair} based on the combined insights from price action, EMAs, indicators and previous 4-hour interval analysis. Using the following format:
-    **Summary:**
-    etc.
-"""
-        self.system_prompt_template_candlestick_15m = """**Role:** You are a skilled forex {currency_pair} technical analyst specializing in providing short-term trading outlooks based on recent price action.
-
-**Context (Inputs):**
-- Current 5-minute price chart including candlestick patterns and EMAs.
-- Detailed analysis of the MACD, RSI and ROC indicators for the same period and same interval, provided by another technical analyst agent.
-- Summary of the 1-hour interval price chart analysis by another analysis agent.
-- 15-minute interval pivot points
-- Exact current price
-
-**Goal:** To synthesize the provided information to understand the immediate trend of the {currency_pair} pair and provide a short-term trading outlook for the next few hours.
-
-**Tasks (Analytical Focus):**
-- **Trend Identification:**
-    - Identify the prevailing trends present in the 5 min chart data.
-        - Describe the overall trend direction by looking at price actions.
-    - Analyze the the most **recent** price action.
-        - Describe the recent price movements and candlestick patterns.
-        - Analyze the interaction between price and moving averages. Are the EMAs sloping upwards or downwards? Is the price above or below the EMAs? What does this suggest about the trend?
-- **Support and Resistance:**
-    - Determine key support and resistance zones, providing specific price levels where possible. Explain why these levels are significant.
-    - Considering both price action and the provided **15-minute pivot points**.
-- **Integration with Indicator Analysis:**
-    - Consider the technical indicators analysis provided by the other agent.
-    - How does the indicator analysis support or contradict your assessment of the trend based on price action and EMAs?
-    - Are there any areas where the indicators suggest a potential trend change that is not yet reflected in the price action?
-- **Compare 15M Trend with H1 Trend:**
-    - If H1 and 15M trends are aligned, state how this reinforces the established bias.
-    - If H1 contradicts 15M, describe the nature of the contradiction.
-    - If both timeframes are sideways, characterize the range (e.g., "Both H1 and 15M are in a sideways range between [price] and [price].").
-- **Identify potential entry and exit points for short-term trades.**
-
-**Guidelines for Output:**
-- Be specific and actionable in your outlook, providing concrete levels or price areas to watch.
-- Remember to always consider the context provided by the previous hourly analysis.
-- **Conclude your analysis by stating whether, based on the available information, a trade can be confidently executed at this time (either long, short or wait)**.
-- If a trade cannot be confidently executed, explain what specific observations or signals would be needed to increase confidence in a potential trade in the near future.
-- In the end, provide a concise summary of your analysis and your outlook for the {currency_pair} based on the combined insights from price action, EMAs, indicators, pivot points and previous 1-hour interval analysis. Using the following format:
-    **Summary:**
-    etc.
-"""
-
         self.encoded_image_template = "data:image/png;base64,{base64_image}"
     
     def encode_image(self, image_path):
@@ -249,7 +227,7 @@ Identify nearer-term structure, and pinpoint potential trade setups on the 1-hou
     
     def extract_eur_usd_rate(self):
         ti = TechnicalIndicators(currency_pair=self.currency_pair, interval="1min", outputsize=100)
-        current_price = ti.download_data()["Close"].iloc[-1].round(4)
+        current_price = ti.get_current_price()
         return current_price
 
         
@@ -310,7 +288,7 @@ Below are the technical indicators with an interval of {ti_interval}.
     
     async def extract_technical_indicators_with_gemini(self):
         generation_config = {
-            "temperature": 0.1,
+            "temperature": 0.5,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 4096,
@@ -340,13 +318,9 @@ Below are the technical indicators with an interval of {ti_interval}.
         )
         return response
 
-    async def get_technical_analysis(self, client, image_path, technical_indicators_analysis, previous_analysis = None, current_price = None, pivit_points = None):
+    async def get_technical_analysis(self, client, image_path, previous_analysis = None, current_price = None, pivit_points = None):
         query_prefix = (
-        "The candlestick chart is uploaded. The **latest** candlesticks are shaded in grey.\n",
-        "The technical indicators analysis for the same period is provided below by another agent:\n",
-        "<Technical indicators analysis>\n",
-        f"{technical_indicators_analysis}\n",
-        "</Technical indicators analysis>\n"
+        "The candlestick chart is uploaded.\n",
         )
 
         query_suffix = ("Start your analysis.",)
@@ -357,7 +331,7 @@ Below are the technical indicators with an interval of {ti_interval}.
                         f"{previous_analysis}\n",
                         "</Previous longer time frame analysis>\n"
             )
-            query_suffix += new_text
+            query_prefix += new_text
         
         if current_price and pivit_points:
             new_text = (
@@ -387,77 +361,49 @@ Below are the technical indicators with an interval of {ti_interval}.
     async def create_gemini_analysis(self, pivot_points, current_price):
         model_name = self.gemini_model
         generation_config = {
-            "temperature": 0.1,
+            "temperature": 0.2,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
             "response_mime_type": "text/plain",
         }
         
-        # analyze all technical indicators
-        tasks = []
-        #files = [("4 hour", "data/chart/4h_ti.png"), ("1 hour", "data/chart/1h_ti.png"), ("15 min", "data/chart/15min_ti.png")]
-        files = [("4 hour", "data/chart/4h_ti.png"), ("1 hour", "data/chart/1h_ti.png"), ("5 min", "data/chart/5min_ti.png")]
-        for interval, image_path in files:
-            system_prompt_technical_indicators = self.system_prompt_template_techncial_indicators.format(interval=interval, currency_pair=self.currency_pair)
-            client = GeminiClient(
-            model_name=model_name, 
-            generation_config=generation_config, 
-            api_key=self.gemini_api_key,
-            system_instruction=system_prompt_technical_indicators
-            )
-            task = self.get_technical_indicators_analysis(client, image_path)
-            tasks.append(task)
-        ti_analysis_results = await asyncio.gather(*tasks)
-
-        # 4 hour analysis
-        #chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/15min_candel.png"]
-        chart_files = ["data/chart/4h_candel.png", "data/chart/1h_candel.png", "data/chart/5min_candel.png"]
-        system_prompt_candlestick_4h = self.system_prompt_template_candlestick_4h.format(currency_pair=self.currency_pair)
+        chart_files = ["data/chart/1h.png", "data/chart/15min.png"]
+        # hourly analysis
         client = GeminiClient(
-            model_name=model_name, 
-            generation_config=generation_config, 
+            model_name=model_name,
+            generation_config=generation_config,
             api_key=self.gemini_api_key,
-            system_instruction=system_prompt_candlestick_4h
+            system_instruction=self.system_prompt_hourly_analysis
         )
-        analysis_4h, _ = await self.get_technical_analysis(client, chart_files[0], ti_analysis_results[0])
-        summary_4h = analysis_4h.split("**Summary:**")[-1].strip()
+        analysis_1h, _ = await self.get_technical_analysis(client, chart_files[0])
 
-        # 1 hour analysis
-        system_prompt_candlestick_1h = self.system_prompt_template_candlestick_1h.format(currency_pair=self.currency_pair)
+        # 5 min analysis
         client = GeminiClient(
-            model_name=model_name, 
-            generation_config=generation_config, 
+            model_name=model_name,
+            generation_config=generation_config,
             api_key=self.gemini_api_key,
-            system_instruction=system_prompt_candlestick_1h
+            system_instruction=self.system_prompt_5_min_analysis
         )
-        analysis_1h, _ = await self.get_technical_analysis(client, chart_files[1], ti_analysis_results[1], summary_4h)
-        summary_1h = analysis_1h.split("**Summary:**")[-1].strip()
+        analysis_5min, chat_session = await self.get_technical_analysis(client, chart_files[1], previous_analysis=analysis_1h, current_price=current_price, pivit_points=pivot_points)
 
-        # 15 min analysis
-        system_prompt_candlestick_15m = self.system_prompt_template_candlestick_15m.format(currency_pair=self.currency_pair)
-        client = GeminiClient(
-            model_name=model_name, 
-            generation_config=generation_config, 
-            api_key=self.gemini_api_key,
-            system_instruction=system_prompt_candlestick_15m
-        )
-        analysis_15m, chat_session = await self.get_technical_analysis(client, chart_files[2], ti_analysis_results[2], summary_1h, current_price, pivot_points)
-        summary_15m = analysis_15m.split("**Summary:**")[-1].strip()
+        summary_5min = analysis_5min.split("**Summary:**")[-1].strip()
 
         query = """Based on your analysis, please output a trading strategy in json format. Using the following format:
         ```json
         {
-            "strategy": "buy", "sell" or "wait"
+            "strategy": "buy", "sell" or "wait",
+            "order_type": "limit" or "market" if strategy is "buy" or "sell" else null
             "entry_point": float, if strategy is "buy" or "sell" else null
             "stop_loss": float, if strategy is "buy" or "sell" else null 
             "take_profit": float, if strategy is "buy" or "sell" else null
         }
         ```
+        For entry_point, stop_loss and take_profit, output one single float number.
         """
         response_json = await chat_session.send_message(query)
         response_json = response_json.text
-        return {"analysis": analysis_15m, "strategy": response_json, "summary": summary_15m}
+        return {"analysis_1h": analysis_1h, "analysis_5min": analysis_5min, "summary_5min": summary_5min, "strategy": response_json}
 
     async def run(self):
         results = await self.extract_technical_indicators_with_gemini()
@@ -475,10 +421,17 @@ if __name__ == "__main__":
     ta = TechnicalAnalysis(
         #currency_pair="EUR/USD",
         currency_pair="USD/JPY",
-        gemini_model="gemini-exp-1206"
+        gemini_model="gemini-2.0-flash",
+        #gemini_model="gemini-2.0-flash-thinking-exp-01-21",
+        gemini_api_key=os.environ["GEMINI_API_KEY_KIEN"]
     )
 
-    print(asyncio.run(ta.run()))
+    ans = asyncio.run(ta.run())
+
+    for k, v in ans.items():
+        print(k)
+        print(v)
+        print("\n\n")
 
 
 

@@ -1,5 +1,5 @@
 from backend.service.TwelveData import TwelveData
-from backend.service.IBKRData import IBKRData
+#from backend.service.IBKRData import IBKRData
 from backend.utils.technical_indicators import TechnicalIndicators
 from backend.utils.technical_charts import TechnicalCharts
 from backend.agents.technical_analysis import ATRAgent, MAAgent, MACDAgent, RSIAgent
@@ -19,12 +19,12 @@ class TechnicalDataPipeline:
         )
         return td.get_data()
     
-    def get_data_from_ibkr(self) -> pd.DataFrame:
-        ibkr = IBKRData(
-            currency_pair=self.currecy_pair,
-            interval=self.interval
-        )
-        return ibkr.get_data()
+    # def get_data_from_ibkr(self) -> pd.DataFrame:
+    #     ibkr = IBKRData(
+    #         currency_pair=self.currecy_pair,
+    #         interval=self.interval
+    #     )
+    #     return ibkr.get_data()
     
     def get_technical_indicators(self, data: pd.DataFrame) -> pd.DataFrame:
         ti = TechnicalIndicators()
@@ -33,8 +33,8 @@ class TechnicalDataPipeline:
     def prepare_data(self, data_source: Literal["TwelveData", "IBKR"], **kwargs) -> pd.DataFrame:
         if data_source == "TwelveData":
             data = self.get_data_from_td(**kwargs)
-        elif data_source == "IBKR":
-            data = self.get_data_from_ibkr()
+        # elif data_source == "IBKR":
+        #     data = self.get_data_from_ibkr()
         else:
             raise ValueError("Invalid data source. Choose 'TwelveData' or 'IBKR'.")
         

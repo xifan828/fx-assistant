@@ -81,7 +81,7 @@ def main():
 
                 if "knowledge" not in st.session_state:
                     knowledge_base = KnowledgeBase(currency_pair=st.session_state["last_currency_pair"])
-                    knowledge = knowledge_base.create_all_analysis()
+                    knowledge = knowledge_base.create_all_analysis_parallel()
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:

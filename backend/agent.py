@@ -13,6 +13,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from backend.models.data_model import TradingReasoning
 import os
+from backend.orchestrator.RiskSentimentPipeline import RiskSentimentPipeline
+from backend.orchestrator.NewsPipeline import NewsPipelie
+from backend.orchestrator.TechnicalAnalysisPipeline import TechnicalAnalysisPipeline
+from backend.utils.keep_time import time_it
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -20,7 +24,7 @@ class FXAgent():
 
     Functionality:
     1. Data Input:
-    - The user will provide information from various categories such as economic indicators, recent financial news, technical analysis, central bank announcements, and economic events. Each category of information is delimted with triple hashtags.
+    - The user will provide information from various categories such as recent financial news, technical analysis, risk sentiments. Each category of information is delimted with triple hashtags.
     2. Individual Source Analysis
     - For each piece of information provided, the assistant will analyze its relevance and potential impact on the {currency_pair} exchange rate.
     - The assistant should assess the reliability of the source and the current relevance of the information based on its date and context.
@@ -37,28 +41,20 @@ class FXAgent():
     """
 
     USER_MESSAGE_TEMPLATE = """
-    - Economic Indicators:
-    ###
-    {economic_indicators}
-    ###
-
     - Most recent news:
     ###
-    {technical_news}
+    {news}
     ###
 
-    - Technical Indicator:
+    - Technical Analysis:
     ###
     {technical_analysis}
     ###
 
-    - Central bank announcements:
+    - Risk sentiment analysis:
     ###
-    {central_bank}
+    {risk_sentiment}
     ###
-
-    - Economic Events:
-    {economic_events}
     """
 
     def __init__(self, currency_pair: str = "EUR/USD" ,model_name: str = "gpt-4o-mini", temperature: float = 1.0):
@@ -70,16 +66,14 @@ class FXAgent():
     def run(self, messages):
         return self.chat_completions(messages)
 
-    def formulate_first_round_messages(self, economic_indicators, technical_news, technical_analysis, central_bank, economic_events):
+    def formulate_first_round_messages(self, news, technical_analysis, sentiment_analysis):
         system_message = self.SYSTEM_MESSAGE.format(
             currency_pair = self.currency_pair
         )
         user_message = self.USER_MESSAGE_TEMPLATE.format(
-            economic_indicators = economic_indicators,
-            technical_news = technical_news,
+            news = news,
             technical_analysis = technical_analysis,
-            central_bank = central_bank,
-            economic_events = economic_events
+            risk_sentiment = sentiment_analysis
         )
         messages = [
             {"role": "system", "content": system_message},
@@ -95,71 +89,6 @@ class FXAgent():
             messages = messages
         )
         return response.choices[0].message.content
-
-# class NaiveStrategyAgent:
-#     def __init__(self, knowledge: dict, model_name: str = "gpt-4o", temperature: float = 1.0, currency_pair: str = "EUR/USD"):
-#         self.model_name = model_name
-#         self.temperature = temperature
-#         self.currency_pair = currency_pair
-#         self.knowledege = knowledge
-#         self.system_message = f"""You are a seasoned Forex trader specializing in the {self.currency_pair} currency pair. Your expertise lies in analyzing diverse information sources and developing profitable trading strategies. 
-# Your should read information from multiple sources and analyze the collected information to identify potential trading opportunities.
-# Your goal will be to propose profitable trading strategies following the schema provided.
-# Here is a description of the parameters:
-# - rationale: A short rationale behind this trade strategy.
-# - strategy: sell, buy
-# - entry_point: entry price of the trade
-# - take_profit: exit price when taking profit
-# - stop_loss: exit price when cutting loss
-# - confidence_score: how confident is this trading strategy based on current market situation. Score should be integer from 1 to 5, with 1 being the lowest and 5 being the highest.
-# You will be rewarded with 100 % of the profits generated."""
-#         self.user_message_template = """Below are collected information. Make a trading strategy the best you can. 
-# - Economic Indicators:
-# ###
-# {economic_indicators}
-# ###
-
-# - Most recent news:
-# ###
-# {technical_news}
-# ###
-
-# - Central bank announcements:
-# ###
-# {central_bank}
-# ###
-
-# - Technical analysis:
-# ###
-# {technical_analysis}
-# ###
-
-# - Economic Events:
-# ###
-# {economic_events}
-# ###
-# """
-#     def generate_strategy(self):
-#         load_dotenv()
-#         client = OpenAI()
-#         messages = [
-#             {"role": "system", "content": self.system_message},
-#             {"role": "user", "content": self.user_message_template.format(
-#                 economic_indicators = self.knowledege["Economic Indicators"],
-#                 technical_news = self.knowledege["Technical News"],
-#                 central_bank = self.knowledege["Central Bank"],
-#                 technical_analysis = self.knowledege["Technical Analysis"],
-#                 economic_events = self.knowledege["Economic Events"]
-#             )}
-#         ]
-#         completion = client.beta.chat.completions.parse(
-#         model=self.model_name,
-#         messages=messages,
-#         response_format=TradingStrategy,
-#         )
-
-#         strategy = completion.choices[0].message.parsed
-#         return strategy
 
 class NaiveStrategyAgent:
     def __init__(self, knowledge: dict, provider: Literal["openai", "google"] = "openai", model_name: str = "gpt-4o", temperature: float = 0.5, currency_pair: str = "EUR/USD"):
@@ -226,17 +155,53 @@ Economic Events
         return strategy
 
 class KnowledgeBase:
-    def __init__(self, currency_pair : str = "EUR/USD", economic_indicators_websites: Dict = None, news_root_website: str = None, technical_indicators_websites: Dict = None, currency_tickers: Dict = None, central_banks : Dict = None):
-        self.economic_indicators_websites = economic_indicators_websites if economic_indicators_websites is not None else ECONOMIC_INDICATORS_WEBSITES
-        self.news_root_website = news_root_website if news_root_website is not None else NEWS_ROOT_WEBSITE
-        self.technical_indicators_websites = technical_indicators_websites if technical_indicators_websites is not None else TECHNICAL_INDICATORS_WEBSITES
-        self.currency_tickers = currency_tickers if currency_tickers is not None else CURRENCY_TICKERS
-        self.central_banks = central_banks if central_banks is not None else CENTRAL_BANKS
+    def __init__(self, currency_pair: str):
         self.currency_pair = currency_pair
-        self.currency_a = currency_pair.split("/")[0]
-        self.currency_b = currency_pair.split("/")[-1]
-        self.currency_ticker = self.currency_tickers[self.currency_pair]
+        
     
+    def create_risk_sentiment_analysis(self):
+        pipeline = RiskSentimentPipeline(currency_pair=self.currency_pair)
+        return pipeline.run()
+    
+    def create_news_analysis(self, k: int = 5):
+        pipeline = NewsPipelie(currency_pair=self.currency_pair, k=k)
+        return pipeline.run()
+    
+    def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):
+        pipeline = TechnicalAnalysisPipeline(currency_pair=self.currency_pair, interval=interval, size=size, analysis_types=analysis_types)
+        return asyncio.run(pipeline.run())
+    
+    @time_it
+    def create_all_analysis_parallel(self):
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_data = {
+                executor.submit(self.create_risk_sentiment_analysis): "Risk Sentiment",
+                executor.submit(self.create_news_analysis): "News Analysis",
+                executor.submit(self.create_technical_analysis): "Technical Analysis"
+            }
+            
+            results = {}
+            for future in as_completed(future_to_data):
+                data_name = future_to_data[future]
+                try:
+                    results[data_name] = future.result()
+                except Exception as exc:
+                    print(f'{data_name} generated an exception: {exc}')
+                    results[data_name] = None
+            
+            return results
+    
+    @time_it
+    def create_all_analysis(self):
+        risk_sentiment = self.create_risk_sentiment_analysis()
+        news_analysis = self.create_news_analysis()
+        technical_analysis = self.create_technical_analysis()
+        return {
+            "Risk Sentiment": risk_sentiment,
+            "News Analysis": news_analysis,
+            "Technical Analysis": technical_analysis
+        }
+
     def prepare_figures(self):
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
@@ -343,13 +308,12 @@ class KnowledgeBase:
 
 if __name__ == "__main__":
     kb = KnowledgeBase(
-        currency_pair="USD/JPY",
-        #currency_pair="EUR/USD"
+        #currency_pair="USD/JPY",
+        currency_pair="EUR/USD"
     )
-    kb.prepare_figures()
-    # knowledge = kb.get_partial_data()   
-    # print(knowledge)
-
+    results = kb.create_all_analysis_parallel()
+    for k, v in results.items():
+        print(f"{k}: {v}")
 
 
 

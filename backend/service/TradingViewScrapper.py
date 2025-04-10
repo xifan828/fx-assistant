@@ -133,5 +133,4 @@ class TradingViewScrapper(SeleniumScrapper):
 
 if __name__ == "__main__":
     scrapper = TradingViewScrapper("USD/JPY")
-    news = scrapper.get_news()
-    print(news)
+    scrapper.get_economic_calenders()

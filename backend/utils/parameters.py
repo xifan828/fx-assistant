@@ -65,3 +65,34 @@ AI_SEARCH_QUERIES = [
         f"Recent FED reserve decisions affecting EUR/USD exchange rate {FORMATED_DATE}", 
         f"Recent ECB decisions affecting EUR/USD exchange rate {FORMATED_DATE}",
     ]
+
+
+INVESTING_ASSETS = {
+    "general": {
+        "S&P 500": "https://www.investing.com/indices/us-spx-500",
+        "Nasdaq": "https://www.investing.com/indices/nq-100",
+        "STOXX50": "https://www.investing.com/indices/eu-stoxx50",
+        "MSCI EM": "https://www.investing.com/indices/msci-em",
+        "DXY": "https://www.investing.com/currencies/us-dollar-index",
+        "Gold": "https://www.investing.com/commodities/gold",
+        "Brent Oil": "https://www.investing.com/commodities/brent-oil",
+        "VIX": "https://www.investing.com/indices/volatility-s-p-500"
+    },
+
+    "EUR": {
+        "EUR/USD": "https://www.investing.com/currencies/eur-usd",
+        "Germany 2Y Yield": "https://www.investing.com/rates-bonds/germany-2-year-bond-yield",
+        "Germany 10Y Yield": "https://www.investing.com/rates-bonds/germany-10-year-bond-yield",
+    },
+
+    "USD": {
+        "US 2Y Yield": "https://www.investing.com/rates-bonds/u.s.-2-year-bond-yield",
+        "US 10Y Yield": "https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield",
+    },
+
+    "JPY": {
+        "USD/JPY": "https://www.investing.com/currencies/usd-jpy",
+        "Japan 2Y Yield": "https://www.investing.com/rates-bonds/japan-2-year-bond-yield",
+        "Japan 10Y Yield": "https://www.investing.com/rates-bonds/japan-10-year-bond-yield",
+    }
+}

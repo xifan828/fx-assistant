@@ -1,4 +1,5 @@
 from backend.orchestrator.TechnicalDataPipeline import TechnicalDataPipeline
+from backend.utils.technical_indicators import TechnicalIndicators
 from typing import List
 import asyncio
 from backend.agents.technical_analysis.ATRAgent import ATRAgent
@@ -10,6 +11,7 @@ from backend.agents.technical_analysis.AggAgent import AggAgent
 class TechnicalAnalysisPipeline:
     def __init__(self, currency_pair: str, interval: str, size: int, analysis_types: List[str], data_source: str = "TwelveData"):
         self.currency_pair = currency_pair
+        self.decimal_places = 2 if currency_pair == "USD/JPY" else 4
         self.interval = interval
         self.size = size
         self.analysis_types = analysis_types
@@ -18,19 +20,21 @@ class TechnicalAnalysisPipeline:
     def prepare_technical_data(self):
         data_pipeline = TechnicalDataPipeline(self.currency_pair, self.interval)
 
-        df = data_pipeline.prepare_data(data_source=self.data_source)
+        self.df = data_pipeline.prepare_data(data_source=self.data_source)
 
         for analysis_type in self.analysis_types:
-            data_pipeline.prepare_chart(df, self.size, analysis_type)
-    
+            data_pipeline.prepare_chart(self.df, self.size, analysis_type)
+
     async def create_individual_analysis(self):
         coroutines = {}
 
         for analysis_type in self.analysis_types:
             chart_path = f"data/chart/{self.interval}_{analysis_type}.png"
-            user_message = f"The chart is uploaded. \n Start you analysis."
+            user_message_template = "The chart is uploaded. \n{context}\nStart you analysis."
 
             if analysis_type == "ema":
+                user_message = user_message_template.format(context=TechnicalIndicators.get_ma_context(self.df, self.decimal_places))
+                print(user_message)
                 agent = MAAgent(user_message=user_message, chart_path=chart_path, interval=self.interval)
             
             if analysis_type == "macd":
@@ -80,10 +84,11 @@ class TechnicalAnalysisPipeline:
 if __name__ == "__main__":
     # Example usage
     currency_pair = "USD/JPY"
-    interval = "4h"
+    interval = "1h"
     size = 48
-    analysis_types = ["ema", "rsi", "macd"]
+    #analysis_types = ["ema", "rsi", "macd"]
+    analysis_types = ["ema"]
 
-    pipeline = TechnicalAnalysisPipeline(currency_pair, interval, size, analysis_types, data_source="IBKR")
+    pipeline = TechnicalAnalysisPipeline(currency_pair, interval, size, analysis_types, data_source="TwelveData")
     agg_analysis = asyncio.run(pipeline.run())
     print(agg_analysis)

@@ -6,7 +6,7 @@ class TechnicalIndicators:
         pass
     
     @staticmethod
-    def calculate_technical_indicators(df, sma=False, ema=True, rsi=True, macd=True, roc=True, bbands=True, atr=True):
+    def calculate_technical_indicators(df, sma=False, ema=True, rsi=True, macd=True, roc=True, bbands=True, atr=True) -> pd.DataFrame:
         df = df.copy()
 
         # Ensure the index is a DateTimeIndex
@@ -57,3 +57,66 @@ class TechnicalIndicators:
         df['Date'] = df.index
         
         return df
+    
+    @staticmethod
+    def get_ma_context(df: pd.DataFrame, decimal_places: int) -> str:
+        df = df.copy()
+
+        df['EMA20_cross_above_EMA50'] = (df['EMA20'] > df['EMA50']) & (df['EMA20'].shift(1) <= df['EMA50'].shift(1))
+        df['EMA20_cross_below_EMA50'] = (df['EMA20'] < df['EMA50']) & (df['EMA20'].shift(1) >= df['EMA50'].shift(1))
+
+        # Similarly, you can detect crossovers between other EMAs
+        df['EMA50_cross_above_EMA100'] = (df['EMA50'] > df['EMA100']) & (df['EMA50'].shift(1) <= df['EMA100'].shift(1))
+        df['EMA50_cross_below_EMA100'] = (df['EMA50'] < df['EMA100']) & (df['EMA50'].shift(1) >= df['EMA100'].shift(1))
+
+        # Detect when the Close price crosses above or below EMA20
+        df['Price_cross_above_EMA20'] = (df['Close'] > df['EMA20']) & (df['Close'].shift(1) <= df['EMA20'].shift(1))
+        df['Price_cross_below_EMA20'] = (df['Close'] < df['EMA20']) & (df['Close'].shift(1) >= df['EMA20'].shift(1))
+
+        # Detect when the Close price crosses above or below EMA50
+        df['Price_cross_above_EMA50'] = (df['Close'] > df['EMA50']) & (df['Close'].shift(1) <= df['EMA50'].shift(1))
+        df['Price_cross_below_EMA50'] = (df['Close'] < df['EMA50']) & (df['Close'].shift(1) >= df['EMA50'].shift(1))
+
+        # Detect when the Close price crosses above or below EMA100
+        df['Price_cross_above_EMA100'] = (df['Close'] > df['EMA100']) & (df['Close'].shift(1) <= df['EMA100'].shift(1))
+        df['Price_cross_below_EMA100'] = (df['Close'] < df['EMA100']) & (df['Close'].shift(1) >= df['EMA100'].shift(1))
+
+        # Create a list to store our natural language events
+        events = []
+
+        for idx, row in df[-20:].iterrows():
+            date = row['Date']
+            if row['EMA20_cross_above_EMA50']:
+                events.append(f"On {date}, EMA20 crossed above EMA50.")
+            if row['EMA20_cross_below_EMA50']:
+                events.append(f"On {date}, EMA20 crossed below EMA50.")
+            if row['EMA50_cross_above_EMA100']:
+                events.append(f"On {date}, EMA50 crossed above EMA100.")
+            if row['EMA50_cross_below_EMA100']:
+                events.append(f"On {date}, EMA50 crossed below EMA100.")
+            if row['Price_cross_above_EMA20']:
+                events.append(f"On {date}, the closing price crossed above EMA20.")
+            if row['Price_cross_below_EMA20']:
+                events.append(f"On {date}, the closing price crossed below EMA20.")
+            if row['Price_cross_above_EMA50']:	
+                events.append(f"On {date}, the closing price crossed above EMA50.")
+            if row['Price_cross_below_EMA50']:
+                events.append(f"On {date}, the closing price crossed below EMA50.")
+            if row['Price_cross_above_EMA100']:
+                events.append(f"On {date}, the closing price crossed above EMA100.")
+            if row['Price_cross_below_EMA100']:
+                events.append(f"On {date}, the closing price crossed below EMA100.")
+        
+        cross_over_context = "\n".join(events) if events else "No significant crossover events detected."
+
+        last_bar = df.iloc[-1]
+        values = {
+            'EMA20': last_bar['EMA20'].round(decimal_places),
+            'EMA50': last_bar['EMA50'].round(decimal_places),
+            'EMA100': last_bar['EMA100'].round(decimal_places),
+            'Close': last_bar['Close'].round(decimal_places),
+        }
+        sorted_items = sorted(values.items(), key=lambda x: x[1], reverse=True)
+        price_context = " > ".join([f"{k}: {v}" for k, v in sorted_items])
+
+        return f"{cross_over_context}\nLatest Values in descending order:\n**{price_context}**"

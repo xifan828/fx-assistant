@@ -33,11 +33,8 @@ class NewsPipelie:
 
     def run(self) -> str:
         news = self.get_news()
-        print("get news content")
         summaries = self.get_news_summary(news)
-        print("summarize news")
         synthesis = self.synthesize_summary(summaries)
-        print("synthesize summary")
         return synthesis
 
 if __name__ == "__main__":

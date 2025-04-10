@@ -69,6 +69,8 @@ if __name__ == "__main__":
     
     # Example usage:
     data = pipeline.prepare_data(data_source="TwelveData")
+    print(data.head())
+    print(data.tail())
     pipeline.prepare_chart(data, size=48, analysis_type="ema")
     
     # data = pipeline.prepare_data(data_source="IBKR")

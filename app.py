@@ -72,7 +72,7 @@ def main():
                 st.session_state["process_initialized"] = True
     
                 if "last_currency_pair" in st.session_state and st.session_state["last_currency_pair"] != currency_pair:
-                    clear_session_states(["knowledge", "economic_indicators", "technical_news", "technical_analysis", "central_bank", "economic_events", "prefix_messages", "messages"])
+                    clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages"])
                 st.session_state["last_currency_pair"] = currency_pair
 
                 if "last_model_choice" in st.session_state and st.session_state["last_model_choice"] != model_choice:
@@ -81,37 +81,32 @@ def main():
 
                 if "knowledge" not in st.session_state:
                     knowledge_base = KnowledgeBase(currency_pair=st.session_state["last_currency_pair"])
-                    knowledge = knowledge_base.get_all_data()
+                    knowledge = knowledge_base.create_all_analysis_parallel()
                     st.session_state["knowledge"] = knowledge
 
-                if "economic_indicators" not in st.session_state:
-                    st.session_state["economic_indicators"] = st.session_state["knowledge"]["Economic Indicators"]
-                if "technical_news" not in st.session_state:
-                    st.session_state["latest_news"] = st.session_state["knowledge"]["Technical News"]
+                if "news" not in st.session_state:
+                    st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
                 if "technical_analysis" not in st.session_state:
                     st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
-                if "central_bank" not in st.session_state:
-                    st.session_state["central_bank"] = st.session_state["knowledge"]["Central Bank"]
-                if "economic_events" not in st.session_state:
-                    st.session_state["economic_events"] = st.session_state["knowledge"]["Economic Events"]
+                if "risk_sentiment" not in st.session_state:
+                    st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
                     
             chart, chat = st.columns(2)
             with chart:
                 with st.container(height=350, border=True):
-                    tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
-                    with tab1:
-                        st.image("data/chart/5min.png")
-                    with tab2:
-                        st.image("data/chart/1h.png")
+                    st.image("data/chart/1h_ema.png")
+                    # tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
+                    # with tab1:
+                    #     st.image("data/chart/5min.png")
+                    # with tab2:
+                    #     st.image("data/chart/1h.png")
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
             if "prefix_messages" not in st.session_state:
                 st.session_state["prefix_messages"] = agent.formulate_first_round_messages(
-                    st.session_state["economic_indicators"], 
+                    st.session_state["news"], 
                     st.session_state["technical_analysis"],
-                    st.session_state["latest_news"],
-                    st.session_state["central_bank"],
-                    st.session_state["economic_events"]
+                    st.session_state["risk_sentiment"]
                 )
             if "messages" not in st.session_state:
                 st.session_state["messages"] = [
@@ -139,30 +134,20 @@ def main():
 
 
             with st.container():
-                tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-                    ["Strategy",
-                    "Economic Indicators",
+                tab1, tab2, tab3 = st.tabs(
+                    [
+                    "Risk sentiment",
                     "Technical Analysis",
-                    "Latest News",
-                    "Central Bank",
-                    "Economic Calenders"]
+                    "Latest News"]
                 )
 
                 with tab1:
-                    st.session_state["strategy"].append({"role": "user", "content": currency_pair + " Trading Plan"})
-                    strategy = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["strategy"])
-                    st.session_state["strategy"].append({"role": "assistant", "content": strategy})
-                    st.chat_message("assistant", avatar="📈").write(strategy)
+                    st.write(st.session_state["risk_sentiment"])
                 with tab2:
-                    st.write(st.session_state["economic_indicators"])
-                with tab3:
                     st.write(st.session_state["technical_analysis"])
-                with tab4:
-                    st.write(st.session_state["latest_news"])
-                with tab5:
-                    st.write(st.session_state["central_bank"])
-                with tab6:
-                    st.write(st.session_state["economic_events"])
+                with tab3:
+                    st.write(st.session_state["news"])
+
         else:
             st.warning("Please authenticate to access the application.")
 

@@ -1,6 +1,5 @@
 import asyncio
 from backend.agents.GeminiChartAgent import GeminiChartAgent
-from backend.service.data_collection import TechnicalIndicators
 
 class MACDAgent(GeminiChartAgent):
 
@@ -41,13 +40,3 @@ The user will provide:
 - When responding, clearly and concisely explain your reasoning so the user can follow your thought process. Maintain a professional tone.
 - Start the analysis directly, **Do not say Ok, here is the analysis.**
 """
-
-async def generate_macd_analysis(currency_pair: str, interval: str, chart_name: str):
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval=interval)
-    data = ti.plot_chart(chart_name=chart_name, size=40, MACD=True)
-    user_message = f"The chart is uploaded. Current data of the last bar: {data}. \n Start you analysis."
-    agent = MACDAgent(user_message=user_message, chart_path=f"data/chart/{chart_name}.png", interval=interval)
-    return await agent.run()
-
-if __name__ == "__main__":
-    print(asyncio.run(generate_macd_analysis("USD/JPY", "1h", "USDJPY_1h_MACD")))

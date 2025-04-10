@@ -1,6 +1,5 @@
 import asyncio
 from backend.agents.GeminiChartAgent import GeminiChartAgent
-from backend.service.data_collection import TechnicalIndicators
 
 class ATRAgent(GeminiChartAgent):
 
@@ -56,14 +55,3 @@ The user will provide:
 
 **Go deep** with your analysis, do not just state the superficial observations.
 """
-
-async def generate_atr_analysis(currency_pair: str, interval: str, chart_name: str, size: int = 40):
-    ti = TechnicalIndicators(currency_pair=currency_pair, interval=interval)
-    data = ti.plot_chart(chart_name=chart_name, size=size, ATR14=True)
-    user_message = f"The chart is uploaded. Current data of the last bar: {data}. \n Start you analysis."
-    agent = ATRAgent(user_message=user_message, chart_path=f"data/chart/{chart_name}.png", interval=interval)
-    return await agent.run()
-
-
-if __name__ == "__main__":
-    print(asyncio.run(generate_atr_analysis("EUR/USD", "1h", "EURUSD_1h_ATR")))

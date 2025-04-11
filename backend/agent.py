@@ -157,7 +157,7 @@ class KnowledgeBase:
         return pipeline.run()
     
     def create_news_analysis(self, k: int = 5):
-        pipeline = NewsPipelie(currency_pair=self.currency_pair, k=k)
+        pipeline = NewsPipeline(currency_pair=self.currency_pair, k=k)
         return pipeline.run()
     
     def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):

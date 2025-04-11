@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from backend.models.data_model import TradingReasoning
 import os
 from backend.orchestrator.RiskSentimentPipeline import RiskSentimentPipeline
-from backend.orchestrator.NewsPipeline import NewsPipelie
+from backend.orchestrator.NewsPipeline import NewsPipeline
 from backend.orchestrator.TechnicalAnalysisPipeline import TechnicalAnalysisPipeline
 from backend.utils.keep_time import time_it
 

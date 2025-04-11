@@ -6,6 +6,9 @@ import time
 from backend.utils.parameters import INVESTING_NEWS_ROOT_WEBSITE, INVESTING_ASSETS
 from typing import List, Dict
 import pandas as pd
+from backend.utils.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 class InvestingScrapper(SeleniumScrapper):
 
@@ -44,25 +47,31 @@ class InvestingScrapper(SeleniumScrapper):
         return links
     
     def get_asset(self, name, url) -> List[str]:
+        logger.info(f"Fetching data for {name} from {url}")
         self.driver.get(url)
+        self.close_ads()
+        logger.info(f"get url and close ads for {name}")
         time.sleep(1)  # wait for JS to load
 
         try:
             price = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]').text
             change = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]').text
             change_pct = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]').text
+            logger.info(f"Fetched data for {name}: Price: {price}, Change: {change}, Change (%): {change_pct}")
             return [name, price, change, change_pct]
         except Exception as e:
-            print(f"Error fetching {name}: {e}")
+            logger.error(f"Error fetching data for {name}: {e}")
             return [name, None, None, None]
 
     def get_all_assets(self) -> str:
         results = []
+        logger.info(f"Fetching data for all assets related to {self.currency_pair}")
         for name, url in self.assets_url.items():
             result = self.get_asset(name, url)
             results.append(result)
             #print(f"Fetched data for {name}: {result}")
         self.quit_driver()
+        logger.info("All assets data fetched and driver closed.")
 
         results_df = pd.DataFrame(results, columns=["Asset", "Last Price", "Change", "Change (%)"])
         results_md = results_df.to_markdown(index=False)

@@ -1,5 +1,8 @@
 from backend.service.InvestingScrapper import InvestingScrapper
 from backend.agents.sentiment.RiskSentimentAgent import RiskSentimentAgent
+from backend.utils.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 class RiskSentimentPipeline:
     def __init__(self, currency_pair: str):
@@ -15,7 +18,9 @@ class RiskSentimentPipeline:
         return analysis
     
     def run(self):
+        logger.info("Running Risk Sentiment Pipeline")
         assets_data = self.get_assets_data()
+        logger.info("Assets data fetched successfully")
         analysis = self.analyze_sentiment(assets_data=assets_data)
         return analysis
     

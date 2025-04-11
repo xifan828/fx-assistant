@@ -168,9 +168,9 @@ class KnowledgeBase:
     def create_all_analysis_parallel(self):
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
-                #executor.submit(self.create_risk_sentiment_analysis): "Risk Sentiment",
-                executor.submit(self.create_news_analysis): "News Analysis",
-                executor.submit(self.create_technical_analysis): "Technical Analysis"
+                executor.submit(self.create_risk_sentiment_analysis): "Risk Sentiment",
+                #executor.submit(self.create_news_analysis): "News Analysis",
+                #executor.submit(self.create_technical_analysis): "Technical Analysis"
             }
             
             results = {}

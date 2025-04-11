@@ -11,6 +11,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 from PIL import Image, ImageDraw, ImageFont
 import os
+from backend.utils.logger_config import get_logger
+logger = get_logger(__name__)
 
 class SeleniumScrapper:
 
@@ -44,21 +46,40 @@ class SeleniumScrapper:
             service = Service(driver_path)
             return webdriver.Chrome(service=service, options=chrome_options)
     
+    def wait_for_popup(self, timeout=5):
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.presence_of_element_located((By.XPATH, "//*[text()='×' or contains(@class, 'close') or contains(@id, 'close')]"))
+            )
+            logger.info("Popup appeared.")
+        except:
+            logger.info(f"No popup appeared within the {timeout} period.")
+    
     def close_ads(self):
         try:
-            # Look for common ad elements
-            potential_ads = self.driver.find_elements(By.XPATH, "//*[contains(@style, 'z-index')]")
+            # Use a list of known close button selectors to check for common patterns
+            close_selectors = [
+                "//div[contains(@class, 'popup') or contains(@class, 'modal') or contains(@class, 'overlay')]//*[text()='×']",
+                "//button[contains(text(), '×')]",
+                "//div[contains(@aria-label, 'Close')]",
+                "//div[contains(@class, 'close') or contains(@id, 'close')]",
+                "//div[@role='dialog']//button[contains(@class, 'close')]",
+            ]
             
-            for ad in potential_ads:
-                try:
-                    close_button = ad.find_element(By.XPATH, ".//*[contains(text(), '×') or contains(@class, 'close') or contains(@id, 'close')]")
-                    close_button.click()
-                    print("Ad closed.")
-                    return 
-                except NoSuchElementException:
-                    continue 
+            for selector in close_selectors:
+                elements = self.driver.find_elements(By.XPATH, selector)
+                for el in elements:
+                    try:
+                        if el.is_displayed():
+                            el.click()
+                            logger.info("Ad closed.")
+                            time.sleep(1)  # Allow UI to refresh
+                            return
+                    except Exception as e:
+                        logger.warning(f"Failed to click on element: {e}")
         except Exception as e:
-            print(f"Error while attempting to close ads: {e}")
+            logger.error(f"Error while attempting to close ads: {e}")
+
     
     def quit_driver(self):
         self.driver.quit()

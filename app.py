@@ -85,11 +85,11 @@ def main():
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:
-                    #st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
-                    st.session_state["news"] = "None"
+                    st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
+                    #st.session_state["news"] = "None"
                 if "technical_analysis" not in st.session_state:
-                    #st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
-                    st.session_state["technical_analysis"] = "None"
+                    st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
+                    #st.session_state["technical_analysis"] = "None"
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
                     

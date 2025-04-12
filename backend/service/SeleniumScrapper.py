@@ -31,6 +31,8 @@ class SeleniumScrapper:
         chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
         chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
 
+        chrome_options.page_load_strategy = "eager"
+
         if driver_path is None:
             try:
                 chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path

@@ -49,8 +49,8 @@ class InvestingScrapper(SeleniumScrapper):
     def get_asset(self, name, url) -> List[str]:
         logger.info(f"Fetching data for {name} from {url}")
         self.driver.get(url)
-        self.wait_for_popup(timeout=5)
-        self.close_ads()
+        #self.wait_for_popup(timeout=5)
+        #self.close_ads()
         logger.info(f"get url and close ads for {name}")
         time.sleep(1)  # wait for JS to load
 

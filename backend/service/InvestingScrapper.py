@@ -91,6 +91,19 @@ class InvestingScrapper(SeleniumScrapper):
             us_japan_2y_spread = us_2y_yield - japan_2y_yield
             us_japan_10y_spread = us_10y_yield - japan_10y_yield
             spread_str = f"US 2Y - Japan 2Y spread: {us_japan_2y_spread:.2f} bps\nUS 10Y - Japan 10Y spread: {us_japan_10y_spread:.2f} bps"
+        elif self.currency_pair == "GBP/USD":
+            uk_2y_yield = float(results_df[results_df['Asset'] == 'UK 2Y Yield']['Last Price'].values[0])
+            uk_10y_yield = float(results_df[results_df['Asset'] == 'UK 10Y Yield']['Last Price'].values[0])
+            us_uk_2y_spread = us_2y_yield - uk_2y_yield
+            us_uk_10y_spread = us_10y_yield - uk_10y_yield
+            spread_str = f"US 2Y - UK 2Y spread: {us_uk_2y_spread:.2f} bps\nUS 10Y - UK 10Y spread: {us_uk_10y_spread:.2f} bps"
+        elif self.currency_pair == "USD/CNH":
+            china_2y_yield = float(results_df[results_df['Asset'] == 'China 2Y Yield']['Last Price'].values[0])
+            china_10y_yield = float(results_df[results_df['Asset'] == 'China 10Y Yield']['Last Price'].values[0])
+            us_china_2y_spread = us_2y_yield - china_2y_yield
+            us_china_10y_spread = us_10y_yield - china_10y_yield
+            spread_str = f"US 2Y - China 2Y spread: {us_china_2y_spread:.2f} bps\nUS 10Y - China 10Y spread: {us_china_10y_spread:.2f} bps"
+
         
         assests_str = results_md + "\n\n" + spread_str
     

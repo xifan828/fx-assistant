@@ -114,7 +114,6 @@ class TradingViewScrapper(SeleniumScrapper):
 
         scrapper = JinaAIScrapper()
         news = asyncio.run(scrapper.aget_multiple(links[:k]))
-        print("get news content")
         return news
 
     

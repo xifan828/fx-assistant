@@ -7,6 +7,7 @@ from mplfinance.original_flavor import candlestick_ohlc
 import pandas as pd
 import os
 import numpy as np
+from backend.utils.parameters import PIP_INTERVALS, DECIMAL_PLACES
 
 class TechnicalCharts:
     def __init__(self, currency_pair: str, interval: str, df: pd.DataFrame, size: int, chart_name: str):
@@ -29,7 +30,7 @@ class TechnicalCharts:
                shading: bool = False):
         # collect current data
         data = {}
-        decimal_places = 4 if self.currency_pair == "EUR/USD" else 2
+        decimal_places = DECIMAL_PLACES[self.currency_pair]
 
         # --- Data Preparation ---
         fx_data = self.df.copy()
@@ -169,26 +170,32 @@ class TechnicalCharts:
             data["ATR14"] = fx_data.iloc[-1]["ATR"].round(decimal_places)
 
         # --- Formatting: Axis Labels, Ticks, and Grids ---
-        if self.currency_pair == "EUR/USD":
+        def make_price_formatter(decimal_places):
             def price_formatter(x, pos):
-                return f"{x:.4f}"
-        elif self.currency_pair == "USD/JPY":
-            def price_formatter(x, pos):
-                return f"{x:.1f}"
-        else:
-            def price_formatter(x, pos):
-                return str(x)
+                return f"{x:.{decimal_places}f}"
+            return price_formatter
+        formatter = make_price_formatter(decimal_places)
+        # def price_formatter(x, pos):
+        #     return f"x:.{decimal_places}f"
+        # if self.currency_pair == "EUR/USD":
+        #     def price_formatter(x, pos):
+        #         return f"{x:.4f}"
+        # elif self.currency_pair == "USD/JPY":
+        #     def price_formatter(x, pos):
+        #         return f"{x:.1f}"
+        # else:
+        #     def price_formatter(x, pos):
+        #         return str(x)
 
         # Calculate y-axis ticks for the price chart.
         y_min, y_max = ax_price.get_ylim()
-        pip_interval_dict = {
-            "EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 10 / 10000, '4h': 50 / 10000},
-            "USD/JPY": {'5min': 10 / 100, '15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100}
-        }
-        pip_interval = pip_interval_dict[self.currency_pair][self.interval]
+
+        pip_interval = PIP_INTERVALS[self.currency_pair][self.interval]
         y_min = round(y_min / pip_interval) * pip_interval
         y_max = round(y_max / pip_interval) * pip_interval
         y_ticks = np.arange(y_min, y_max + pip_interval, pip_interval)
+        # num_ticks = int(round((y_max - y_min) / pip_interval)) + 1
+        # y_ticks = np.linspace(y_min, y_max, num_ticks)
 
         def date_formatter(x, pos):
             index = int(round(x))
@@ -205,7 +212,7 @@ class TechnicalCharts:
             ax.yaxis.tick_right()
             ax.yaxis.set_label_position("right")
             if i == 0:
-                ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
+                ax.yaxis.set_major_formatter(FuncFormatter(formatter))
                 ax.set_yticks(y_ticks)
                 ax.tick_params(axis='x', rotation=0)
             else:

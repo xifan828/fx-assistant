@@ -5,6 +5,10 @@ import mimetypes
 import aiofiles  # Install with: pip install aiofiles
 from google import genai
 from google.genai import types
+from openai import AsyncOpenAI
+from dotenv import load_dotenv
+from typing import List
+from pydantic import BaseModel
 
 class Config:
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0, max_tokens: int = None):
@@ -14,6 +18,43 @@ class Config:
     
     def get_model(self):
         return ChatOpenAI(model=self.model_name, temperature=self.temperature, max_tokens=self.max_tokens)
+
+class OpenAIClient:
+    def __init__(self, model: str, temperature: float = 0.2, reasoning_effort: str = "medium"):
+        load_dotenv()
+        self.client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        self.model = model
+        self.temperature = temperature
+        self.reading_effort = reasoning_effort
+
+    async def chat_completion(self, messages,  **kwargs) -> str:
+        try:
+            response = await self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature,
+                **kwargs
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"Error in chat_completion: {e}")
+            raise e
+    
+    async def structured_chat_completion(self, messages: List, response_format: BaseModel, **kwargs) -> BaseModel:
+        try:
+            response = await self.client.beta.chat.completions.parse(
+                model=self.model,
+                messages=messages,
+                response_format=response_format,
+                temperature=self.temperature,
+                **kwargs
+            )
+
+            return response.choices[0].message.parsed
+
+        except Exception as e:
+            print(f"Error in structured_chat_completion: {e}")
+            raise e
 
 class GeminiClient:
     def __init__(self, model_name: str, generation_config: dict, api_key: str, system_instruction: str = None):

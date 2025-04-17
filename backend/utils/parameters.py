@@ -26,46 +26,67 @@ ECONOMIC_INDICATORS_WEBSITES = {
         "Interest_Rate_JP": "https://tradingeconomics.com/japan/interest-rate",
         "Inflation_Rate_JP": "https://tradingeconomics.com/japan/inflation-cpi",
         "Unemployment_Rate_JP": "https://tradingeconomics.com/japan/unemployment-rate"
+    },
+
+    "GBP": {
+        "GDP_UK": "https://tradingeconomics.com/united-kingdom/gdp-growth",
+        "Interest_Rate_UK": "https://tradingeconomics.com/united-kingdom/interest-rate",
+        "Inflation_Rate_UK": "https://tradingeconomics.com/united-kingdom/inflation-cpi",
+        "Unemployment_Rate_UK": "https://tradingeconomics.com/united-kingdom/unemployment-rate",
+    },
+
+    "CNH": {
+        "GDP_CN": "https://tradingeconomics.com/china/gdp-growth",
+        "Interest_Rate_CN": "https://tradingeconomics.com/china/interest-rate",
+        "Inflation_Rate_CN": "https://tradingeconomics.com/china/inflation-cpi",
+        "Unemployment_Rate_CN": "https://tradingeconomics.com/china/unemployment-rate",
     }
 }
 
 NEWS_ROOT_WEBSITE = {
     "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX",
-    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX"
+    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX",
+    "GBP/USD": "https://www.tradingview.com/symbols/GBPUSD/news/?exchange=FX",
+    "USD/CNH": "https://www.tradingview.com/symbols/USDCNH/news/?exchange=FX",
 }
 
 INVESTING_NEWS_ROOT_WEBSITE = {
     "EUR/USD": "https://cn.investing.com/currencies/eur-usd-news",
-    "USD/JPY": "https://cn.investing.com/currencies/usd-jpy-news"
+    "USD/JPY": "https://cn.investing.com/currencies/usd-jpy-news",
+    "GBP/USD": "https://cn.investing.com/currencies/gbp-usd-news",
+    "USD/CNH": "https://cn.investing.com/currencies/usd-cnh-news",
 }
 
 TECHNICAL_INDICATORS_WEBSITES = {
     "EUR/USD": {
         "indicator": "https://www.tradingview.com/symbols/EURUSD/technicals/?exchange=FX",
         "calender": "https://www.tradingview.com/symbols/EURUSD/economic-calendar/?exchange=FX",
-        "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=EURUSD"
     },
     "USD/JPY": {
         "indicator": "https://www.tradingview.com/symbols/USDJPY/technicals/?exchange=FX",
         "calender": "https://www.tradingview.com/symbols/USDJPY/economic-calendar/?exchange=FX",
-        "chart": "http://www.aastocks.com/en/forex/quote/chart.aspx?symbol=USDJPY"
+    },
+    "GBP/USD": {
+        "indicator": "https://www.tradingview.com/symbols/GBPUSD/technicals/?exchange=FX",
+        "calender": "https://www.tradingview.com/symbols/GBPUSD/economic-calendar/?exchange=FX",
+    },
+
+    "USD/CNH": {
+        "indicator": "https://www.tradingview.com/symbols/USDCNH/technicals/?exchange=FX",
+        "calender": "https://www.tradingview.com/symbols/USDCNH/economic-calendar/?exchange=FX",
     }
 }
 
 CURRENCY_TICKERS = {
     "EUR/USD": "EURUSD=X",
-    "USD/JPY": "USDJPY=X"
+    "USD/JPY": "USDJPY=X",
+    "GBP/USD": "GBPUSD=X",
+    "USD/CNH": "USDCNH=X",
 }
 
 CENTRAL_BANKS = {
     "EUR": ECB(), "USD": FED(), "JPY": BOJ()
 }
-
-AI_SEARCH_QUERIES = [
-        f"Recent FED reserve decisions affecting EUR/USD exchange rate {FORMATED_DATE}", 
-        f"Recent ECB decisions affecting EUR/USD exchange rate {FORMATED_DATE}",
-    ]
-
 
 INVESTING_ASSETS = {
     "general": {
@@ -94,5 +115,33 @@ INVESTING_ASSETS = {
         "USD/JPY": "https://www.investing.com/currencies/usd-jpy",
         "Japan 2Y Yield": "https://www.investing.com/rates-bonds/japan-2-year-bond-yield",
         "Japan 10Y Yield": "https://www.investing.com/rates-bonds/japan-10-year-bond-yield",
+    },
+
+    "GBP": {
+        "GBP/USD": "https://www.investing.com/currencies/gbp-usd",
+        "UK 2Y Yield": "https://www.investing.com/rates-bonds/uk-2-year-bond-yield",
+        "UK 10Y Yield": "https://www.investing.com/rates-bonds/uk-10-year-bond-yield",
+    },
+
+    "CNH": {
+        "USD/CNH": "https://www.investing.com/currencies/usd-cnh",
+        "China 2Y Yield": "https://www.investing.com/rates-bonds/china-2-year-bond-yield",
+        "China 10Y Yield": "https://www.investing.com/rates-bonds/china-10-year-bond-yield",
     }
 }
+
+PIP_INTERVALS = {
+            "EUR/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 20 / 10000, '4h': 50 / 10000},
+            "USD/JPY": {'5min': 10 / 100, '15min': 10 / 100, '1h': 50 / 100, '4h': 50 / 100},
+            "GBP/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 20 / 10000, '4h': 50 / 10000},
+            "AUD/USD": {'5min': 5 / 10000, '15min': 5 / 10000, '1h': 20 / 10000, '4h': 50 / 10000},
+            "USD/CNH": {'5min': 0.01, '15min': 0.01, '1h': 0.02, '4h': 0.04},
+        }
+
+DECIMAL_PLACES = {
+            "EUR/USD": 4,
+            "USD/JPY": 2,
+            "GBP/USD": 4,
+            "AUD/USD": 4,
+            "USD/CNH": 2,
+        }

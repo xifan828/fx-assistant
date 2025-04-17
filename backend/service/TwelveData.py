@@ -44,7 +44,7 @@ class TwelveData:
 
 if __name__ == "__main__":
     # Example usage
-    td = TwelveData(currency_pair="EUR/USD", interval="1h", outputsize=200, exchange="OANDA")
+    td = TwelveData(currency_pair="GBP/USD", interval="1h", outputsize=200, exchange="OANDA")
     data = td.get_data()
     print("head")
     print(data.head())

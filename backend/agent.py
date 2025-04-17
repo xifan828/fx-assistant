@@ -10,6 +10,7 @@ from backend.orchestrator.RiskSentimentPipeline import RiskSentimentPipeline
 from backend.orchestrator.NewsPipeline import NewsPipeline
 from backend.orchestrator.TechnicalAnalysisPipeline import TechnicalAnalysisPipeline
 from backend.utils.keep_time import time_it
+from backend.utils.format_response import basemodel_to_md_str
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -152,24 +153,29 @@ class KnowledgeBase:
         self.currency_pair = currency_pair
         
     
-    def create_risk_sentiment_analysis(self):
+    def create_risk_sentiment_analysis(self, news: str):
         pipeline = RiskSentimentPipeline(currency_pair=self.currency_pair)
-        return pipeline.run()
+        risk_analysis = pipeline.run(news)
+        risk_analysis_md = basemodel_to_md_str(risk_analysis)
+        return risk_analysis_md
     
     def create_news_analysis(self, k: int = 5):
         pipeline = NewsPipeline(currency_pair=self.currency_pair, k=k)
-        return pipeline.run()
+        news_synthesis = pipeline.run()
+        news_synthesis_str = basemodel_to_md_str(news_synthesis)
+        return news_synthesis_str
     
     def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):
         pipeline = TechnicalAnalysisPipeline(currency_pair=self.currency_pair, interval=interval, size=size, analysis_types=analysis_types)
         return asyncio.run(pipeline.run())
     
     @time_it
-    def create_all_analysis_parallel(self):
+    def create_all_analysis_parallel(self) -> Dict[str, str]:
+        news = self.create_news_analysis()
+
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_data = {
-                executor.submit(self.create_risk_sentiment_analysis): "Risk Sentiment",
-                executor.submit(self.create_news_analysis): "News Analysis",
+                executor.submit(self.create_risk_sentiment_analysis, news): "Risk Sentiment",
                 executor.submit(self.create_technical_analysis): "Technical Analysis"
             }
             
@@ -182,6 +188,8 @@ class KnowledgeBase:
                     print(f'{data_name} generated an exception: {exc}')
                     results[data_name] = None
             
+            results["News Analysis"] = news
+
             return results
     
     @time_it
@@ -198,7 +206,7 @@ class KnowledgeBase:
 if __name__ == "__main__":
     kb = KnowledgeBase(
         #currency_pair="USD/JPY",
-        currency_pair="EUR/USD"
+        currency_pair="GBP/USD"
     )
     results = kb.create_all_analysis_parallel()
     for k, v in results.items():

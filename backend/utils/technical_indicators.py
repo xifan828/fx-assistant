@@ -59,7 +59,7 @@ class TechnicalIndicators:
         return df
     
     @staticmethod
-    def get_ma_context(df: pd.DataFrame, decimal_places: int) -> str:
+    def get_ma_context(df: pd.DataFrame, decimal_places: int, period: int = 20) -> str:
         df = df.copy()
 
         df['EMA20_cross_above_EMA50'] = (df['EMA20'] > df['EMA50']) & (df['EMA20'].shift(1) <= df['EMA50'].shift(1))
@@ -82,9 +82,9 @@ class TechnicalIndicators:
         df['Price_cross_below_EMA100'] = (df['Close'] < df['EMA100']) & (df['Close'].shift(1) >= df['EMA100'].shift(1))
 
         # Create a list to store our natural language events
-        events = []
+        events = [f"In the last {period} bars: "]
 
-        for idx, row in df[-20:].iterrows():
+        for idx, row in df[period * -1:].iterrows():
             date = row['Date']
             if row['EMA20_cross_above_EMA50']:
                 events.append(f"On {date}, EMA20 crossed above EMA50.")
@@ -120,3 +120,76 @@ class TechnicalIndicators:
         price_context = " > ".join([f"{k}: {v}" for k, v in sorted_items])
 
         return f"{cross_over_context}\nLatest Values in descending order:\n**{price_context}**"
+    
+    @staticmethod
+    def get_macd_context(df: pd.DataFrame, decimal_places: int, period: int = 20) -> str:
+        # Create a copy of the dataframe
+        df = df.copy()
+        
+        # Detect when the MACD line crosses above or below the MACD Signal line
+        df['MACD_cross_above_Signal'] = (df['MACD'] > df['MACD_Signal']) & (df['MACD'].shift(1) <= df['MACD_Signal'].shift(1))
+        df['MACD_cross_below_Signal'] = (df['MACD'] < df['MACD_Signal']) & (df['MACD'].shift(1) >= df['MACD_Signal'].shift(1))
+        
+        # Detect when the MACD histogram (MACD_Diff) crosses zero
+        df['MACD_Diff_cross_above_0'] = (df['MACD_Diff'] > 0) & (df['MACD_Diff'].shift(1) <= 0)
+        df['MACD_Diff_cross_below_0'] = (df['MACD_Diff'] < 0) & (df['MACD_Diff'].shift(1) >= 0)
+        
+        # List to store natural language events for the most recent period
+        events = [f"In the last {period} bars: "]
+        
+        # Iterate over the last 20 rows of the dataframe
+        for idx, row in df[period * -1:].iterrows():
+            date = row['Date']
+            if row['MACD_cross_above_Signal']:
+                events.append(f"On {date}, MACD crossed above the MACD Signal line.")
+            if row['MACD_cross_below_Signal']:
+                events.append(f"On {date}, MACD crossed below the MACD Signal line.")
+            if row['MACD_Diff_cross_above_0']:
+                events.append(f"On {date}, the MACD histogram turned positive (MACD_Diff crossed above 0).")
+            if row['MACD_Diff_cross_below_0']:
+                events.append(f"On {date}, the MACD histogram turned negative (MACD_Diff crossed below 0).")
+        
+        # Build the context string for MACD events
+        macd_context = "\n".join(events) if events else "No significant MACD events detected."
+        
+        # Summarize the latest indicator values, rounding them appropriately.
+        last_bar = df.iloc[-1]
+
+        values_context = f"MACD: {last_bar['MACD'].round(decimal_places)}, MACD Signal: {last_bar['MACD_Signal'].round(decimal_places)}, MACD Diff: {last_bar['MACD_Diff'].round(decimal_places)}"
+        
+        # Return the final natural language description with the events and the latest sorted values.
+        return f"{macd_context}\nLatest Values:\n**{values_context}**"
+
+    @staticmethod
+    def get_atr_context(df: pd.DataFrame, decimal_places: int) -> str:
+        # Create a copy of the dataframe
+        df = df.copy()
+        
+        # Get the latest ATR value
+        last_atr = df['ATR'].iloc[-1].round(decimal_places)
+        
+        # Get the latest closing price
+        last_close = df['Close'].iloc[-1].round(decimal_places)
+        
+        # Calculate the ATR context
+        atr_context = f"Latest ATR: {last_atr}, Latest Close: {last_close}"
+        
+        return atr_context
+    
+    @staticmethod
+    def get_rsi_context(df: pd.DataFrame, decimal_places: int) -> str:
+        # Create a copy of the dataframe
+        df = df.copy()
+        
+        # Get the latest RSI value
+        last_rsi = df['RSI14'].iloc[-1].round(decimal_places)
+        
+        # Determine the RSI context based on the latest value
+        if last_rsi > 70:
+            rsi_context = "Overbought"
+        elif last_rsi < 30:
+            rsi_context = "Oversold"
+        else:
+            rsi_context = "Neutral"
+        
+        return f"Latest RSI: {last_rsi}"

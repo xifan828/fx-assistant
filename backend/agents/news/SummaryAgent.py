@@ -1,8 +1,8 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
+
 from backend.utils.llm_helper import Config
-from backend.utils.keep_time import time_it
 from typing import List, Dict
+from backend.utils.llm_helper import OpenAIClient
+import asyncio
 
 class SummaryAgent:
 
@@ -15,30 +15,32 @@ Pay particular attention to:
 - Key data points and their potential implications.
 - Shifts in market sentiment or risk appetite.
 
-Be concise and focus on the most impactful information.
+Be **concise** and focus on the most impactful information.
 """
 
-    def __init__(self, currency_pair: str):
+    def __init__(self, currency_pair: str, model_name: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2):
         self.currency_pair = currency_pair
-        self.summarize_llm = Config(model_name="gpt-4o-mini", temperature=0.2).get_model()
+        self.openai_client = OpenAIClient(model=model_name, temperature=temperature)
     
-    @time_it    
-    def summarize_news(self, news: List[Dict[str, str]]) -> List[Dict[str, str]]:
-        user_prompt = """
-         <content>
-         {content}
-         </content>"""
+    async def summarize_news(self, news: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
-        prompt = ChatPromptTemplate.from_messages([
-        ("system", self.summarize_system_template),
-        ("user", user_prompt)])
 
-        chain = prompt | self.summarize_llm | StrOutputParser()
-        results = chain.batch([{"content": news_dict["content"], "currency_pair": self.currency_pair} for news_dict in news])
+        system_message = self.summarize_system_template.format(currency_pair=self.currency_pair)
 
-        for i, news_dict in enumerate(news):
-            news_dict["summary"] = results[i]
+        tasks = {
+            news_dict["url"]: self.openai_client.chat_completion(
+                messages = [
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": news_dict["content"]}
+                ]
+            )
+            for news_dict in news
+        }
 
+        responses = await asyncio.gather(*tasks.values())
+
+        for nd, summary in zip(news, responses):
+            nd["summary"] = summary
         return news
 
 
@@ -50,8 +52,8 @@ if __name__ == "__main__":
     tv_scrapper.quit_driver()
     news = tv_scrapper.get_news(news_links, 5)
 
-    news_agent = SummaryAgent("EUR/USD")
-    news = news_agent.summarize_news(news)
+    news_agent = SummaryAgent("EUR/USD", model_name="gpt-4.1-mini-2025-04-14")
+    news = asyncio.run(news_agent.summarize_news(news))
 
     for news_dict in news:
         print(news_dict["url"])

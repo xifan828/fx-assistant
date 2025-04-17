@@ -50,7 +50,7 @@ def main():
 
     if st.session_state["authenticated"]:
         # Choices of Currency Pairs
-        currencyOptions = ["EUR/USD", "USD/JPY"]
+        currencyOptions = ["EUR/USD", "USD/JPY", "GBP/USD", "USD/CNH"]
         
         # Model Selection
         model_choice = st.sidebar.selectbox(

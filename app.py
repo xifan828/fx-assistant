@@ -7,8 +7,7 @@ import os
 import numpy as np
 from dotenv import load_dotenv
 
-
-st.set_page_config(layout = "wide")
+st.set_page_config(layout="centered")
 
 load_dotenv()
 def check_email(email):
@@ -85,23 +84,22 @@ def main():
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:
-                    st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
-                    #st.session_state["news"] = "None"
+                    #st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
+                    st.session_state["news"] = "None"
                 if "technical_analysis" not in st.session_state:
-                    st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
-                    #st.session_state["technical_analysis"] = "None"
+                    #st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
+                    st.session_state["technical_analysis"] = "None"
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
-                    
-            chart, chat = st.columns(2)
-            with chart:
-                with st.container(height=350, border=True):
-                    st.image("data/chart/1h_ema.png")
-                    # tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
-                    # with tab1:
-                    #     st.image("data/chart/5min.png")
-                    # with tab2:
-                    #     st.image("data/chart/1h.png")
+
+            with st.container():
+                st.image("data/chart/1h_ema.png")
+                # tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
+                # with tab1:
+                #     st.image("data/chart/5min.png")
+                # with tab2:
+                #     st.image("data/chart/1h.png")
+            st.divider()
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
             if "prefix_messages" not in st.session_state:
@@ -109,7 +107,6 @@ def main():
                     st.session_state["news"], 
                     st.session_state["technical_analysis"],
                     st.session_state["risk_sentiment"]
-                    #st.session_state["risk_sentiment"]
                 )
             if "messages" not in st.session_state:
                 st.session_state["messages"] = [
@@ -118,38 +115,14 @@ def main():
             if "strategy" not in st.session_state:
                     st.session_state["strategy"] = []
 
-            with chat:
-                with st.container(height=350):
-                    st.html("<div style='text-align: center; font-size: 35px'><b> Ask a question </b></div>")
-                    msgs = st.container(height=190, border=False)
-
-                    if prompt := st.chat_input():
-                        with msgs:
-                            st.session_state["messages"].append({"role": "user", "content": prompt})
-                            message = st.chat_message("user")
-                            message.write(prompt)
-                            #st.chat_message(prompt, is_user=True)
-                            response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
-                            st.session_state["messages"].append({"role": "assistant", "content": response})
-                            message = st.chat_message("assistant")
-                            message.write(response)
-                            #st.chat_message(response)
-
-
             with st.container():
-                tab1, tab2, tab3 = st.tabs(
-                    [
-                    "Risk sentiment",
-                    "Technical Analysis",
-                    "Latest News"]
-                )
-
-                with tab1:
-                    st.write(st.session_state["risk_sentiment"])
-                with tab2:
-                    st.write(st.session_state["technical_analysis"])
-                with tab3:
-                    st.write(st.session_state["news"])
+                st.write(st.session_state["news"])
+            st.divider()
+            with st.container():
+                st.write(st.session_state["technical_analysis"])
+            st.divider()
+            with st.container():
+                st.write(st.session_state["risk_sentiment"])
 
         else:
             st.warning("Please authenticate to access the application.")

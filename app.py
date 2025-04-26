@@ -36,6 +36,9 @@ def main():
     if "process_initialized" not in st.session_state:
         st.session_state["process_initialized"] = False
 
+    if "current_time" not in st.session_state:
+        st.session_state["current_time"] = False
+
     with st.sidebar:
         auth_email_address = st.text_input("Email address", key="auth_email")
         st.text_input("Password", type="password")
@@ -70,6 +73,7 @@ def main():
         if run_process or st.session_state["process_initialized"]:
             if run_process:
                 st.session_state["process_initialized"] = True
+                st.session_state["current_time"] = datetime.datetime.now()
     
                 if "last_currency_pair" in st.session_state and st.session_state["last_currency_pair"] != currency_pair:
                     clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages"])
@@ -101,7 +105,7 @@ def main():
                 #     st.image("data/chart/5min.png")
                 # with tab2:
                 #     st.image("data/chart/1h.png")
-                st.write("Last updated: ", datetime.datetime.now())
+                st.write("Last updated: ", st.session_state["current_time"])
             st.divider()
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])

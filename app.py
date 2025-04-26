@@ -117,6 +117,41 @@ def main():
                 ]
             if "strategy" not in st.session_state:
                     st.session_state["strategy"] = []
+            
+            @st.dialog("Customise Strategy")
+            def customise():
+                
+                totalWeight = 0
+
+                interest = st.checkbox("Interest Rate")
+                if interest:
+                    interestSl = st.slider("Interest Rate", min_value=0, max_value=100, label_visibility="collapsed")
+                    totalWeight += interestSl
+                technical = st.checkbox("Technical Analysis")
+                if technical:
+                    technicalSl = st.slider("Technical Analysis", min_value=0, max_value=100, label_visibility="collapsed")
+                    totalWeight += technicalSl
+                dxy = st.checkbox("DXY Chart")
+                if dxy:
+                    dxySl = st.slider("DXY Chart", min_value=0, max_value=100, label_visibility="collapsed")
+                    totalWeight += dxySl
+                seasonality = st.checkbox("Seasonality")
+                if seasonality:
+                    seasonalitySl = st.slider("Seasonality", min_value=0, max_value=100, label_visibility="collapsed")
+                    totalWeight += seasonalitySl
+                fundamentals = st.checkbox("Fundamentals")
+                if fundamentals:
+                    fundamentalsSl = st.slider("Fundamentals", min_value=0, max_value=100, label_visibility="collapsed")
+                    totalWeight += fundamentalsSl
+                
+                st.write("Total weight: ", totalWeight)
+                if totalWeight <= 100 and totalWeight > 0:
+                    st.button("Generate Strategy", use_container_width=True)
+
+            @st.dialog("Full Analysis")
+            def analysis():
+                st.write(st.session_state["risk_sentiment"])
+
 
             with st.container():
                 st.title("Market at a Glance")
@@ -125,10 +160,15 @@ def main():
             with st.container():
                 st.title("Strategy Highlight")
                 st.write(st.session_state["technical_analysis"])
+                if "customise" not in st.session_state:
+                    if st.button("Customise Strategy", use_container_width=True):
+                        customise()
             st.divider()
             with st.container():
-                st.title("Risk Sentiment")
                 st.write(st.session_state["risk_sentiment"])
+                if "analysis" not in st.session_state:
+                    if st.button("View Full Analysis", use_container_width=True):
+                        analysis()
 
         else:
             st.warning("Please authenticate to access the application.")

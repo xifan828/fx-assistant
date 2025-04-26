@@ -152,7 +152,6 @@ def main():
             def analysis():
                 st.write(st.session_state["risk_sentiment"])
 
-
             with st.container():
                 st.title("Market at a Glance")
                 st.write(st.session_state["news"])

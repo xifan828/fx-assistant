@@ -6,6 +6,7 @@ from PIL import Image
 import os
 import numpy as np
 from dotenv import load_dotenv
+import datetime
 
 st.set_page_config(layout="centered")
 
@@ -84,21 +85,23 @@ def main():
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:
-                    #st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
-                    st.session_state["news"] = "None"
+                    st.session_state["news"] = st.session_state["knowledge"]["News Analysis"]
+                    #st.session_state["news"] = "None"
                 if "technical_analysis" not in st.session_state:
-                    #st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
-                    st.session_state["technical_analysis"] = "None"
+                    st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
+                    #st.session_state["technical_analysis"] = "None"
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
 
             with st.container():
+                st.title(currency_pair)
                 st.image("data/chart/1h_ema.png")
                 # tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
                 # with tab1:
                 #     st.image("data/chart/5min.png")
                 # with tab2:
                 #     st.image("data/chart/1h.png")
+                st.write("Last updated: ", datetime.datetime.now())
             st.divider()
 
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
@@ -116,12 +119,15 @@ def main():
                     st.session_state["strategy"] = []
 
             with st.container():
+                st.title("Market at a Glance")
                 st.write(st.session_state["news"])
             st.divider()
             with st.container():
+                st.title("Strategy Highlight")
                 st.write(st.session_state["technical_analysis"])
             st.divider()
             with st.container():
+                st.title("Risk Sentiment")
                 st.write(st.session_state["risk_sentiment"])
 
         else:

@@ -1,5 +1,6 @@
 from backend.service.SeleniumScrapper import SeleniumScrapper
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import time
@@ -7,6 +8,8 @@ from backend.utils.parameters import INVESTING_NEWS_ROOT_WEBSITE, INVESTING_ASSE
 from typing import List, Dict
 import pandas as pd
 from backend.utils.logger_config import get_logger
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 logger = get_logger(__name__)
 
@@ -15,6 +18,8 @@ class InvestingScrapper(SeleniumScrapper):
     def __init__(self, currency_pair: str, driver_path = None, is_headless = True):
         super().__init__(driver_path, is_headless)
         self.currency_pair = currency_pair
+        self.driver_path = driver_path
+        self.is_headless = is_headless  
         self.news_root_url = INVESTING_NEWS_ROOT_WEBSITE[self.currency_pair]
         self.assets_url = self._get_assets_url()
     
@@ -49,17 +54,39 @@ class InvestingScrapper(SeleniumScrapper):
     def get_asset(self, name, url) -> List[str]:
         logger.info(f"Fetching data for {name} from {url}")
         self.driver.get(url)
-        #self.wait_for_popup(timeout=5)
-        #self.close_ads()
-        logger.info(f"get url and close ads for {name}")
-        time.sleep(1)  # wait for JS to load
+        wait = WebDriverWait(self.driver, 10)
 
+        # try:
+        #     price = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]').text
+        #     change = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]').text
+        #     change_pct = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]').text
+        #     logger.info(f"Fetched data for {name}: Price: {price}, Change: {change}, Change (%): {change_pct}")
+        #     return [name, price, change, change_pct]
+        # except Exception as e:
+        #     logger.error(f"Error fetching data for {name}: {e}")
+        #     return [name, None, None, None]
         try:
-            price = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]').text
-            change = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]').text
-            change_pct = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]').text
-            logger.info(f"Fetched data for {name}: Price: {price}, Change: {change}, Change (%): {change_pct}")
+        # wait until the price element is present in the DOM and visible
+            price_el = wait.until(EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]')
+            ))
+            change_el = wait.until(EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]')
+            ))
+            change_pct_el = wait.until(EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]')
+            ))
+
+            price = price_el.text
+            change = change_el.text
+            change_pct = change_pct_el.text
+
+            logger.info(f"Fetched data for {name}")
             return [name, price, change, change_pct]
+
+        except TimeoutException:
+            logger.error(f"Timed out waiting for price data for {name} at {url}")
+            return [name, None, None, None]
         except Exception as e:
             logger.error(f"Error fetching data for {name}: {e}")
             return [name, None, None, None]
@@ -76,7 +103,11 @@ class InvestingScrapper(SeleniumScrapper):
 
         results_df = pd.DataFrame(results, columns=["Asset", "Last Price", "Change", "Change (%)"])
         results_md = results_df.to_markdown(index=False)
+
+        assests_str = results_md + "\n\n" + self.compute_spreads(results_df)
+        return assests_str
         
+    def compute_spreads(self, results_df: pd.DataFrame) -> str:
         us_2y_yield = float(results_df[results_df['Asset'] == 'US 2Y Yield']['Last Price'].values[0])
         us_10y_yield = float(results_df[results_df['Asset'] == 'US 10Y Yield']['Last Price'].values[0])
         if self.currency_pair == "EUR/USD":
@@ -103,16 +134,50 @@ class InvestingScrapper(SeleniumScrapper):
             us_china_2y_spread = us_2y_yield - china_2y_yield
             us_china_10y_spread = us_10y_yield - china_10y_yield
             spread_str = f"US 2Y - China 2Y spread: {us_china_2y_spread:.2f} bps\nUS 10Y - China 10Y spread: {us_china_10y_spread:.2f} bps"
-
-        
-        assests_str = results_md + "\n\n" + spread_str
+        return spread_str
     
-        return assests_str
+    @staticmethod
+    def _fetch_and_quit(name, url, currency_pair, driver_path, is_headless):
+        tmp = InvestingScrapper(currency_pair, driver_path=driver_path, is_headless=is_headless)
+        try:
+            return tmp.get_asset(name, url)
+        finally:
+            tmp.quit_driver()
 
+    def get_all_assets_parallel(self, max_workers=4) -> str:
+        # build the jobs list
+        jobs = [
+            (name, url, self.currency_pair, self.driver_path, self.is_headless)
+            for name, url in self.assets_url.items()
+        ]
 
+        results = []
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(
+                    InvestingScrapper._fetch_and_quit,
+                    name, url, cp, dp, hd
+                )
+                for name, url, cp, dp, hd in jobs
+            ]
+            for future in as_completed(futures):
+                try:
+                    results.append(future.result())
+                except Exception as e:
+                    logger.error(f"Asset job error: {e}")
+                    continue
+
+        results_df = pd.DataFrame(results, columns=["Asset", "Last Price", "Change", "Change (%)"])
+        results_md = results_df.to_markdown(index=False)
+        return results_md + "\n\n" + self.compute_spreads(results_df)
 
 
 if __name__ == "__main__":
-    scrapper = InvestingScrapper("USD/JPY")
+    import time
+    begin = time.time()
+    scrapper = InvestingScrapper("EUR/USD")
     #scrapper.get_news_websites()
-    print(scrapper.get_all_assets())
+    print(scrapper.get_all_assets_parallel(max_workers=8))
+    #print(scrapper.get_all_assets())
+    end = time.time()
+    print(f"Execution time: {end - begin:.2f} seconds")

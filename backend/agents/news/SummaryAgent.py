@@ -1,8 +1,10 @@
-
-from backend.utils.llm_helper import Config
 from typing import List, Dict
 from backend.utils.llm_helper import OpenAIClient
 import asyncio
+import re
+from backend.utils.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 class SummaryAgent:
 
@@ -22,6 +24,36 @@ Be **concise** and focus on the most impactful information.
         self.currency_pair = currency_pair
         self.openai_client = OpenAIClient(model=model_name, temperature=temperature)
     
+    def extract_content_from_mace_url(self, url: str) -> str:
+        elements = url.split(";")
+        print(elements)
+        contents = []
+        for element in elements:
+            match = re.search(r":0-(.+?)/?$", element)
+            if match:
+                content = match.group(1).replace("-", " ")
+            else:
+                content = element
+            contents.append(content)
+        return "\n".join(contents)
+
+    async def run(self, content: str) -> str:
+
+        if "macenews" in content:
+            content = self.extract_content_from_mace_url(content)
+            response = "Mace flash news:\n" + content
+        else:
+            system_message = self.summarize_system_template.format(currency_pair=self.currency_pair)
+            response = await self.openai_client.chat_completion(
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": content}
+                ]
+            )
+        logger.info(f"Summarized news for {self.currency_pair}")
+        return response
+
+
     async def summarize_news(self, news: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
 
@@ -46,18 +78,9 @@ Be **concise** and focus on the most impactful information.
 
 if __name__ == "__main__":
 
-    from backend.service.TradingViewScrapper import TradingViewScrapper
-    tv_scrapper = TradingViewScrapper("EUR/USD")
-    news_links = tv_scrapper.get_news_websites()
-    tv_scrapper.quit_driver()
-    news = tv_scrapper.get_news(news_links, 5)
+    url = "https://www.tradingview.com/news/macenews:804d5dd87094b:0-fed-s-financial-stability-report-in-survey-before-april-2-potential-near-term-risks-were-global-trade-policy-uncertainty-fiscal-debt/;https://www.tradingview.com/news/macenews:8d02f9e25094b:0-fed-s-financial-stability-report-funding-risks-have-declined-over-the-course-of-the-past-yr-to-a-moderate-level-in-line-historically/;"
 
-    news_agent = SummaryAgent("EUR/USD", model_name="gpt-4.1-mini-2025-04-14")
-    news = asyncio.run(news_agent.summarize_news(news))
+    agent = SummaryAgent(currency_pair="EUR/USD")
+    print(agent.extract_content_from_mace_url(url))
 
-    for news_dict in news:
-        print(news_dict["url"])
-        print(news_dict["summary"])
-        print("="*20)
-        print("\n")
 

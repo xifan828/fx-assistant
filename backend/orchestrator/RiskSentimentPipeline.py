@@ -12,7 +12,7 @@ class RiskSentimentPipeline:
     
     def get_assets_data(self) -> str:
         scrapper = InvestingScrapper(self.currency_pair)
-        return scrapper.get_all_assets()
+        return scrapper.get_all_assets_parallel(max_workers=8)
 
     def analyze_sentiment(self, assets_data: str, news_summary: str) -> RiskSentimentAnalysis:
         agent = RiskSentimentAgent(currency_pair=self.currency_pair, model_name=self.model_name, temperature=self.temperature)

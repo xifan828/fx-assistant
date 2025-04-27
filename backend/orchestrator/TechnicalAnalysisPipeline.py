@@ -8,15 +8,18 @@ from backend.agents.technical_analysis.MAAgent import MAAgent
 from backend.agents.technical_analysis.RSIAgent import RSIAgent
 from backend.agents.technical_analysis.AggAgent import AggAgent
 from backend.utils.parameters import DECIMAL_PLACES
+import os
 
 class TechnicalAnalysisPipeline:
-    def __init__(self, currency_pair: str, interval: str, size: int, analysis_types: List[str], data_source: str = "TwelveData"):
+    def __init__(self, currency_pair: str, interval: str, size: int, analysis_types: List[str], data_source: str = "TwelveData", ti_model: str = "gemini-2.5-flash-preview-04-17", agg_model: str = "gemini-2.5-flash-preview-04-17"):
         self.currency_pair = currency_pair
         self.decimal_places = DECIMAL_PLACES.get(currency_pair, 4)  
         self.interval = interval
         self.size = size
         self.analysis_types = analysis_types
         self.data_source = data_source
+        self.ti_model = ti_model
+        self.agg_model = agg_model
     
     def prepare_technical_data(self):
         data_pipeline = TechnicalDataPipeline(self.currency_pair, self.interval)
@@ -36,20 +39,20 @@ class TechnicalAnalysisPipeline:
             if analysis_type == "ema":
                 user_message = user_message_template.format(context=TechnicalIndicators.get_ma_context(self.df, self.decimal_places))
                 print(user_message)
-                agent = MAAgent(user_message=user_message, chart_path=chart_path, interval=self.interval)
+                agent = MAAgent(user_message=user_message, chart_path=chart_path, interval=self.interval, gemini_model=self.ti_model, gemini_api_key=os.getenv("GEMINI_API_KEY_XIFAN"))
             
             if analysis_type == "macd":
                 user_message = user_message_template.format(context=TechnicalIndicators.get_macd_context(self.df, self.decimal_places))
                 print(user_message)
-                agent = MACDAgent(user_message=user_message, chart_path=chart_path, interval=self.interval)
+                agent = MACDAgent(user_message=user_message, chart_path=chart_path, interval=self.interval, gemini_model=self.ti_model, gemini_api_key=os.getenv("GEMINI_API_KEY_CONG"))
      
             if analysis_type == "atr":
                 user_message = user_message_template.format(context=TechnicalIndicators.get_atr_context(self.df, self.decimal_places))
-                agent = ATRAgent(user_message=user_message, chart_path=chart_path, interval=self.interval)
+                agent = ATRAgent(user_message=user_message, chart_path=chart_path, interval=self.interval, gemini_model=self.ti_model, gemini_api_key=os.getenv("GEMINI_API_KEY_KIEN"))
             
             if analysis_type == "rsi":
                 user_message = user_message_template.format(context=TechnicalIndicators.get_rsi_context(self.df, self.decimal_places))
-                agent = RSIAgent(user_message=user_message, chart_path=chart_path, interval=self.interval)
+                agent = RSIAgent(user_message=user_message, chart_path=chart_path, interval=self.interval, gemini_model=self.ti_model, gemini_api_key=os.getenv("GEMINI_API_KEY_XIFAN"))
 
             coroutines[analysis_type] = agent.run()
 
@@ -69,7 +72,7 @@ class TechnicalAnalysisPipeline:
     
     async def aggregate_analysis(self, formatted_analysis: str):
         agent = AggAgent(
-            gemini_model="gemini-2.5-flash-preview-04-17",
+            gemini_model=self.agg_model,
             user_message=formatted_analysis
         )
         agg_analysis = await agent.run_text()

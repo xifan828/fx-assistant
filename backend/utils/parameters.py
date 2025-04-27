@@ -7,6 +7,12 @@ CURRENT_DATE = datetime.datetime.now()
 # Format the date to "Month Year"
 FORMATED_DATE = CURRENT_DATE.strftime("%B %Y")
 
+CURRENCY_PAIRS = ["EUR/USD", "USD/JPY", "GBP/USD", "USD/CNH"]
+
+#CURRENCY_PAIRS = ["EUR/USD", "USD/JPY"]
+
+PAIRS = [i.replace("/", "_").lower() for i in CURRENCY_PAIRS]
+
 ECONOMIC_INDICATORS_WEBSITES = {
     "USD": {
         "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",

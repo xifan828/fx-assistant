@@ -1,4 +1,6 @@
 from backend.service.SeleniumScrapper import SeleniumScrapper
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,14 +10,17 @@ import os
 from backend.utils.parameters import NEWS_ROOT_WEBSITE, TECHNICAL_INDICATORS_WEBSITES
 from backend.service.JinaAIScrapper import JinaAIScrapper
 import asyncio
-from backend.utils.keep_time import time_it
 from typing import List, Dict
+from backend.utils.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 class TradingViewScrapper(SeleniumScrapper):
 
     def __init__(self, currency_pair: str, driver_path = None, is_headless = True):
         super().__init__(driver_path, is_headless)
         self.currency_pair = currency_pair
+        self.currency_pair_formatted = currency_pair.lower().replace("/", "_")
         self.indicator_url = TECHNICAL_INDICATORS_WEBSITES[self.currency_pair]["indicator"]
         self.calender_url = TECHNICAL_INDICATORS_WEBSITES[self.currency_pair]["calender"]
         self.news_root_url = NEWS_ROOT_WEBSITE[self.currency_pair]
@@ -63,53 +68,90 @@ class TradingViewScrapper(SeleniumScrapper):
                         pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
     
     def get_economic_calenders(self):
-        self.driver.get(self.calender_url)
-        self.driver.execute_script("window.scrollBy(0, 400);")
-        time.sleep(2)
-        
-        self.close_ads()
+        try:
+            self.driver.get(self.calender_url)
+            self.driver.execute_script("window.scrollBy(0, 400);")
+            time.sleep(2)
+            
+            self.close_ads()
 
-        screen_shot_width = 900
-        normal_width = 1920
-        normal_height = 1080
-        line_positions = [500, 620, 750]
+            screen_shot_width = 900
+            normal_width = 1920
+            normal_height = 1080
+            line_positions = [500, 620, 750]
 
-        importance_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
-        importance_button.click()
-        time.sleep(2)
-        self.driver.set_window_size(screen_shot_width, normal_height)
-        self.driver.save_screenshot("data/calender/upcoming.png")
-        self.driver.set_window_size(normal_width, normal_height)
+            importance_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
+            importance_button.click()
+            time.sleep(2)
 
-        today_button = self.driver.find_element(By.ID, "Today")
-        today_button.click()
-        time.sleep(2)
-        self.driver.set_window_size(screen_shot_width, normal_height)
-        self.driver.save_screenshot("data/calender/today.png")
+            dir_path = os.path.join("data", "calender", self.currency_pair_formatted)
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
 
-        for file_name in os.listdir("data/calender/"):
-            with Image.open(f"data/calender/{file_name}") as img:
-                cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
-                draw = ImageDraw.Draw(cropped_img)
-                for line_position in line_positions:
-                    draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
-                
+            self.driver.set_window_size(screen_shot_width, normal_height)
+            self.driver.save_screenshot(os.path.join(dir_path, "calender.png"))
+            self.driver.set_window_size(normal_width, normal_height)
 
-                cropped_img.save(f"data/calender/{file_name}")
+            today_button = self.driver.find_element(By.ID, "Today")
+            today_button.click()
+            time.sleep(2)
+            self.driver.set_window_size(screen_shot_width, normal_height)
+
+            self.driver.save_screenshot(os.path.join(dir_path, "today.png"))
+
+            for file_name in os.listdir(dir_path):
+                with Image.open(os.path.join(dir_path, file_name)) as img:
+                    cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
+                    draw = ImageDraw.Draw(cropped_img)
+                    for line_position in line_positions:
+                        draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
+                    
+
+                    cropped_img.save(os.path.join(dir_path, file_name))
+                    
+        except Exception as e:
+            logger.error(f"Error occurred while getting economic calenders: {e}")
     
     def get_news_websites(self) -> List[str]:
-        self.driver.get(self.news_root_url)
-        self.driver.execute_script("window.scrollBy(0, 400);")
-        time.sleep(2)
+        attempt = 0
+        while attempt < 2:
+            try:
+                self.driver.get(self.news_root_url)
 
-        wait = WebDriverWait(self.driver, 10)
-        container = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.list-iTt_Zp4a")))
+                self.driver.execute_script("window.scrollBy(0, 400);")
 
-        link_elements = container.find_elements(By.TAG_NAME, "a")
-        links = [link.get_attribute("href") for link in link_elements]
-        return links
+                time.sleep(2)
+
+                wait = WebDriverWait(self.driver, 10)
+
+                container = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.list-iTt_Zp4a")))
+                
+                elems = container.find_elements(By.TAG_NAME, "a")
+                links = []
+                for e in elems:
+                    href = e.get_attribute("href")
+                    if href and href.startswith(("http://", "https://")):
+                        links.append(href)
+
+                return links
+            
+            except (TimeoutException, NoSuchElementException) as e:
+                attempt += 1
+                wait_time = 2 ** attempt
+                time.sleep(wait_time)
+            
+            except WebDriverException as e:
+                logger.error(f"WebDriverException occurred: {e}")
+                break
+
+            except Exception as e:
+                logger.error(f"An unexpected error occurred: {e}")
+                break
+
+        logger.error(f"Failed to fetch news links after {attempt} attempts, return empty list")
+        return []
+
     
-    @time_it
     def get_news(self, links: List[str], k: int) -> List[Dict[str, str]]:
 
         scrapper = JinaAIScrapper()
@@ -131,5 +173,7 @@ class TradingViewScrapper(SeleniumScrapper):
 
 
 if __name__ == "__main__":
-    scrapper = TradingViewScrapper("USD/JPY")
-    scrapper.get_all(5)
+    scrapper = TradingViewScrapper("EUR/USD")
+    links = scrapper.get_news_websites()
+    print(links)
+    print(len(links))

@@ -41,15 +41,14 @@ Be **concise** and focus on the most impactful information.
 
         if "macenews" in content:
             content = self.extract_content_from_mace_url(content)
-            response = "Mace flash news:\n" + content
-        else:
-            system_message = self.summarize_system_template.format(currency_pair=self.currency_pair)
-            response = await self.openai_client.chat_completion(
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": content}
-                ]
-            )
+
+        system_message = self.summarize_system_template.format(currency_pair=self.currency_pair)
+        response = await self.openai_client.chat_completion(
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": content}
+            ]
+        )
         logger.info(f"Summarized news for {self.currency_pair}")
         return response
 

@@ -89,7 +89,7 @@ class TradingViewScrapper(SeleniumScrapper):
                 os.makedirs(dir_path)
 
             self.driver.set_window_size(screen_shot_width, normal_height)
-            self.driver.save_screenshot(os.path.join(dir_path, "calender.png"))
+            self.driver.save_screenshot(os.path.join(dir_path, "upcoming.png"))
             self.driver.set_window_size(normal_width, normal_height)
 
             today_button = self.driver.find_element(By.ID, "Today")

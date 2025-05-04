@@ -2,20 +2,24 @@ from backend.utils.parameters import CURRENCY_PAIRS, PAIRS
 from backend.orchestrator.server.ProcessPipeline import ProcessPipeline
 from backend.service.JinaAIScrapper import JinaAIScrapper
 from backend.agents.news.SummaryAgent import SummaryAgent
-from backend.agents.news.SynthesisAgent import SynthesisAgent
+from backend.agents.news.SynthesisAgent import SynthesisAgent, NewsSynthesis
 from typing import List, Dict
 import os
 import asyncio
 import aiohttp
 from backend.utils.logger_config import get_logger
+from datetime import datetime
 
 logger = get_logger(__name__)
 
 class NewsPipeline(ProcessPipeline):
 
-    def __init__(self, k: int = 7):
+    def __init__(self, k: int = 7, summry_model: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2, systhesis_model: str = "gpt-4.1-mini-2025-04-14"):
         super().__init__()
         self.k = k
+        self.summry_model = summry_model
+        self.temperature = temperature
+        self.systhesis_model = systhesis_model
     
     @staticmethod
     def _process_news_urls(urls: List[str]) -> List[str]:
@@ -79,11 +83,11 @@ class NewsPipeline(ProcessPipeline):
         logger.info(f"New news URLs: {new_news_urls}")
         return new_news_urls
     
-    async def fetch_and_summarize(self):
+    async def fetch_and_summarize(self) -> Dict[str, List[Dict[str, str]]]:
         scrapper = JinaAIScrapper()
         currency_urls = self.get_new_news_urls()
         agent_map: Dict[str, SummaryAgent]  = {
-            pair: SummaryAgent(currency_pair=pair)
+            pair: SummaryAgent(currency_pair=pair, model_name=self.summry_model, temperature=self.temperature)
             for pair in PAIRS
         }
 
@@ -95,27 +99,90 @@ class NewsPipeline(ProcessPipeline):
         async with aiohttp.ClientSession() as session:
 
             async def work(pair: str, idx: int, url: str):
-                raw = await scrapper.aget(session, url)
-                summ = await agent_map[pair].run(raw)
-                return pair, idx, {"url": url, "summary": summ}
+                try:
+                    raw = await scrapper.aget(session, url)
+                    summ = await agent_map[pair].run(raw)
+                    return pair, idx, {"url": url, "summary": summ}
+                except Exception as e:
+                    return pair, idx, {"url": url, "summary": "Error summarizing"}
             
             all_tasks = [
                 work(pair, idx, url)
                 for pair, urls in currency_urls.items()
                 for idx, url in enumerate(urls)
             ]
-
-            all_results = await asyncio.gather(*all_tasks)
-
+            try:
+                all_results = await asyncio.gather(*all_tasks)
+            except Exception as e:
+                logger.error(f"Error during gathering tasks: {e}")
+                raise
             for pair, idx, summary_dict in all_results:
                 result[pair][idx] = summary_dict
         
         for pair in PAIRS:
             if result[pair]:
-                self._save_summary_json(result[pair][::-1], os.path.join("data", "process", f"{pair}_news_summary.json"))
-                logger.info(f"Saved {pair} news summary to JSON file")
+                try:
+                    self._save_summary_json(result[pair][::-1], os.path.join("data", "process", f"{pair}_news_summary.json"))
+                    logger.info(f"Saved {pair} news summary to JSON file")
+                except Exception as e:
+                    logger.error(f"Error saving {pair} news summary: {e}")
+                    raise
         
         return result 
+
+    async def synthesize_news(self, pairs: List[str]):
+
+        if not pairs:
+            logger.info("No new news to synthesize")
+            return
+        summaries = {}
+        for currency_pair in pairs:
+            # read the news summary from the JSON file
+            news_summary_file_path = os.path.join("data", "process", f"{currency_pair}_news_summary.json")
+            news_summary: List[Dict] = self._load_json(news_summary_file_path)
+            # order, take the last k news summary
+            news_summary = news_summary[::-1][:self.k]
+            
+            summaries[currency_pair] = news_summary
+        
+        # synthesize the news summary
+        synthesis_agent_map: Dict[str, SynthesisAgent] = {
+            pair: SynthesisAgent(currency_pair=pair, model_name=self.systhesis_model, temperature=self.temperature)
+            for pair in pairs
+        }
+
+        async def safe_synthesize(pair: str):
+            try:
+                return await synthesis_agent_map[pair].synthesize_summaries(summaries[pair])
+            except Exception as e:
+                logger.error(f"Error synthesizing news for {pair}: {e}")
+                # Return a default synthesis indicating an error
+                return NewsSynthesis(url="", synthesis="Error synthesizing")
+
+        task = [safe_synthesize(currency_pair) for currency_pair in pairs]
+        
+        results: List[NewsSynthesis, None] = await asyncio.gather(*task)
+
+        result: Dict[str, Dict[str, str]] = {}
+        for currency_pair, synthesis in zip(pairs, results):
+            if result is None:
+                continue
+            synthesis = synthesis.dict()
+            logger.info(f"Synthesized news for {currency_pair}")
+            synthesis["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+            result[currency_pair] = synthesis
+            systhesis_file_path = os.path.join("data", "process", f"{currency_pair}_news_synthesis.json")
+            self._save_synthesis_json(synthesis, systhesis_file_path)
+            logger.info(f"Saved {currency_pair} news synthesis to JSON file")
+        
+        return result
+    
+    async def run(self):
+        result = await self.fetch_and_summarize()
+        pairs_with_new_summaries = [pair for pair, summaries in result.items() if summaries]
+        await self.synthesize_news(pairs_with_new_summaries)
+    
+
 
 
 
@@ -125,4 +192,4 @@ if __name__ == "__main__":
 
     pipeline = NewsPipeline(k=7)
 
-    result = asyncio.run(pipeline.fetch_and_summarize())
+    asyncio.run(pipeline.run())

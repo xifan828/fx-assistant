@@ -1,12 +1,14 @@
 from backend.service.InvestingScrapper import InvestingScrapper
 from backend.service.TradingViewScrapper import TradingViewScrapper
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from backend.utils.parameters import INVESTING_ASSETS, CURRENCY_PAIRS
+from backend.utils.parameters import INVESTING_ASSETS, CURRENCY_PAIRS, ECONOMIC_INDICATORS_WEBSITES, CURRENCIES
 from backend.utils.logger_config import get_logger
+from backend.service.web_scrapping import TradingEconomicsScraper
 import json
 import os
 from datetime import datetime
 from typing import List, Dict
+import asyncio
 
 logger = get_logger(__name__)
 
@@ -51,9 +53,31 @@ class ScrapePipeline:
             return data
         finally:
             scr.quit_driver()
+    
+    def _fetech_fundamental(self) -> List[str]:
+        """
+        Fetch fundamental data from TradingEconomics
+        """
+        try:
+            results = {}
+            for curr in CURRENCIES:
+                results[curr.lower()] = {}
+                logger.info(f"Fetching fundamental data for {curr}")
+                url_dict = ECONOMIC_INDICATORS_WEBSITES[curr.upper()]
+                scr = TradingEconomicsScraper()
+                pair_results = asyncio.run(scr.scrape_websites(url_dict))
+                results[curr.lower()] = pair_results
+                logger.info(f"Fetched fundamental data for {curr}")
 
+        except Exception as e:
+            logger.error(f"Error fetching fundamental data: {e}")
+            results = {}
+        return results
+        
+            
     def fetch_all(self) -> Dict: 
         results = {}
+        results["asset"] = {}
 
         asset_dict = {
             name: url
@@ -71,19 +95,25 @@ class ScrapePipeline:
 
             # investing tasks
             for name, url in asset_dict.items():
-                futures[executor.submit(self._fetch_inv_asset, name, url)] = name
+                futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
+            
+            # economic indicators tasks
+            futures[executor.submit(self._fetech_fundamental)] = "fundamental"
 
 
             for future in as_completed(futures):
-                task_name = futures[future]
+                task_name: str = futures[future]
                 try:
                     result = future.result()
                     if result:
-                        results[task_name] = result
+                        if "asset_" in task_name:
+                            results["asset"][task_name.split("_")[1]] = result
+                        else:
+                            results[task_name] = result
                     else:
                         logger.warning(f"{task_name} returned None or empty result")
                 except Exception as e:
-                    print(f"{task_name} generated an exception: {e}")
+                    logger.error(f"Error in task {task_name}: {e}")
         
         dir_path = os.path.join("data", "scrape")
         if not os.path.exists(dir_path):
@@ -101,6 +131,10 @@ class ScrapePipeline:
         else:
             records = []
         
+        # delete the first record if len of records is greater than 5
+        if len(records) >= 5:
+            records.pop(0)
+            
         records.append({
             "timestamp": datetime.utcnow().isoformat(),
             "data": data
@@ -108,6 +142,8 @@ class ScrapePipeline:
 
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(records, f, ensure_ascii=False, indent=4)
+    
+
 
 if __name__ == "__main__":
     import time
@@ -116,8 +152,12 @@ if __name__ == "__main__":
     currency_pair = "EUR/USD"
     pipeline = ScrapePipeline(currency_pair)
     result = pipeline.fetch_all()
+    #results = pipeline._fetech_fundamental()
     end_time = time.time()
     
     print(f"Time taken: {end_time - begin_time} seconds")
-        
+    
+    # for k, v in results.items():
+    #     print(f"{k}: {v}")
+    #     print("\n\n")
 

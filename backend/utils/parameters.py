@@ -9,43 +9,78 @@ FORMATED_DATE = CURRENT_DATE.strftime("%B %Y")
 
 CURRENCY_PAIRS = ["EUR/USD", "USD/JPY", "GBP/USD", "USD/CNH"]
 
+CURRENCIES = ["EUR", "USD", "JPY", "GBP", "CNH"]
+
 #CURRENCY_PAIRS = ["EUR/USD", "USD/JPY"]
 
 PAIRS = [i.replace("/", "_").lower() for i in CURRENCY_PAIRS]
 
 ECONOMIC_INDICATORS_WEBSITES = {
     "USD": {
-        "GDP_US": "https://tradingeconomics.com/united-states/gdp-growth",
-        "Interest_Rate_US": "https://tradingeconomics.com/united-states/interest-rate",
-        "Inflation_Rate_US": "https://tradingeconomics.com/united-states/inflation-cpi",
-        "Unemployment_Rate_US": "https://tradingeconomics.com/united-states/unemployment-rate",
-        "Non_Farm_Payrolls_US": "https://tradingeconomics.com/united-states/non-farm-payrolls",
-    },
+        "Fed Fund Rate": "https://tradingeconomics.com/united-states/interest-rate",
+        "Core PCE YoY": "https://tradingeconomics.com/united-states/core-pce-price-index-annual-change",
+        "PCE YoY": "https://tradingeconomics.com/united-states/pce-price-index-annual-change",
+        "GDP QoQ": "https://tradingeconomics.com/united-states/gdp-growth",
+        "ISM Manufacturing PMI": "https://tradingeconomics.com/united-states/business-confidence",
+        "ISM Services PMI": "https://tradingeconomics.com/united-states/non-manufacturing-pmi",
+        "Retail Sales MoM": "https://tradingeconomics.com/united-states/retail-sales",
+        "Unemployment Rate": "https://tradingeconomics.com/united-states/unemployment-rate",
+        "NFP": "https://tradingeconomics.com/united-states/non-farm-payrolls",
+        "Average Hourly Earnings MoM": "https://tradingeconomics.com/united-states/average-hourly-earnings",
+        "Balance of Trade": "https://tradingeconomics.com/united-states/balance-of-trade"
+},
+
     "EUR": {
-        "GDP_EU": "https://tradingeconomics.com/euro-area/gdp-growth",
-        "Interest_Rate_EU": "https://tradingeconomics.com/euro-area/interest-rate",
-        "Inflation_Rate_EU": "https://tradingeconomics.com/euro-area/inflation-cpi",
-        "Unemployment_Rate_EU": "https://tradingeconomics.com/euro-area/unemployment-rate",
-    },
+        "ECB Rate (Deposit Facility Rate)": "https://tradingeconomics.com/euro-area/interest-rate",
+        "Core HICP YoY": "https://tradingeconomics.com/euro-area/core-inflation-rate",
+        "HICP YoY": "https://tradingeconomics.com/euro-area/inflation-cpi",
+        "GDP QoQ": "https://tradingeconomics.com/euro-area/gdp-growth",
+        "HCOB Manufacturing PMI": "https://tradingeconomics.com/euro-area/manufacturing-pmi",
+        "HCOB Services PMI": "https://tradingeconomics.com/euro-area/services-pmi",
+        "Unemployment Rate": "https://tradingeconomics.com/euro-area/unemployment-rate",
+        "Negotiated Wage Growth": "https://tradingeconomics.com/euro-area/negotiated-wage-growth",
+        "Balance of Trade": "https://tradingeconomics.com/euro-area/balance-of-trade"
+},
+
     "JPY": {
-        "GDP_JP": "https://tradingeconomics.com/japan/gdp-growth",
-        "Interest_Rate_JP": "https://tradingeconomics.com/japan/interest-rate",
-        "Inflation_Rate_JP": "https://tradingeconomics.com/japan/inflation-cpi",
-        "Unemployment_Rate_JP": "https://tradingeconomics.com/japan/unemployment-rate"
-    },
+        "BOJ Rate": "https://tradingeconomics.com/japan/interest-rate",
+        "Core CPI YoY": "https://tradingeconomics.com/japan/core-inflation-rate",
+        "CPI YoY": "https://tradingeconomics.com/japan/inflation-cpi",
+        "GDP QoQ": "https://tradingeconomics.com/japan/gdp-growth",
+        "Jibun Bank Manufacturing PMI": "https://tradingeconomics.com/japan/manufacturing-pmi",
+        "Jibun Bank Services PMI": "https://tradingeconomics.com/japan/services-pmi",
+        "Retail Sales YoY": "https://tradingeconomics.com/japan/retail-sales-annual",
+        "Unemployment Rate": "https://tradingeconomics.com/japan/unemployment-rate",
+        "Wage Growth": "https://tradingeconomics.com/japan/wage-growth",
+        "Balance of Trade": "https://tradingeconomics.com/japan/balance-of-trade"
+},
 
     "GBP": {
-        "GDP_UK": "https://tradingeconomics.com/united-kingdom/gdp-growth",
-        "Interest_Rate_UK": "https://tradingeconomics.com/united-kingdom/interest-rate",
-        "Inflation_Rate_UK": "https://tradingeconomics.com/united-kingdom/inflation-cpi",
-        "Unemployment_Rate_UK": "https://tradingeconomics.com/united-kingdom/unemployment-rate",
-    },
+        "BOE Rate": "https://tradingeconomics.com/united-kingdom/interest-rate",
+        "Core CPI YoY": "https://tradingeconomics.com/united-kingdom/core-inflation-rate",
+        "CPI YoY": "https://tradingeconomics.com/united-kingdom/inflation-cpi",
+        "GDP QoQ": "https://tradingeconomics.com/united-kingdom/gdp-growth",
+        "S&P Manufacturing PMI": "https://tradingeconomics.com/united-kingdom/manufacturing-pmi",
+        "S&P Services PMI": "https://tradingeconomics.com/united-kingdom/services-pmi",
+        "Retail Sales": "https://tradingeconomics.com/united-kingdom/retail-sales",
+        "Unemployment Rate": "https://tradingeconomics.com/united-kingdom/unemployment-rate",
+        "Average Weekly Earnings Growth": "https://tradingeconomics.com/united-kingdom/wage-growth",
+        "Balance of Trade": "https://tradingeconomics.com/united-kingdom/balance-of-trade"
+},
 
     "CNH": {
-        "GDP_CN": "https://tradingeconomics.com/china/gdp-growth",
-        "Interest_Rate_CN": "https://tradingeconomics.com/china/interest-rate",
-        "Inflation_Rate_CN": "https://tradingeconomics.com/china/inflation-cpi",
-        "Unemployment_Rate_CN": "https://tradingeconomics.com/china/unemployment-rate",
+        "China Loan Prime Rate": "https://tradingeconomics.com/china/interest-rate",
+        "Core CPI YoY": "https://tradingeconomics.com/china/core-inflation-rate",
+        "CPI YoY": "https://tradingeconomics.com/china/inflation-cpi",
+        "GDP QoQ": "https://tradingeconomics.com/china/gdp-growth",
+        "NBS Manufacturing PMI": "https://tradingeconomics.com/china/business-confidence",
+        "Caixin Manufacturing PMI": "https://tradingeconomics.com/china/manufacturing-pmi",
+        "Retail Sales YoY": "https://tradingeconomics.com/china/retail-sales-annual",
+        "Industrial Production YoY": "https://tradingeconomics.com/china/industrial-production",
+        "Unemployment Rate": "https://tradingeconomics.com/china/unemployment-rate",
+        "Balance of Trade": "https://tradingeconomics.com/china/balance-of-trade",
+        "Export": "https://tradingeconomics.com/china/exports-yoy",
+        "Import": "https://tradingeconomics.com/china/imports-yoy"
     }
 }
 

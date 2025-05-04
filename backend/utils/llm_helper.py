@@ -103,8 +103,14 @@ class GeminiClient:
                 )
 
             response = await chat_session.send_message(parts)
-            response_text = response.text
-            return response_text, chat_session
+
+            if self.generation_config["response_mime_type"] == "text/plain":
+                response_text = response.text
+                return response_text, chat_session
+            
+            elif self.generation_config["response_mime_type"] == "application/json":
+                response_json = response.parsed
+                return response_json, chat_session
         
         except Exception as e:
             print(f"Error in call_api: {e}, api is {self.api_key}")

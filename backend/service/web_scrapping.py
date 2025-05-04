@@ -10,6 +10,8 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from backend.utils.llm_helper import Config
 from backend.utils.parameters import ECONOMIC_INDICATORS_WEBSITES, INVESTING_NEWS_ROOT_WEBSITE
 import time
+import pandas as pd
+import io
 
 # economic indicators
 class TradingEconomicsScraper:
@@ -24,22 +26,29 @@ class TradingEconomicsScraper:
                 if response.status == 200:
                     html = await response.text()
                     soup = BeautifulSoup(html, 'html.parser')
-                    content = soup.find('div', id='historical-desc')
-                    return name, content.get_text(strip=True) if content else 'Content not found'
+                    # find historical description
+                    content = soup.find('div', id='historical-desc').get_text(strip=True)
+                    # find tables with <table class="table table-hover" id="calendar"> get all thead and tbody
+                    table = soup.find_all('table', class_='table table-hover', id='calendar')[0]
+                    df = pd.read_html(io.StringIO(str(table)))[0]
+                    df = df.astype(object)
+                    df = df.where(pd.notnull(df), None)
+    
+                    return name, content, df.to_dict(orient='records')
                 else:
-                    return name, f'Failed to retrieve the page. Status code: {response.status}'
+                    return name, f'Failed to retrieve the page. Status code: {response.status}', None
         except Exception as e:
-            return name, f'An error occurred: {e}'
+            return name, f'An error occurred: {e}', None
 
-    async def scrape_websites(self, websites_dict):
+    async def scrape_websites(self, websites_dict: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         results = {}
         async with aiohttp.ClientSession() as session:
             tasks = []
             for name, url in websites_dict.items():
                 tasks.append(self.fetch_content(session, name, url))
             results_list = await asyncio.gather(*tasks)
-            for name, content in results_list:
-                results[name] = content
+            for name, desc, table in results_list:
+                results[name] = {"desc": desc, "table": table}
         return results
 
 # moving average
@@ -219,7 +228,8 @@ Be concise and focus on the most impactful information.
          </content>""")
         ])
         chain = prompt | model | StrOutputParser()
-        results = chain.batch([{"title": content["article"], "content": content["content"], "currency_pair": self.currency_pair} for content in contents])
+        results = chain.batch([{"ti"
+        "tle": content["article"], "content": content["content"], "currency_pair": self.currency_pair} for content in contents])
         summaries = []
         for content, result in zip(contents, results):
             summaries.append({"article": content["article"], "summary": result})
@@ -264,12 +274,8 @@ Provide a concise and insightful synthesis that is valuable for forex traders.""
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    # scraper = TradingEconomicsScraper()
-    # scraped_data = asyncio.run(scraper.scrape_websites(ECONOMIC_INDICATORS_WEBSITES))
-    # print(scraped_data)
-    scrapper = TechnicalNewsScrapper(top_k=5)
-    print(scrapper.scrape_root_page())
-    # print(scrapper.scrape_root_page())
-    # results = scrapper.scrape_news()
-    # print(results)
+    scr = TradingEconomicsScraper()
+
+    result = asyncio.run(scr.scrape_websites({"test": "https://tradingeconomics.com/united-states/interest-rate"}))
+
+    print(result)

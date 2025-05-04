@@ -1,0 +1,122 @@
+from backend.agents.sentiment.RiskSentimentAgent import RiskSentimentAgent, RiskSentimentAnalysis
+from backend.orchestrator.server.ProcessPipeline import ProcessPipeline
+from backend.utils.parameters import CURRENCY_PAIRS, INVESTING_ASSETS
+from backend.utils.logger_config import get_logger
+from typing import List, Dict, Union
+import pandas as pd
+import os
+import asyncio
+
+logger = get_logger(__name__)
+
+
+class RiskSentimentPipeline(ProcessPipeline):
+    def __init__(self, model_name: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2):
+        super().__init__()
+        self.model_name = model_name
+        self.temperature = temperature
+    
+    def _compute_spreads(self, results_df: pd.DataFrame, currency_pair: str) -> str:
+        us_2y_yield = float(results_df[results_df['Asset'] == 'US 2Y Yield']['Last Price'].values[0])
+        us_10y_yield = float(results_df[results_df['Asset'] == 'US 10Y Yield']['Last Price'].values[0])
+        if currency_pair == "EUR/USD":
+            germany_2y_yield = float(results_df[results_df['Asset'] == 'Germany 2Y Yield']['Last Price'].values[0])
+            germany_10y_yield = float(results_df[results_df['Asset'] == 'Germany 10Y Yield']['Last Price'].values[0])
+            us_germany_2y_spread = us_2y_yield - germany_2y_yield
+            us_germany_10y_spread = us_10y_yield - germany_10y_yield
+            spread_str = f"US 2Y - Germany 2Y spread: {us_germany_2y_spread:.2f} bps\nUS 10Y - Germany 10Y spread: {us_germany_10y_spread:.2f} bps"
+        elif currency_pair == "USD/JPY":
+            japan_2y_yield = float(results_df[results_df['Asset'] == 'Japan 2Y Yield']['Last Price'].values[0])
+            japan_10y_yield = float(results_df[results_df['Asset'] == 'Japan 10Y Yield']['Last Price'].values[0])
+            us_japan_2y_spread = us_2y_yield - japan_2y_yield
+            us_japan_10y_spread = us_10y_yield - japan_10y_yield
+            spread_str = f"US 2Y - Japan 2Y spread: {us_japan_2y_spread:.2f} bps\nUS 10Y - Japan 10Y spread: {us_japan_10y_spread:.2f} bps"
+        elif currency_pair == "GBP/USD":
+            uk_2y_yield = float(results_df[results_df['Asset'] == 'UK 2Y Yield']['Last Price'].values[0])
+            uk_10y_yield = float(results_df[results_df['Asset'] == 'UK 10Y Yield']['Last Price'].values[0])
+            us_uk_2y_spread = us_2y_yield - uk_2y_yield
+            us_uk_10y_spread = us_10y_yield - uk_10y_yield
+            spread_str = f"US 2Y - UK 2Y spread: {us_uk_2y_spread:.2f} bps\nUS 10Y - UK 10Y spread: {us_uk_10y_spread:.2f} bps"
+        elif currency_pair == "USD/CNH":
+            china_2y_yield = float(results_df[results_df['Asset'] == 'China 2Y Yield']['Last Price'].values[0])
+            china_10y_yield = float(results_df[results_df['Asset'] == 'China 10Y Yield']['Last Price'].values[0])
+            us_china_2y_spread = us_2y_yield - china_2y_yield
+            us_china_10y_spread = us_10y_yield - china_10y_yield
+            spread_str = f"US 2Y - China 2Y spread: {us_china_2y_spread:.2f} bps\nUS 10Y - China 10Y spread: {us_china_10y_spread:.2f} bps"
+        return spread_str
+    
+    def _fetch_assets_data(self, currency_pair: str) -> str:
+        try:
+            symbol = currency_pair.split("/")[0]
+            currency = currency_pair.split("/")[1]
+            general_asset_names = INVESTING_ASSETS["general"].keys()
+            symbol_asset_names = INVESTING_ASSETS[symbol].keys()
+            currency_asset_names = INVESTING_ASSETS[currency].keys()
+            all_asset_names = list(general_asset_names) + list(symbol_asset_names) + list(currency_asset_names)
+
+            data = [self.scrape_results_curr["asset"].get(name, None) for name in all_asset_names]
+            df = pd.DataFrame(data, columns=["Asset", "Last Price", "Change", "Change (%)"])
+            results_md = df.to_markdown(index=False)
+            assests_str = results_md + "\n\n" + self._compute_spreads(df, currency_pair)
+        except Exception as e:
+            logger.error(f"Error preparaing asset data for {currency_pair} for risk sentiment synthetis: {e}")
+            assests_str = f"Error preparaing asset data for {currency_pair}: {e}"
+        return assests_str
+
+    def _fetch_news_synthesis(self, currency_pair: str) -> Union[str, Dict[str, str]]:
+        currency_pair = currency_pair.replace("/", "_").lower()
+        news_summary_file_path = os.path.join("data", "process", f"{currency_pair}_news_synthesis.json")
+        try:
+            if os.path.exists(news_summary_file_path):
+                news_synthesis: Dict[str, str] = self._load_json(news_summary_file_path)[-1]
+            else:
+                news_synthesis = "No news summary available."
+        except Exception as e:
+            logger.error(f"Error loading news synthesis for {currency_pair}: {e}")
+            news_synthesis = f"Error loading news synthesis for {currency_pair}: {e}"
+        return news_synthesis
+
+    async def synthesize_sentiments(self) -> Dict[str, Dict[str, str]]:
+        
+        agent_map = {
+            pair: RiskSentimentAgent(currency_pair=pair, model_name=self.model_name, temperature=self.temperature)
+            for pair in CURRENCY_PAIRS
+        }
+
+        tasks = []
+
+        async def safe_synthesize(pair: str, assets_data: str, news_summary: str):
+            try:
+                return await agent_map[pair].analyze_risk_sentiment(assets_data=assets_data, news_summary=news_summary)
+            except Exception as e:
+                logger.error(f"Error synthesizing sentiment for {pair}: {e}")
+                # Return a default synthesis indicating an error
+                return RiskSentimentAnalysis(
+                            risk_sentiment_analysis="Analysis failed",
+                            key_market_drivers="",
+                            implications_for_trading="",
+                            conclusion="",
+                            risk_sentiment="neutral")
+
+        for pair in CURRENCY_PAIRS:
+            assets_data = self._fetch_assets_data(pair)
+            news_summary = self._fetch_news_synthesis(pair)
+            tasks.append(safe_synthesize(pair, assets_data, news_summary))
+        
+        results = await asyncio.gather(*tasks)
+
+        sentiment_results = {}
+        for pair, result in zip(CURRENCY_PAIRS, results):
+
+            sentiment_results[pair] = result.dict()
+        
+        self._save_risk_sentiment_json(sentiment_results, os.path.join(self.process_dir_path, "risk_sentiment.json"))
+        logger.info(f"Risk sentiment analysis results saved to json")
+        
+        return sentiment_results
+
+
+if __name__ == "__main__":
+    pipeline = RiskSentimentPipeline()
+    currency_pair = "USD/JPY"
+    asyncio.run(pipeline.synthesize_sentiments())

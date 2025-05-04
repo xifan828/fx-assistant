@@ -1,10 +1,7 @@
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from backend.utils.llm_helper import Config
 from typing import List, Dict, Literal
 from backend.utils.llm_helper import OpenAIClient
 from pydantic import BaseModel
-import asyncio
+
 
 class RiskSentimentAnalysis(BaseModel):
     risk_sentiment_analysis: str
@@ -40,7 +37,7 @@ class RiskSentimentAgent:
         self.currency_pair = currency_pair
         self.openai_client = OpenAIClient(model=model_name, temperature=temperature)
     
-    def analyze_risk_sentiment(self, assets_data: str, news_summary: str) -> RiskSentimentAnalysis:
+    async def analyze_risk_sentiment(self, assets_data: str, news_summary: str) -> RiskSentimentAnalysis:
         user_prompt = f"""
          <assets data>
          {assets_data}
@@ -56,9 +53,9 @@ class RiskSentimentAgent:
             {"role": "user", "content": user_prompt}
         ]
 
-        analysis = asyncio.run(self.openai_client.structured_chat_completion(
+        analysis = await self.openai_client.structured_chat_completion(
             messages=messages,
             response_format=RiskSentimentAnalysis
-        ))
+        )
         
         return analysis

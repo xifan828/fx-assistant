@@ -22,6 +22,10 @@ class ProcessPipeline:
             data = json.load(file)
         return data
     
+    def _save_json(self, data: List[Dict], file_path: str):
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+    
     def _load_scrape_results(self) -> List[Dict]:
         file_path = os.path.join(self.scrape_dir_path, "results.json")
         return self._load_json(file_path)[-2:]
@@ -44,8 +48,23 @@ class ProcessPipeline:
             records = self._remove_redundant_mace_summary(records)
         else:
             records = data
-        with open(file_path, "w", encoding="utf-8") as file:
-                json.dump(records, file, indent=4, ensure_ascii=False)
+        self._save_json(records, file_path)
+    
+    def _save_synthesis_json(self, data: Dict[str, str], file_path: str):
+        if os.path.exists(file_path):
+            records = self._load_json(file_path)
+            records.append(data)
+        else:
+            records = [data]
+        self._save_json(records, file_path)
+    
+    def _save_risk_sentiment_json(self, data: Dict[str, str], file_path: str):
+        if os.path.exists(file_path):
+            records = self._load_json(file_path)
+            records.append(data)
+        else:
+            records = [data]
+        self._save_json(records, file_path)
 
 
 

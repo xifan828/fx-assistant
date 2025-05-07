@@ -1,7 +1,7 @@
 import json
 import os
 from backend.utils.parameters import CURRENCY_PAIRS
-from typing import List, Dict
+from typing import List, Dict, Union
 
 class ProcessPipeline:
     def __init__(self):
@@ -39,6 +39,25 @@ class ProcessPipeline:
             new_records.append(record)
             prev_url = record["url"]
         return new_records
+    
+    def _save_results(self, data: Union[Dict, List[Dict]], file_path: str, truncate: bool = False, limit: int = 5):
+        if isinstance(data, dict):
+            if os.path.exists(file_path):
+                records = self._load_json(file_path)
+                records.append(data)
+                if truncate:
+                    records = records[-limit:]
+            else:
+                records = [data]
+        elif isinstance(data, list):
+            if os.path.exists(file_path):
+                records = self._load_json(file_path)
+                records.extend(data)
+                if truncate:
+                    records = records[-limit:]
+            else:
+                records = data
+        self._save_json(records, file_path)
     
     def _save_summary_json(self, data: List[Dict], file_path: str):
 

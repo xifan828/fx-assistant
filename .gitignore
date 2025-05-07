@@ -169,3 +169,6 @@ tws_api/
 simulation/back_test/
 
 simulation/forward_test/
+
+# app.log
+app.log

@@ -151,13 +151,13 @@ class NewsPipeline(ProcessPipeline):
             for pair in pairs
         }
 
-        async def safe_synthesize(pair: str):
+        async def safe_synthesize(pair: str) -> NewsSynthesis:
             try:
                 return await synthesis_agent_map[pair].synthesize_summaries(summaries[pair])
             except Exception as e:
                 logger.error(f"Error synthesizing news for {pair}: {e}")
                 # Return a default synthesis indicating an error
-                return NewsSynthesis(url="", synthesis="Error synthesizing")
+                return None
 
         task = [safe_synthesize(currency_pair) for currency_pair in pairs]
         

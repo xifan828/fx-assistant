@@ -6,6 +6,7 @@ from typing import List, Dict, Union
 import pandas as pd
 import os
 import asyncio
+from datetime import datetime
 
 logger = get_logger(__name__)
 
@@ -108,13 +109,18 @@ class RiskSentimentPipeline(ProcessPipeline):
         sentiment_results = {}
         for pair, result in zip(CURRENCY_PAIRS, results):
 
-            sentiment_results[pair] = result.dict()
+            result = result.dict()
+            result["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+            sentiment_results[pair] = result
         
         self._save_risk_sentiment_json(sentiment_results, os.path.join(self.process_dir_path, "risk_sentiment.json"))
         logger.info(f"Risk sentiment analysis results saved to json")
         
         return sentiment_results
 
+    async def run(self):
+        result = await self.synthesize_sentiments()
+        return result
 
 if __name__ == "__main__":
     pipeline = RiskSentimentPipeline()

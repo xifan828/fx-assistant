@@ -5908,5 +5908,1975 @@
                 }
             }
         }
+    },
+    {
+        "timestamp": "2025-05-08T18:49:47.491007",
+        "data": {
+            "asset": {
+                "S&P 500": [
+                    "S&P 500",
+                    "5,708.05",
+                    "+76.78",
+                    "(+1.36%)"
+                ],
+                "Nasdaq": [
+                    "Nasdaq",
+                    "20,219.11",
+                    "+351.14",
+                    "(+1.77%)"
+                ],
+                "STOXX50": [
+                    "STOXX50",
+                    "5,288.25",
+                    "+58.06",
+                    "(+1.11%)"
+                ],
+                "MSCI EM": [
+                    "MSCI EM",
+                    "1,133.93",
+                    "-3.48",
+                    "(-0.31%)"
+                ],
+                "DXY": [
+                    "DXY",
+                    "100.500",
+                    "+1.065",
+                    "(+1.07%)"
+                ],
+                "Gold": [
+                    "Gold",
+                    "3,311.21",
+                    "-80.69",
+                    "(-2.38%)"
+                ],
+                "Brent Oil": [
+                    "Brent Oil",
+                    "62.91",
+                    "+1.79",
+                    "(+2.93%)"
+                ],
+                "VIX": [
+                    "VIX",
+                    "22.12",
+                    "-1.43",
+                    "(-6.07%)"
+                ],
+                "EUR/USD": [
+                    "EUR/USD",
+                    "1.1228",
+                    "-0.0073",
+                    "(-0.65%)"
+                ],
+                "Germany 2Y Yield": [
+                    "Germany 2Y Yield",
+                    "1.787",
+                    "+0.014",
+                    "(+0.79%)"
+                ],
+                "Germany 10Y Yield": [
+                    "Germany 10Y Yield",
+                    "2.5475",
+                    "+0.0275",
+                    "(+1.09%)"
+                ],
+                "US 2Y Yield": [
+                    "US 2Y Yield",
+                    "3.907",
+                    "+0.114",
+                    "(+3.01%)"
+                ],
+                "US 10Y Yield": [
+                    "US 10Y Yield",
+                    "4.369",
+                    "+0.094",
+                    "(+2.20%)"
+                ],
+                "Japan 2Y Yield": [
+                    "Japan 2Y Yield",
+                    "0.615",
+                    "-0.005",
+                    "(-0.81%)"
+                ],
+                "USD/JPY": [
+                    "USD/JPY",
+                    "145.90",
+                    "+2.11",
+                    "(+1.47%)"
+                ],
+                "Japan 10Y Yield": [
+                    "Japan 10Y Yield",
+                    "1.328",
+                    "+0.003",
+                    "(+0.23%)"
+                ],
+                "GBP/USD": [
+                    "GBP/USD",
+                    "1.3253",
+                    "-0.0040",
+                    "(-0.30%)"
+                ],
+                "UK 2Y Yield": [
+                    "UK 2Y Yield",
+                    "3.9675",
+                    "+0.0335",
+                    "(+0.85%)"
+                ],
+                "UK 10Y Yield": [
+                    "UK 10Y Yield",
+                    "4.6010",
+                    "+0.0550",
+                    "(+1.21%)"
+                ],
+                "China 2Y Yield": [
+                    "China 2Y Yield",
+                    "1.405",
+                    "-0.048",
+                    "(-3.30%)"
+                ],
+                "China 10Y Yield": [
+                    "China 10Y Yield",
+                    "1.638",
+                    "-0.005",
+                    "(-0.30%)"
+                ],
+                "USD/CNH": [
+                    "USD/CNH",
+                    "7.2450",
+                    "+0.0176",
+                    "(+0.24%)"
+                ]
+            },
+            "usd_jpy_news_websites": [
+                "https://www.tradingview.com/news/forexlive:b3ae633ad094b:0-us-dollar-soars-as-the-market-sniffs-out-improvement-on-the-trade-front-4-reasons-why/",
+                "https://www.tradingview.com/news/te_news:458117:0-japanese-yen-hits-4-week-low/",
+                "https://www.tradingview.com/news/forexlive:54bd72e9b094b:0-usdjpy-extends-above-200-bar-ma-on-the-4-hour-chart/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0ZQ:0-dollar-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0SJ:0-dollar-sterling-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/forexlive:bdf783045094b:0-forexlive-european-fx-news-wrap-us-uk-trade-deal-looms-boe-vote-split-raises-eyebrows/",
+                "https://www.tradingview.com/news/forexlive:d96cd0709094b:0-the-boe-cuts-by-25-basis-points-but-it-is-a-mixed-decision-usdjpy-higher-eurusd-lower/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0H9:0-sterling-strengthens-after-boe-rate-decision/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0AQ:0-dollar-strengthens-as-trump-moots-major-trade-deal/",
+                "https://www.tradingview.com/news/forexlive:1b8437651094b:0-the-us-dollar-extends-gains-against-the-jpy-on-positive-sentiment/",
+                "https://www.tradingview.com/news/forexlive:8ba5c6d15094b:0-dollar-climbs-as-hopeful-optimism-builds-on-trade/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG073:0-sterling-rises-with-aussie-as-trump-moots-major-trade-deal/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG04R:0-shares-rise-on-trade-deal-hopes-dollar-clings-to-post-fed-gains/",
+                "https://www.tradingview.com/news/forexlive:860266a65094b:0-forexlive-asia-pacific-fx-news-wrap-trump-says-he-ll-announce-major-trade-deal-thursday/",
+                "https://www.tradingview.com/news/te_news:457972:0-japanese-yen-firms-amid-trade-uncertainty/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG039:0-sterling-jumps-with-aussie-as-trump-moots-major-trade-deal/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3RF2N4:0-shares-firm-on-hopes-for-trade-deals-dollar-tries-to-hold-post-fed-bounce/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG019:0-dollar-on-front-foot-after-fed-signals-no-rush-to-cut-rates/",
+                "https://www.tradingview.com/news/DJN_DN20250507017275:0/",
+                "https://www.tradingview.com/news/DJN_DN20250507017277:0/",
+                "https://www.tradingview.com/news/DJN_DN20250507017273:0/",
+                "https://www.tradingview.com/news/forexlive:c4da5e2b2094b:0-forexlive-americas-fx-news-wrap-7-may-fed-and-chair-powell-stays-noncommitted/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF1AO:0-dollar-retains-strength-against-peers-after-fed-rate-decision/",
+                "https://www.tradingview.com/news/forexlive:0081c368c094b:0-usdjpy-sellers-tried-the-buyers-are-now-making-a-run/",
+                "https://www.tradingview.com/news/forexlive:10ade22e5094b:0-us-dollar-rallies-through-the-fomc-decision-and-press-conference/",
+                "https://www.tradingview.com/news/forexlive:06c02b1b6094b:0-us-stocks-move-lower-after-fed-decision-yields-lower/",
+                "https://www.tradingview.com/news/macenews:ae72ffec7094b:0-us-tsy-s-bessent-q-a-hse-fin-svcs-comte-repeats-conditions-for-a-strong-dollar-are-important-for-international-confidence/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF0PP:0-dollar-edges-higher-against-yen-and-euro-with-fed-and-trade-talks-in-focus/",
+                "https://www.tradingview.com/news/forexlive:2ab1c674a094b:0-kickstart-the-trading-day-for-may-7-with-a-technical-look-at-the-eurusd-usdjpy-gbpusd/",
+                "https://www.tradingview.com/news/forexlive:f85ca8d02094b:0-forexlive-european-fx-news-wrap-dollar-steadies-on-us-china-trade-news-fed-up-next/"
+            ],
+            "eur_usd_news_websites": [
+                "https://www.tradingview.com/news/forexlive:081bae906094b:0-eurusd-falls-below-key-floor-support-and-the-38-2-retracement/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0ZQ:0-dollar-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/macenews:4488c5800094b:0-us-freddie-mac-15-year-mortgage-rates-5-89-in-latest-week-vs-5-92-previous-week-6-38-year-ago/",
+                "https://www.tradingview.com/news/macenews:818460bd9094b:0-us-freddie-mac-30-year-mortgage-rates-6-76-in-latest-week-unchanged-from-previous-week-vs-7-09-year-ago/",
+                "https://www.tradingview.com/news/macenews:7e151fcac094b:0-us-atlanta-fed-gdpnow-model-sees-us-2q-gdp-growth-rate-at-2-3-up-from-2-2-after-latest-wholesale-inventories-data/",
+                "https://www.tradingview.com/news/forexlive:a11cd526f094b:0-eurusd-retests-key-support-zone-as-bearish-pressure-mounts/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0SJ:0-dollar-sterling-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/macenews:2ae8f65ff094b:0-us-new-york-fed-consumer-1-year-earnings-growth-expectation-2-5-in-april-2-8-in-march-3-0-in-february-3-0-in-january/",
+                "https://www.tradingview.com/news/macenews:feacc39e3094b:0-us-new-york-fed-consumer-1-year-food-price-expectation-5-1-in-april-5-2-in-march-5-1-in-february-4-6-in-january/",
+                "https://www.tradingview.com/news/macenews:ecbda96a5094b:0-us-new-york-fed-consumer-1-year-gas-price-expectation-3-5-in-april-3-2-in-march-3-7-in-february-2-6-in-january/",
+                "https://www.tradingview.com/news/macenews:b904edf4f094b:0-us-new-york-fed-consumer-1-year-household-spending-expectation-5-2-in-april-4-9-in-march-5-0-in-february-4-4-in-january/",
+                "https://www.tradingview.com/news/macenews:92852c41c094b:0-us-new-york-fed-consumer-1-year-inflation-expectation-3-63-in-april-3-58-in-march-3-13-in-february-3-00-in-january/",
+                "https://www.tradingview.com/news/macenews:cc58d5c84094b:0-us-new-york-fed-consumer-1-year-job-loss-expectation-15-3-in-april-15-7-in-march-14-1-in-february-14-2-in-january/",
+                "https://www.tradingview.com/news/macenews:4d53ea58b094b:0-us-new-york-fed-consumer-1-year-job-quit-expectation-18-2-in-april-18-0-in-march-17-6-in-february-19-9-in-january/",
+                "https://www.tradingview.com/news/macenews:18e0a2fae094b:0-us-new-york-fed-consumer-1-year-rent-price-expectation-9-0-in-april-7-2-in-march-6-7-in-february-6-0-in-january/",
+                "https://www.tradingview.com/news/macenews:07b737c68094b:0-us-new-york-fed-consumer-3-year-inflation-expectation-3-17-in-april-3-00-in-march-3-00-in-february-2-99-in-january/",
+                "https://www.tradingview.com/news/macenews:8851b455c094b:0-us-new-york-fed-consumer-5-year-inflation-expectation-2-74-in-april-2-86-in-march-2-98-in-february-2-98-in-january/",
+                "https://www.tradingview.com/news/macenews:c66c84c6f094b:0-us-new-york-fed-consumer-expected-home-price-rise-3-3-in-april-3-0-in-march-3-3-in-february-3-2-in-january/",
+                "https://www.tradingview.com/news/macenews:b7fd6979c094b:0-us-eia-natural-gas-in-storage-104-bln-cubic-feet-in-latest-week-from-previous-week-vs-103-bln-markets-expected/",
+                "https://www.tradingview.com/news/macenews:9d496e9f7094b:0-us-wholesale-inventories-0-4-in-march-from-feb-vs-0-5-previously-reported/",
+                "https://www.tradingview.com/news/macenews:1a708a709094b:0-us-wholesale-inventories-0-5-in-feb-from-jan-vs-0-3-previously-reported/",
+                "https://www.tradingview.com/news/macenews:76475c4df094b:0-more-u-s-q1-productivity-q4-unit-labour-costs-revised-down-to-2-0-annualised-vs-2-2-previous-report/",
+                "https://www.tradingview.com/news/macenews:012609c7d094b:0-more-u-s-q1-productivity-q4-revised-up-to-1-7-annualised-vs-1-5-previous-report/",
+                "https://www.tradingview.com/news/macenews:0eee47c47094b:0-more-u-s-q1-productivity-business-productivity-1-1-annualised/",
+                "https://www.tradingview.com/news/macenews:96553d6eb094b:0-more-u-s-q1-productivity-manufacturing-4-5-annualised/",
+                "https://www.tradingview.com/news/macenews:55d9ac5f3094b:0-more-u-s-q1-productivity-unit-labor-costs-5-7-annual-rate-vs-5-2-expected/",
+                "https://www.tradingview.com/news/macenews:dbb0cb786094b:0-u-s-q1-non-farm-productivity-0-8-annual-rate-vs-0-5-expected/",
+                "https://www.tradingview.com/news/forexlive:bdf783045094b:0-forexlive-european-fx-news-wrap-us-uk-trade-deal-looms-boe-vote-split-raises-eyebrows/",
+                "https://www.tradingview.com/news/tradingview:9219396dc094b:0-eur-usd-dollar-powers-up-as-fed-s-powell-says-rates-stay-unchanged-trump-calls-him-a-fool/",
+                "https://www.tradingview.com/news/forexlive:d96cd0709094b:0-the-boe-cuts-by-25-basis-points-but-it-is-a-mixed-decision-usdjpy-higher-eurusd-lower/"
+            ],
+            "gbp_usd_news_websites": [
+                "https://www.tradingview.com/news/DJN_DN20250508012036:0/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0ZQ:0-dollar-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/te_news:458098:0-sterling-little-changed-on-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0SJ:0-dollar-sterling-buoyed-by-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/DJN_DN20250508010651:0/",
+                "https://www.tradingview.com/news/DJN_DN20250508010226:0/",
+                "https://www.tradingview.com/news/DJN_DN20250508009050:0/",
+                "https://www.tradingview.com/news/macenews:c3071594c094b:0-recapping-boe-governor-andrew-bailey-was-in-undecided-camp-after-three-way-vote-split-little-guidance-on-june-meeting/",
+                "https://www.tradingview.com/news/macenews:868fd033e094b:0-boe-governor-bailey-finishes-press-conference/",
+                "https://www.tradingview.com/news/macenews:c13898c77094b:0-more-u-s-q1-productivity-productivity-1-4-y-y/",
+                "https://www.tradingview.com/news/DJN_DN20250508008678:0/",
+                "https://www.tradingview.com/news/forexlive:bdf783045094b:0-forexlive-european-fx-news-wrap-us-uk-trade-deal-looms-boe-vote-split-raises-eyebrows/",
+                "https://www.tradingview.com/news/forexlive:d96cd0709094b:0-the-boe-cuts-by-25-basis-points-but-it-is-a-mixed-decision-usdjpy-higher-eurusd-lower/",
+                "https://www.tradingview.com/news/macenews:86b7163d6094b:0-boe-deputy-governor-dave-ramsden-boe-agents-survey-suggests-that-employers-will-reduce-wages-to-counter-higher-national-insurance-contributions/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG0H9:0-sterling-strengthens-after-boe-rate-decision/",
+                "https://www.tradingview.com/news/macenews:0e0ec8bde094b:0-more-boe-s-bailey-we-haven-t-had-a-lot-of-news-on-how-the-increase-in-employers-national-insurance-contributions-are-affecting-activity/",
+                "https://www.tradingview.com/news/macenews:39decda4c094b:0-more-boe-s-bailey-i-was-in-the-undecided-camp-at-the-mpc-meeting/",
+                "https://www.tradingview.com/news/macenews:e203f10b0094b:0-boe-deputy-governor-clare-lombardelli-policy-makers-will-respond-to-lower-than-expected-inflation/",
+                "https://www.tradingview.com/news/DJN_DN20250508007745:0/",
+                "https://www.tradingview.com/news/macenews:b5f8ffb09094b:0-more-boe-s-bailey-we-have-not-been-briefed-on-the-contents-of-a-us-uk-trade-deal/",
+                "https://www.tradingview.com/news/macenews:5f327ee01094b:0-more-boe-s-bailey-we-expect-global-trade-prices-to-be-weaker-particularly-in-china/",
+                "https://www.tradingview.com/news/macenews:9b7fb0dad094b:0-more-boe-s-bailey-expected-pick-up-in-gdp-growth-later-this-year-will-not-prevent-increased-slack-in-the-economy/",
+                "https://www.tradingview.com/news/macenews:ed6a6a09e094b:0-more-boe-s-bailey-we-expect-gdp-to-remain-weak-in-the-near-term-before-picking-up-later-this-year/",
+                "https://www.tradingview.com/news/macenews:5b54e4e9a094b:0-more-boe-s-bailey-a-small-measure-of-slack-has-opened-up-in-the-uk-economy-we-expect-that-to-widen/",
+                "https://www.tradingview.com/news/macenews:e7fef17cc094b:0-more-boe-s-bailey-expected-inflation-increase-due-to-energy-regulated-utility-prices-and-higher-national-insurance-contributions/",
+                "https://www.tradingview.com/news/macenews:e260281cf094b:0-more-boe-s-bailey-interest-rate-policy-is-not-on-auto-pilot/",
+                "https://www.tradingview.com/news/macenews:9fb1a904f094b:0-bank-of-england-governor-andrew-bailey-inflation-has-been-lower-than-we-expected/",
+                "https://www.tradingview.com/news/forexlive:412373654094b:0-sterling-climbs-on-messy-boe-vote-split/",
+                "https://www.tradingview.com/news/DJN_DN20250508006907:0/",
+                "https://www.tradingview.com/news/te_news:458057:0-british-pound-strengthens-on-boe/"
+            ],
+            "usd_cnh_news_websites": [
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RG04B:0-china-s-yuan-slips-as-pboc-guides-currency-lower/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF1AO:0-dollar-retains-strength-against-peers-after-fed-rate-decision/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF0PP:0-dollar-edges-higher-against-yen-and-euro-with-fed-and-trade-talks-in-focus/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF0BR:0-china-markets-trim-gains-as-stimulus-trade-talk-optimism-wane/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF0CR:0-china-s-yuan-dips-after-beijing-announces-sweeping-monetary-easing-measures/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RF03Y:0-china-markets-trim-gains-as-stimulus-rally-wanes-trade-talks-eyed/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3RF0AZ:0-china-s-yuan-dips-after-rate-cut-announcement/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3RF05R:0-china-stocks-jump-at-open-on-trade-optimism-stimulus-hopes/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RE0AS:0-china-s-yuan-ends-at-six-month-high-as-carry-trades-unwind/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RE03W:0-china-s-yuan-jumps-to-1-1-2-month-high-as-carry-trades-unwind/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RE031:0-china-s-yuan-jumps-to-1-1-2-month-high-on-hopes-of-thaw-in-sino-us-trade-war/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RD0T5:0-dollar-slides-against-peers-weighed-down-by-fresh-tariff-worries/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3RD0ED:0-dollar-weakens-against-major-currencies-as-markets-weigh-tariff-uncertainty/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3R804H:0-china-s-yuan-inches-lower-set-for-losing-month-as-tariff-damage-starts-to-emerge/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3R709L:0-yuan-recovers-from-us-tariff-blow-to-hit-one-month-high/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3R706P:0-yuan-hits-highest-level-since-april-2-as-china-holds-ground/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3R609D:0-yuan-slips-as-investors-await-sino-u-s-trade-developments-china-pmi/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3R3077:0-china-s-yuan-slips-tariff-developments-and-april-politburo-meeting-in-focus/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3R20DR:0-russian-rouble-little-changed-ahead-of-new-russia-us-talks/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3R20A7:0-china-s-yuan-slightly-weaker-as-dollar-climbs-on-trade-war-deescalation-signs/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3R10EY:0-russian-rouble-weakens-amid-ukraine-peace-talks-uncertainty/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3R108S:0-china-s-yuan-holds-ground-on-trade-optimism-regulator-vows-stability/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3R008G:0-russian-rouble-weakens-slightly-against-us-dollar/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L6N3R0058:0-china-s-yuan-pulls-back-trade-row-keeps-markets-wary/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L1N3QZ07H:0-russian-rouble-near-80-vs-us-dollar-strongest-since-june-2024/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3QZ07F:0-china-s-yuan-hovers-near-2-week-high-tariffs-in-focus/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L8N3QW089:0-russian-rouble-strengthens-past-81-vs-u-s-dollar-up-40-since-start-of-2025/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_S8N3IV097:0-russian-rouble-strengthens-past-81-to-the-u-s-dollar/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3QW061:0-china-s-yuan-rises-to-2-week-high-on-hopes-of-de-escalation-in-us-china-tensions/",
+                "https://www.tradingview.com/news/reuters.com,2025:newsml_L4N3QV0B7:0-china-s-yuan-slips-on-tariff-woes/"
+            ],
+            "fundamental": {
+                "eur": {
+                    "ECB Rate (Deposit Facility Rate)": {
+                        "desc": "The ECB cut all three of its key interest rates by 25 basis points, lowering the main refinancing rate to 2.40%, the deposit rate to 2.25% and the marginal lending facility to 2.65%, as expected. The decision reflects growing confidence that inflation is on track to return sustainably to the 2% target. Both headline and core inflation have continued to ease, with services inflation also cooling. Wage growth is moderating, and firms are absorbing some of the cost pressure. However, risks to the Euro Area outlook remain, especially due to rising global trade tensions, which are hurting confidence and tightening financial conditions. The ECB acknowledged that growth prospects have weakened and emphasized a data-dependent approach going forward. It made no commitment to further cuts, underlining that future decisions will depend on economic data, inflation dynamics, and the strength of monetary transmission.source:European Central Bank",
+                        "table": [
+                            {
+                                "Calendar": "2025-01-30",
+                                "GMT": "01:15 PM",
+                                "Reference": "ECB Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "2.9%",
+                                "Previous": "3.15%",
+                                "Consensus": "2.9%",
+                                "TEForecast": "2.9%"
+                            },
+                            {
+                                "Calendar": "2025-03-06",
+                                "GMT": "01:15 PM",
+                                "Reference": "ECB Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "2.65%",
+                                "Previous": "2.9%",
+                                "Consensus": "2.65%",
+                                "TEForecast": "2.65%"
+                            },
+                            {
+                                "Calendar": "2025-04-17",
+                                "GMT": "12:15 PM",
+                                "Reference": "ECB Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "2.4%",
+                                "Previous": "2.65%",
+                                "Consensus": "2.40%",
+                                "TEForecast": "2.40%"
+                            },
+                            {
+                                "Calendar": "2025-05-21",
+                                "GMT": "07:00 AM",
+                                "Reference": "ECB Non-Monetary Policy Meeting",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-05",
+                                "GMT": "12:15 PM",
+                                "Reference": "ECB Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-26",
+                                "GMT": "07:00 AM",
+                                "Reference": "ECB General Council Meeting",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Core HICP YoY": {
+                        "desc": "The annual core inflation rate in the Euro Area, which excludes prices for energy, food, alcohol and tobacco rose to 2.7% in April 2025, from an over three-year low of 2.4% in March and topping market forecasts of 2.5%. From the previous month, core consumer prices rose by 1%.source:EUROSTAT",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "09:00 AM",
+                                "Reference": "Core Inflation Rate YoY Final",
+                                "Reference.1": "Mar",
+                                "Actual": "2.4%",
+                                "Previous": "2.6%",
+                                "Consensus": "2.4%",
+                                "TEForecast": "2.4%"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "09:00 AM",
+                                "Reference": "Core Inflation Rate YoY Flash",
+                                "Reference.1": "Apr",
+                                "Actual": "2.7%",
+                                "Previous": "2.4%",
+                                "Consensus": "2.5%",
+                                "TEForecast": "2.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-19",
+                                "GMT": "09:00 AM",
+                                "Reference": "Core Inflation Rate YoY Final",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "2.4%",
+                                "Consensus": "2.7%",
+                                "TEForecast": "2.7%"
+                            }
+                        ]
+                    },
+                    "HICP YoY": {
+                        "desc": "Consumer price inflation in the Euro Area remained steady at 2.2% in April 2025, slightly exceeding market expectations of 2.1% and hovering just above the European Central Bank’s 2.0% target midpoint, according to a preliminary estimate. A sharper drop in energy prices (-3.5% vs. -1.0% in March) was offset by faster inflation in services (3.9% vs. 3.5%) and food, alcohol, and tobacco (3.0% vs. 2.9%). Prices for non-energy industrial goods rose by 0.6%, unchanged from March. Meanwhile, core inflation, which excludes food and energy, climbed to 2.7%, up from March’s three-year low of 2.4% and above the forecast of 2.5%. On a monthly basis, consumer prices increased by 0.6% in April, matching March’s rise.source:EUROSTAT",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "09:00 AM",
+                                "Reference": "Inflation Rate YoY Final",
+                                "Reference.1": "Mar",
+                                "Actual": "2.2%",
+                                "Previous": "2.3%",
+                                "Consensus": "2.2%",
+                                "TEForecast": "2.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "09:00 AM",
+                                "Reference": "Inflation Rate YoY Flash",
+                                "Reference.1": "Apr",
+                                "Actual": "2.2%",
+                                "Previous": "2.2%",
+                                "Consensus": "2.1%",
+                                "TEForecast": "2.0%"
+                            },
+                            {
+                                "Calendar": "2025-05-19",
+                                "GMT": "09:00 AM",
+                                "Reference": "Inflation Rate YoY Final",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "2.2%",
+                                "Consensus": "2.2%",
+                                "TEForecast": "2.2%"
+                            }
+                        ]
+                    },
+                    "GDP QoQ": {
+                        "desc": "The Gross Domestic Product (GDP) In the Euro Area expanded 0.40 percent in the first quarter of 2025 over the previous quarter. GDP Growth Rate in Euro Area averaged 0.37 percent from 1995 until 2025, reaching an all time high of 11.60 percent in the third quarter of 2020 and a record low of -11.10 percent in the second quarter of 2020.source:EUROSTAT",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-07",
+                                "GMT": "10:00 AM",
+                                "Reference": "QoQ 3rd Est",
+                                "Reference.1": "Q4",
+                                "Actual": "0.2%",
+                                "Previous": "0.4%",
+                                "Consensus": "0.1%",
+                                "TEForecast": "0.1%"
+                            },
+                            {
+                                "Calendar": "2025-04-30",
+                                "GMT": "09:00 AM",
+                                "Reference": "QoQ Flash",
+                                "Reference.1": "Q1",
+                                "Actual": "0.4%",
+                                "Previous": "0.2%",
+                                "Consensus": "0.2%",
+                                "TEForecast": "0.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-15",
+                                "GMT": "09:00 AM",
+                                "Reference": "QoQ 2nd Est",
+                                "Reference.1": "Q1",
+                                "Actual": null,
+                                "Previous": "0.2%",
+                                "Consensus": "0.4%",
+                                "TEForecast": "0.4%"
+                            }
+                        ]
+                    },
+                    "HCOB Manufacturing PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "HCOB Services PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Unemployment Rate": {
+                        "desc": "Unemployment Rate In the Euro Area remained unchanged at 6.20 percent in March. Unemployment Rate in Euro Area averaged 9.22 percent from 1995 until 2025, reaching an all time high of 12.20 percent in January of 2013 and a record low of 6.20 percent in October of 2024.source:EUROSTAT",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-01",
+                                "GMT": "09:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Feb",
+                                "Actual": "6.1%",
+                                "Previous": "6.2%",
+                                "Consensus": "6.2%",
+                                "TEForecast": "6.3%"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "09:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Mar",
+                                "Actual": "6.2%",
+                                "Previous": "6.2%",
+                                "Consensus": "6.1%",
+                                "TEForecast": "6.2%"
+                            },
+                            {
+                                "Calendar": "2025-06-03",
+                                "GMT": "09:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "6.2%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Negotiated Wage Growth": {
+                        "desc": "Negotiated wages in the Euro Area increased by 4.12% year-on-year in the fourth quarter of 2024, slowing from the 31-year high of 5.43% recorded in the previous quarter. The data provided some relief for European Central Bank policymakers as they continue efforts to curb inflation while supporting sluggish economic growth. The ECB has recently indicated plans to continue easing monetary policy, with money markets pricing in at least two interest rate cuts by the end of December. Meanwhile, a mid-February survey from the ECB indicated that Eurozone firms expect wage growth to slow to 3.6% in 2025 from 4.3% in 2024, before further declining to 2.7% in 2026. For the full year 2024, negotiated wage growth edged up to 4.48% from 4.44% in 2023, marking the highest annual increase since 1993.source:European Central Bank",
+                        "table": [
+                            {
+                                "Calendar": "2024-11-20",
+                                "GMT": "10:00 AM",
+                                "Reference": "Negotiated Wage Growth",
+                                "Reference.1": "Q3",
+                                "Actual": "5.42%",
+                                "Previous": "3.54%",
+                                "Consensus": null,
+                                "TEForecast": "3.7%"
+                            },
+                            {
+                                "Calendar": "2025-02-25",
+                                "GMT": "10:00 AM",
+                                "Reference": "Negotiated Wage Growth",
+                                "Reference.1": "Q4",
+                                "Actual": "4.12%",
+                                "Previous": "5.43%",
+                                "Consensus": null,
+                                "TEForecast": "5.1%"
+                            },
+                            {
+                                "Calendar": "2025-05-23",
+                                "GMT": "09:00 AM",
+                                "Reference": "Negotiated Wage Growth",
+                                "Reference.1": "Q1",
+                                "Actual": null,
+                                "Previous": "4.12%",
+                                "Consensus": null,
+                                "TEForecast": "4.0%"
+                            }
+                        ]
+                    },
+                    "Balance of Trade": {
+                        "desc": "Euro Area recorded a trade surplus of 23984.50 EUR Million in February of 2025. Balance of Trade in Euro Area averaged 5681.30 EUR Million from 1999 until 2025, reaching an all time high of 29946.10 EUR Million in July of 2015 and a record low of -54922.70 EUR Million in August of 2022.source:EUROSTAT",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-18",
+                                "GMT": "10:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Jan",
+                                "Actual": "€1B",
+                                "Previous": "€15.4B",
+                                "Consensus": "€14B",
+                                "TEForecast": "€12.5B"
+                            },
+                            {
+                                "Calendar": "2025-04-23",
+                                "GMT": "09:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Feb",
+                                "Actual": "€24B",
+                                "Previous": "€0.8B",
+                                "Consensus": null,
+                                "TEForecast": "€15.1B"
+                            },
+                            {
+                                "Calendar": "2025-05-16",
+                                "GMT": "09:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Mar",
+                                "Actual": null,
+                                "Previous": "€24B",
+                                "Consensus": null,
+                                "TEForecast": "€ 25B"
+                            }
+                        ]
+                    }
+                },
+                "usd": {
+                    "Fed Fund Rate": {
+                        "desc": "The Federal Reserve kept the funds rate at 4.25%–4.50% for a third consecutive meeting in May 2025, in line with expectations, as officials adopt a wait-and-see approach amid concerns that President Trump’s tariffs could drive up inflation and slow economic growth. Policymakers noted that uncertainty about the economic outlook has increased further and that the risks of higher unemployment and higher inflation have risen. During the regular press conference, Fed Chair Powell said that it's too early to determine whether inflation or unemployment will emerge as the greater concern, and the Fed does not need to rush into adjusting interest rates. The central bank can afford to be patient, monitoring incoming data and adopting a wait-and-see approach. The Fed also said that that although swings in net exports have affected the data, recent indicators suggest that economic activity has continued to expand at a solid pace.source:Federal Reserve",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-19",
+                                "GMT": "06:00 PM",
+                                "Reference": "Interest Rate Projection - Longer",
+                                "Reference.1": null,
+                                "Actual": "3%",
+                                "Previous": "3%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-03-19",
+                                "GMT": "06:00 PM",
+                                "Reference": "Interest Rate Projection - Current",
+                                "Reference.1": null,
+                                "Actual": "3.9%",
+                                "Previous": "4.4%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-05-07",
+                                "GMT": "06:00 PM",
+                                "Reference": "Fed Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "4.5%",
+                                "Previous": "4.5%",
+                                "Consensus": "4.5%",
+                                "TEForecast": "4.5%"
+                            },
+                            {
+                                "Calendar": "2025-06-04",
+                                "GMT": "06:00 PM",
+                                "Reference": "Fed Beige Book",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-18",
+                                "GMT": "06:00 PM",
+                                "Reference": "Fed Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-07-16",
+                                "GMT": "06:00 PM",
+                                "Reference": "Fed Beige Book",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Core PCE YoY": {
+                        "desc": "Core PCE Price Index Annual Change in the United States decreased to 2.60 percent in March from 3 percent in February of 2025. Core PCE Price Index Annual Change in the United States averaged 3.24 percent from 1960 until 2025, reaching an all time high of 10.22 percent in February of 1975 and a record low of 0.63 percent in July of 2009.source:U.S. Bureau of Economic Analysis",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-28",
+                                "GMT": "12:30 PM",
+                                "Reference": "Core PCE Price Index YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "2.8%",
+                                "Previous": "2.7%",
+                                "Consensus": "2.7%",
+                                "TEForecast": "2.6%"
+                            },
+                            {
+                                "Calendar": "2025-04-30",
+                                "GMT": "02:00 PM",
+                                "Reference": "Core PCE Price Index YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "2.6%",
+                                "Previous": "3%",
+                                "Consensus": "2.6%",
+                                "TEForecast": "2.5%"
+                            },
+                            {
+                                "Calendar": "2025-05-30",
+                                "GMT": "12:30 PM",
+                                "Reference": "Core PCE Price Index YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "PCE YoY": {
+                        "desc": "PCE prices in the US increased 2.3% year-on-year in March 2025, the lowest in five months but above market expectations of 2.2%. In February PCE prices rose 2.7%. PCE Price Index Annual Change in the United States averaged 3.29 percent from 1960 until 2025, reaching an all time high of 11.60 percent in March of 1980 and a record low of -1.47 percent in July of 2009.source:U.S. Bureau of Economic Analysis",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-28",
+                                "GMT": "12:30 PM",
+                                "Reference": "PCE Price Index YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "2.5%",
+                                "Previous": "2.5%",
+                                "Consensus": "2.5%",
+                                "TEForecast": "2.5%"
+                            },
+                            {
+                                "Calendar": "2025-04-30",
+                                "GMT": "02:00 PM",
+                                "Reference": "PCE Price Index YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "2.3%",
+                                "Previous": "2.7%",
+                                "Consensus": "2.2%",
+                                "TEForecast": "2.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-30",
+                                "GMT": "12:30 PM",
+                                "Reference": "PCE Price Index YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "2.3%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "GDP QoQ": {
+                        "desc": "The U.S. economy contracted at an annualized rate of 0.3% in the first quarter of 2025, marking the first decline since the first quarter of 2022. This was a sharp reversal from 2.4% growth in the previous quarter and came in below market expectations of 0.3% growth, according to an advance estimate. A 41.3% surge in imports contributed to the slowdown, as businesses and consumers rushed to stockpile goods in anticipation of higher costs following a series of tariff announcements by the Trump administration. Consumer spending growth also cooled to 1.8%, the slowest pace since Q2 2023, while federal government expenditures fell 5.1%, the steepest drop since Q1 2022. In contrast, fixed investment surged 7.8%, the most since Q2 2023.source:U.S. Bureau of Economic Analysis",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-27",
+                                "GMT": "12:30 PM",
+                                "Reference": "QoQ Final",
+                                "Reference.1": "Q4",
+                                "Actual": "2.4%",
+                                "Previous": "3.1%",
+                                "Consensus": "2.3%",
+                                "TEForecast": "2.3%"
+                            },
+                            {
+                                "Calendar": "2025-04-30",
+                                "GMT": "12:30 PM",
+                                "Reference": "QoQ Adv",
+                                "Reference.1": "Q1",
+                                "Actual": "-0.3%",
+                                "Previous": "2.4%",
+                                "Consensus": "0.3%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-05-29",
+                                "GMT": "12:30 PM",
+                                "Reference": "QoQ 2nd Est",
+                                "Reference.1": "Q1",
+                                "Actual": null,
+                                "Previous": "2.4%",
+                                "Consensus": null,
+                                "TEForecast": "-0.3%"
+                            }
+                        ]
+                    },
+                    "ISM Manufacturing PMI": {
+                        "desc": "The ISM Manufacturing PMI for the U.S. slipped to 48.7 in April 2025 from 49.0 in March, slightly above market expectations of 48. The reading signaled a second consecutive month of contraction in the manufacturing sector as output shrank more sharply (44.0 vs. 48.3) and prices rose further (69.8 vs. 69.4). Meanwhile, new orders declined at a slower pace (47.2 vs. 45.2), though new export orders fell more steeply amid ongoing tariff-related disruptions. Meanwhile, the rate of job losses moderated slightly (46.5 vs. 44.7). The ISM survey also revealed U.S. manufacturers were grappling with rising costs and margin pressure, while ongoing trade uncertainty was disrupting supply chains, causing shipping delays, complex duties, and frequent changes in cost structures. At the same time, they said customer demand was becoming more volatile, with some clients delaying orders or pushing tariff costs back onto manufacturers.source:Institute for Supply Management",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-01",
+                                "GMT": "02:00 PM",
+                                "Reference": "ISM Manufacturing PMI",
+                                "Reference.1": "Mar",
+                                "Actual": 49.0,
+                                "Previous": 50.3,
+                                "Consensus": 49.5,
+                                "TEForecast": 50.0
+                            },
+                            {
+                                "Calendar": "2025-05-01",
+                                "GMT": "02:00 PM",
+                                "Reference": "ISM Manufacturing PMI",
+                                "Reference.1": "Apr",
+                                "Actual": 48.7,
+                                "Previous": 49.0,
+                                "Consensus": 48.0,
+                                "TEForecast": 47.2
+                            },
+                            {
+                                "Calendar": "2025-06-02",
+                                "GMT": "02:00 PM",
+                                "Reference": "ISM Manufacturing PMI",
+                                "Reference.1": "May",
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "ISM Services PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Retail Sales MoM": {
+                        "desc": "Retail sales in the US jumped 1.4% mom in March 2025, following a 0.2% gain in February and slightly better than forecasts of 1.3%. It marked the largest increase in retail sales since January 2023, driven by a 5.3% increase in motor vehicle and parts sales, as consumers appeared to rush purchases ahead of impending auto tariffs. Excluding autos, retail sales were up 0.5%. Increases were also seen at building material & garden equipment (3.3%); sporting goods, hobby, musical instrument, & book stores (2.4%); food services & drinking places (1.8%); electronics & appliance (0.8%); miscellaneous store retailers (0.7%); health & personal care stores (0.7%); general merchandise stores (0.6%); clothing (0.4%); and food & beverage stores (0.2%). On the other hand, retail sales declined at gasoline stations (-2.5%) and furniture stores (-0.7%). Meanwhile, sales excluding food services, auto dealers, building materials stores and gasoline stations, which are used to calculate GDP, were up 0.4%.source:U.S. Census Bureau",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-17",
+                                "GMT": "12:30 PM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Feb",
+                                "Actual": "0.2%",
+                                "Previous": "-1.2%",
+                                "Consensus": "0.6%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "12:30 PM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Mar",
+                                "Actual": "1.4%",
+                                "Previous": "0.2%",
+                                "Consensus": "1.3%",
+                                "TEForecast": "1.1%"
+                            },
+                            {
+                                "Calendar": "2025-05-15",
+                                "GMT": "12:30 PM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "1.4%",
+                                "Consensus": null,
+                                "TEForecast": "-0.8%"
+                            }
+                        ]
+                    },
+                    "Unemployment Rate": {
+                        "desc": "The US unemployment rate was at 4.2% in April 2025, the same as in March and in line with market expectations. The number of unemployed individuals increased by 82,000 to 7.165 million, while employment grew by 436,000 to reach 163.944 million. The labor force participation rate also edged up to 62.6% from 62.5%, and the employment-population ratio to 60% from 59.9%. Additionally, the U-6 unemployment rate, which includes those marginally attached to the labor force and those working part-time for economic reasons, decreased to 7.8% in April from 7.9% in the previous month.source:U.S. Bureau of Labor Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-04",
+                                "GMT": "12:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Mar",
+                                "Actual": "4.2%",
+                                "Previous": "4.1%",
+                                "Consensus": "4.1%",
+                                "TEForecast": "4.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "12:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Apr",
+                                "Actual": "4.2%",
+                                "Previous": "4.2%",
+                                "Consensus": "4.2%",
+                                "TEForecast": "4.2%"
+                            },
+                            {
+                                "Calendar": "2025-06-06",
+                                "GMT": "12:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "May",
+                                "Actual": null,
+                                "Previous": "4.2%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "NFP": {
+                        "desc": "The U.S. economy added 177,000 jobs in April 2025, a slowdown from the downwardly revised 185,000 in March, but significantly surpassing market expectations of 130,000. This figure aligns closely with the average monthly gain of 152,000 over the past 12 months, despite growing uncertainty surrounding President Donald Trump’s aggressive tariff policies. Job growth was primarily seen in sectors such as health care (+51,000), transportation and warehousing (+29,000), financial activities (+14,000), and social assistance (+8,000), while federal government employment experienced a decline (-9,000).source:U.S. Bureau of Labor Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-04",
+                                "GMT": "12:30 PM",
+                                "Reference": "Non Farm Payrolls",
+                                "Reference.1": "Mar",
+                                "Actual": "228K",
+                                "Previous": "117K",
+                                "Consensus": "135K",
+                                "TEForecast": "100.0K"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "12:30 PM",
+                                "Reference": "Non Farm Payrolls",
+                                "Reference.1": "Apr",
+                                "Actual": "177K",
+                                "Previous": "185K",
+                                "Consensus": "130K",
+                                "TEForecast": "140K"
+                            },
+                            {
+                                "Calendar": "2025-06-06",
+                                "GMT": "12:30 PM",
+                                "Reference": "Non Farm Payrolls",
+                                "Reference.1": "May",
+                                "Actual": null,
+                                "Previous": "177K",
+                                "Consensus": null,
+                                "TEForecast": "130.0K"
+                            }
+                        ]
+                    },
+                    "Average Hourly Earnings MoM": {
+                        "desc": "The average hourly earnings for all employees on US private nonfarm payrolls rose by 6 cents, or 0.2% over a month, to $36.06 in April 2025, following a 0.3% increase in March and just below market forecasts of 0.3%. In April, average hourly earnings of private-sector production and nonsupervisory employees rose by 10 cents, or 0.3%, to $31.06. Over the past 12 months, average hourly earnings have increased by 3.8% in April, matching March's rate and slightly below estimates of 3.9%.source:U.S. Bureau of Labor Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-04",
+                                "GMT": "12:30 PM",
+                                "Reference": "Average Hourly Earnings MoM",
+                                "Reference.1": "Mar",
+                                "Actual": "0.3%",
+                                "Previous": "0.2%",
+                                "Consensus": "0.3%",
+                                "TEForecast": "0.3%"
+                            },
+                            {
+                                "Calendar": "2025-05-02",
+                                "GMT": "12:30 PM",
+                                "Reference": "Average Hourly Earnings MoM",
+                                "Reference.1": "Apr",
+                                "Actual": "0.2%",
+                                "Previous": "0.3%",
+                                "Consensus": "0.3%",
+                                "TEForecast": "0.3%"
+                            },
+                            {
+                                "Calendar": "2025-06-06",
+                                "GMT": "12:30 PM",
+                                "Reference": "Average Hourly Earnings MoM",
+                                "Reference.1": "May",
+                                "Actual": null,
+                                "Previous": "0.2%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Balance of Trade": {
+                        "desc": "The US trade deficit widened to $140.5 billion in March 2025, reaching a fresh record high, compared to forecasts of a $137 billion shortfall. Imports jumped 4.4% to an all-time high of $419 billion in anticipation of more tariff announcements in April. Purchases rose for pharmaceutical preparations, passenger cars, and computer accessories but fell for finished metal shapes, nonmonetary gold, and crude oil. Meanwhile, exports were up a meagre 0.2% but also topped a record $278.5 billion, led by passenger cars, natural gas, nonmonetary gold, and computer accessories but fell for civilian aircraft. The US trade deficit widened sharply with the EU ($-48.3 billion vs $-30.9 billion), particularly Ireland ($-29.3 billion vs $-14 billion), and Vietnam ($-14.1 billion vs $-12.4 billion) but narrowed with China ($-24.8 billion vs $-26.6 billion), Switzerland ($-14.7 billion vs $-18.8 billion) and Canada ($-4.9 billion vs $-7.4 billion) and was little changed with Mexico at $16.7 billion.source:Bureau of Economic Analysis (BEA)",
+                        "table": [
+                            {
+                                "Calendar": "2025-04-03",
+                                "GMT": "12:30 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Feb",
+                                "Actual": "$-122.7B",
+                                "Previous": "$-130.7B",
+                                "Consensus": "$-123.5B",
+                                "TEForecast": "$-122B"
+                            },
+                            {
+                                "Calendar": "2025-05-06",
+                                "GMT": "12:30 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Mar",
+                                "Actual": "$-140.5B",
+                                "Previous": "$-123.2B",
+                                "Consensus": "$-137B",
+                                "TEForecast": "$-137.1B"
+                            },
+                            {
+                                "Calendar": "2025-06-05",
+                                "GMT": "12:30 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "$-140.5B",
+                                "Consensus": null,
+                                "TEForecast": "$-132.0B"
+                            }
+                        ]
+                    }
+                },
+                "jpy": {
+                    "BOJ Rate": {
+                        "desc": "The Bank of Japan (BoJ) kept its key short-term interest rate unchanged at 0.5% during its May meeting, maintaining the highest level since 2008 and in line with market expectations. The unanimous decision came amid rising concerns that U.S. President Trump's tariff measures could dampen both U.S. and global economic growth. Tokyo is currently negotiating a trade deal with Washington, which may influence future policy moves. The board signaled that it would raise rates if economic and price forecasts materialize. In its quarterly outlook, the BoJ lowered its FY 2025 GDP growth forecast to 0.5% from 1.0% projected in January, citing trade risks and policy uncertainty. The 2026 growth outlook was also reduced to 0.7% from 1.0%. The BoJ also trimmed its core inflation forecast for FY 2025 to 2.2% from 2.7% and expects it to ease further to 1.7% in FY 2026 before ticking up to 1.9% in FY 2027. Meanwhile, headline inflation is projected to hover around 2% through the FY ending March 2028.source:Bank of Japan",
+                        "table": [
+                            {
+                                "Calendar": "2025-01-24",
+                                "GMT": "03:30 AM",
+                                "Reference": "BoJ Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "0.5%",
+                                "Previous": "0.25%",
+                                "Consensus": "0.5%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-03-19",
+                                "GMT": "03:00 AM",
+                                "Reference": "BoJ Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "0.5%",
+                                "Previous": "0.5%",
+                                "Consensus": "0.5%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-05-01",
+                                "GMT": "03:00 AM",
+                                "Reference": "BoJ Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "0.5%",
+                                "Previous": "0.5%",
+                                "Consensus": "0.5%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-05-12",
+                                "GMT": "11:50 PM",
+                                "Reference": "BoJ Summary of Opinions",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-17",
+                                "GMT": "03:00 AM",
+                                "Reference": "BoJ Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": "0.5%",
+                                "Consensus": null,
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-06-24",
+                                "GMT": "11:50 PM",
+                                "Reference": "BoJ Summary of Opinions",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Core CPI YoY": {
+                        "desc": "Japan’s core consumer price index, which excludes fresh food but includes energy costs, rose 3.2% year-on-year in March 2025, up from 3% in February and in line with market expectations. The data supports the Bank of Japan’s approach of gradual interest rate hikes, though rising economic risks, particularly from sweeping U.S. tariffs, cast a shadow over the outlook. The inflation figures arrive ahead of the BOJ’s policy meeting next week, where the central bank is expected to keep its benchmark rate unchanged at 0.5% and lower its growth forecasts. Core inflation has remained at or above the BOJ’s 2% target for nearly three years, driven by persistently high food prices and rising wages. While further rate hikes are anticipated later this year, the U.S. trade measures add uncertainty to Japan’s export-reliant economy.source:Statistics Bureau of Japan",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-20",
+                                "GMT": "11:30 PM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "3%",
+                                "Previous": "3.2%",
+                                "Consensus": "2.9%",
+                                "TEForecast": "2.8%"
+                            },
+                            {
+                                "Calendar": "2025-04-17",
+                                "GMT": "11:30 PM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "3.2%",
+                                "Previous": "3%",
+                                "Consensus": "3.2%",
+                                "TEForecast": "3%"
+                            },
+                            {
+                                "Calendar": "2025-05-22",
+                                "GMT": "11:30 PM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "3.2%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "CPI YoY": {
+                        "desc": "Japan's annual inflation rate edged to 3.6% in March 2025 from 3.7% in the prior month, marking the lowest print since last November. Food prices rose the least in three months (7.4% vs 7.6% in February) even as rice costs jumped by 92.1% yoy due to poor harvests, rising demand from record tourist numbers, and emergency government stockpile releases. In addition, prices of electricity (8.7% vs 9.0% ) and gas (2.4% vs 3.4%) eased further amid energy subsidies. Inflation also eased slightly for recreation (2.0% vs 2.1%), while education cost fell further (-1.2% vs -1.1%). In contrast, inflation was stable for housing (at 0.8%) and miscellaneous items (at 1.1%) but accelerated for clothing (3.0% vs 2.8%), healthcare (2.0% vs 1.7%), transport (2.7% vs 2.4%), furniture and household items (4.5% vs 4.0%), and communications (1.0% vs 0.1%). However, the core inflation rate rose to 3.2% from 3.0%, in line with market estimates. Monthly, the CPI increased 0.3%, after a 0.1% drop in February.source:Ministry of Internal Affairs & Communications",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-20",
+                                "GMT": "11:30 PM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "3.7%",
+                                "Previous": "4%",
+                                "Consensus": null,
+                                "TEForecast": "4.2%"
+                            },
+                            {
+                                "Calendar": "2025-04-17",
+                                "GMT": "11:30 PM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "3.6%",
+                                "Previous": "3.7%",
+                                "Consensus": null,
+                                "TEForecast": "3.7%"
+                            },
+                            {
+                                "Calendar": "2025-05-22",
+                                "GMT": "11:30 PM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "3.6%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "GDP QoQ": {
+                        "desc": "Japan's GDP grew by 0.6% qoq in Q4 2024, below the flash estimate of 0.7% but higher than an upwardly revised 0.4% expansion in Q3, marking the third consecutive quarter of growth. Private consumption saw a slight downward revision, remaining flat instead of a 0.1% growth reported in the flash estimate, following a 0.7% increase in Q3. Meanwhile, business investment gained 0.6%, compared to a preliminary reading of 0.5% and after a 0.1% drop in Q3, surpassing forecasts of a 0.3% rise. Simultaneously, government spending expanded for the fourth successive quarter, rising by 0.4%, up from an initial estimate of 0.3% and a 0.1% gain in Q3. Net trade contributed 0.7 percentage points to overall growth, as exports rose for the third straight quarter despite concerns over US tariff threats (1.0% vs 1.5% in Q3), while imports fell for the first time since Q1 2024 (-2.1% vs. 2.0% in Q3). On an annualized basis, the economy advanced 2.2%, quickening from an upwardly revised 1.4% in Q3.source:Cabinet Office, Japan",
+                        "table": [
+                            {
+                                "Calendar": "2025-02-16",
+                                "GMT": "11:50 PM",
+                                "Reference": "QoQ Prel",
+                                "Reference.1": "Q4",
+                                "Actual": "0.7%",
+                                "Previous": "0.4%",
+                                "Consensus": "0.3%",
+                                "TEForecast": "0.5%"
+                            },
+                            {
+                                "Calendar": "2025-03-10",
+                                "GMT": "11:50 PM",
+                                "Reference": "QoQ Final",
+                                "Reference.1": "Q4",
+                                "Actual": "0.6%",
+                                "Previous": "0.4%",
+                                "Consensus": "0.7%",
+                                "TEForecast": "0.7%"
+                            },
+                            {
+                                "Calendar": "2025-05-15",
+                                "GMT": "11:50 PM",
+                                "Reference": "QoQ Prel",
+                                "Reference.1": "Q1",
+                                "Actual": null,
+                                "Previous": "0.6%",
+                                "Consensus": "-0.1%",
+                                "TEForecast": "0.1%"
+                            }
+                        ]
+                    },
+                    "Jibun Bank Manufacturing PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Jibun Bank Services PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Retail Sales YoY": {
+                        "desc": "Retail sales in Japan increased by 3.1% year-on-year in March 2025, up from a downwardly revised 1.3% growth in the previous month, but below market expectations of a 3.5% rise. This marked the 36th straight month of expansion in retail sales, with rising wages continuing to support consumption. Sales grew for fuel (1.8%), automobile (1.5%), machinery & equipment (6.7%), clothing & personal goods (7.6%), food & beverage (1.9%), non-store retailers (3.1%), other retailers (4.1%), and pharmaceuticals & cosmetics (3.7%). By contrast, sales fell for department stores (-1.2%). On a monthly basis, retail sales dropped by 1.2% in March, the first monthly decline in three months, reversing a downwardly revised 0.4% gain in February.source:Ministry of Economy Trade & Industry (METI)",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-30",
+                                "GMT": "11:50 PM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "1.4%",
+                                "Previous": "4.4%",
+                                "Consensus": "2%",
+                                "TEForecast": "2.2%"
+                            },
+                            {
+                                "Calendar": "2025-04-29",
+                                "GMT": "11:50 PM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "3.1%",
+                                "Previous": "1.3%",
+                                "Consensus": "3.5%",
+                                "TEForecast": "3.3%"
+                            },
+                            {
+                                "Calendar": "2025-05-30",
+                                "GMT": "11:50 PM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "3.1%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Unemployment Rate": {
+                        "desc": "Japan's unemployment rate edged up to 2.5% in March 2025, slightly above both February's figure and market expectations of 2.4%. The number of unemployed increased by 50 thousand to 1.73 million while employment declined by 80 thousand to 68.08 million. The labor force fell by 50 thousand to 69.81 million, and those detached from the labor force rose by 30 thousand to 39.94 million. The non-seasonally adjusted labor force participation rate increased to 63.3% in March from 62.8% in the same month a year earlier. Meanwhile, the jobs-to-applications ratio went up 1.26 from February's 5-month low of 1.24, slightly above consensus of 1.26.source:Ministry of Internal Affairs & Communications",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-31",
+                                "GMT": "11:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Feb",
+                                "Actual": "2.4%",
+                                "Previous": "2.5%",
+                                "Consensus": "2.5%",
+                                "TEForecast": "2.6%"
+                            },
+                            {
+                                "Calendar": "2025-05-01",
+                                "GMT": "11:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Mar",
+                                "Actual": "2.5%",
+                                "Previous": "2.4%",
+                                "Consensus": "2.4%",
+                                "TEForecast": "2.50%"
+                            },
+                            {
+                                "Calendar": "2025-05-29",
+                                "GMT": "11:30 PM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "2.5%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Wage Growth": {
+                        "desc": "Total cash earnings in Japan rose 2.7% year-on-year in February 2025, following a 1.8% increase in January, revised data showed. Wage Growth in Japan averaged 3.00 percent from 1972 until 2025, reaching an all time high of 35.02 percent in July of 1974 and a record low of -7.10 percent in June of 2009.source: Ministry of Health, Labour and Welfare, Japan",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-09",
+                                "GMT": "11:30 PM",
+                                "Reference": "Average Cash Earnings YoY",
+                                "Reference.1": "Jan",
+                                "Actual": "2.8%",
+                                "Previous": "4.4%",
+                                "Consensus": "3.2%",
+                                "TEForecast": "3.5%"
+                            },
+                            {
+                                "Calendar": "2025-04-06",
+                                "GMT": "11:30 PM",
+                                "Reference": "Average Cash Earnings YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "3.1%",
+                                "Previous": "1.8%",
+                                "Consensus": "3.1%",
+                                "TEForecast": "2.9%"
+                            },
+                            {
+                                "Calendar": "2025-05-08",
+                                "GMT": "11:30 PM",
+                                "Reference": "Average Cash Earnings YoY",
+                                "Reference.1": "Mar",
+                                "Actual": null,
+                                "Previous": "2.7%",
+                                "Consensus": "2.3%",
+                                "TEForecast": "2.5%"
+                            }
+                        ]
+                    },
+                    "Balance of Trade": {
+                        "desc": "Japan’s trade surplus increased to JPY 544.1 billion in March 2025 from JPY 349.9 billion in the same month a year earlier, beating market expectations of JPY 485.3 billion, as export growth outpaced imports. Exports rose 3.9% year-on-year to a three-month high of JPY 9,847.8 billion, marking the sixth consecutive month of expansion, though slightly below the forecast of 4.5%. Meanwhile, imports rose at a slower 2% to JPY 9,303.8 billion, rebounding from a 0.7% decline in February but falling short of the projected 3.1% rise.source:Ministry of Finance, Japan",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-18",
+                                "GMT": "11:50 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Feb",
+                                "Actual": "¥584.5B",
+                                "Previous": "¥-2,736.6B",
+                                "Consensus": "¥722.8B",
+                                "TEForecast": "¥650.0B"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "11:50 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Mar",
+                                "Actual": "¥544.1B",
+                                "Previous": "¥590.5B",
+                                "Consensus": "¥485.3B",
+                                "TEForecast": "¥300.0B"
+                            },
+                            {
+                                "Calendar": "2025-05-20",
+                                "GMT": "11:50 PM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "¥544.1B",
+                                "Consensus": null,
+                                "TEForecast": "¥-200.0B"
+                            }
+                        ]
+                    }
+                },
+                "gbp": {
+                    "BOE Rate": {
+                        "desc": "The Bank of England voted 5–4 to cut Bank Rate by 25bps to 4.25% in May as expected. Two members preferred a larger cut to 4%, while two opted to hold at 4.5%. The decision reflects continued disinflation progress as external shocks eased and tight policy helped anchor inflation expectations. UK GDP growth has slowed since mid-2024, and the labour market is loosening. CPI inflation fell to 2.6% in March, though a temporary rise to 3.5% is expected in Q3 due to earlier energy price spikes. Inflation is forecast to ease again thereafter. Pay growth remains high but is expected to slow. Global uncertainty has risen due to new US tariffs, weakening global growth and lowering market interest rate expectations. The MPC remains committed to returning inflation to 2% sustainably. Future policy will depend on evolving risks and inflation dynamics. A cautious, data-driven approach to reducing policy restraint remains appropriate.source:Bank of England",
+                        "table": [
+                            {
+                                "Calendar": "2025-05-08",
+                                "GMT": "11:02 AM",
+                                "Reference": "BoE Interest Rate Decision",
+                                "Reference.1": null,
+                                "Actual": "4.25%",
+                                "Previous": "4.5%",
+                                "Consensus": "4.25%",
+                                "TEForecast": "4.25%"
+                            },
+                            {
+                                "Calendar": "2025-05-08",
+                                "GMT": "11:02 AM",
+                                "Reference": "BoE MPC Vote Cut",
+                                "Reference.1": null,
+                                "Actual": "7/9",
+                                "Previous": "1/9",
+                                "Consensus": "9/9",
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-05-08",
+                                "GMT": "11:02 AM",
+                                "Reference": "BoE MPC Vote Hike",
+                                "Reference.1": null,
+                                "Actual": "0/9",
+                                "Previous": "0/9",
+                                "Consensus": "0/9",
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-19",
+                                "GMT": "11:00 AM",
+                                "Reference": "BoE MPC Vote Unchanged",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-19",
+                                "GMT": "11:00 AM",
+                                "Reference": "BoE MPC Vote Hike",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-06-19",
+                                "GMT": "11:00 AM",
+                                "Reference": "BoE MPC Vote Cut",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Core CPI YoY": {
+                        "desc": "The United Kingdom's annual core inflation rate inched lower to 3.4% in March 2025 from 3.5% in the previous month, matching market consensus while marking its lowest reading since December. The annual CPI goods rate eased (0.6% vs 0.8% in February), and the CPI services rate also slowed (4.7% vs 5.0%). On a monthly basis, core consumer prices rose by 0.5%, the largest increase in ten months, following a 0.4% gain in February. It was in line with expectations.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-26",
+                                "GMT": "07:00 AM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "3.5%",
+                                "Previous": "3.7%",
+                                "Consensus": "3.6%",
+                                "TEForecast": "3.5%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "06:00 AM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "3.4%",
+                                "Previous": "3.5%",
+                                "Consensus": "3.4%",
+                                "TEForecast": "3.3%"
+                            },
+                            {
+                                "Calendar": "2025-05-21",
+                                "GMT": "06:00 AM",
+                                "Reference": "Core Inflation Rate YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "3.4%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "CPI YoY": {
+                        "desc": "The annual inflation rate in the UK slowed to 2.6% in March 2025 from 2.8% in February and below market and the BoE's forecasts of 2.7%. The largest downward contributions came from recreation and culture (2.4% vs 3.4%), mainly games, toys and hobbies (-4.2%) and data processing equipment (-5.1%). Transport also contributed to the slowdown (1.2% vs 1.8%), largely due to a 5.3% fall in motor fuel prices. In addition, prices rose less for restaurants and hotels (3%, the lowest since July 2021 vs 3.4%), mostly accommodation services (-0.6%); housing and utilities (1.8% vs 1.9%); and food and non-alcoholic beverages (3% vs 3.3%). In contrast, the most significant upward contribution came from clothing and footwear (1.1% vs -0.6%), with prices usually rising in March as spring fashions continue to enter the shops. Compared to the previous month, the CPI edged up 0.3%, slightly below both the previous month’s increase and expectations of 0.4%. Annual core inflation slowed to 3.4% from 3.5%.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-26",
+                                "GMT": "07:00 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "2.8%",
+                                "Previous": "3%",
+                                "Consensus": "2.9%",
+                                "TEForecast": "3.0%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "06:00 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "2.6%",
+                                "Previous": "2.8%",
+                                "Consensus": "2.7%",
+                                "TEForecast": "2.8%"
+                            },
+                            {
+                                "Calendar": "2025-05-21",
+                                "GMT": "06:00 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "2.6%",
+                                "Consensus": null,
+                                "TEForecast": "3.3%"
+                            }
+                        ]
+                    },
+                    "GDP QoQ": {
+                        "desc": "The British economy expanded 0.1% on quarter in Q4 2024, the same as in the first estimate, and following a flat reading in Q3. On the production side, the services sector increased by 0.1% (less than 0.2% in the first estimate), with the largest positive contribution coming from human health and social work activities. Construction also grew 0.3%, while production fell by 0.4% (vs -0.8% in the first estimate), largely driven by a 0.6% decline in manufacturing, namely manufacture of basic metals and metal products (-2.9%) and transport equipment (-2%). On the expenditure side, there were falls in net trade and gross fixed capital formation, offset by a large increase in gross capital formation. Also, household consumption increased 0.1%, revised up from the initial estimate of no growth, mostly due to spending on restaurants and hotels, and housing. Public expenditure rose 0.5%, mainly public administration and defence, and higher activity in health.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-02-13",
+                                "GMT": "07:00 AM",
+                                "Reference": "QoQ Prel",
+                                "Reference.1": "Q4",
+                                "Actual": "0.1%",
+                                "Previous": "0%",
+                                "Consensus": "-0.1%",
+                                "TEForecast": "-0.1%"
+                            },
+                            {
+                                "Calendar": "2025-03-28",
+                                "GMT": "07:00 AM",
+                                "Reference": "QoQ Final",
+                                "Reference.1": "Q4",
+                                "Actual": "0.1%",
+                                "Previous": "0%",
+                                "Consensus": "0.1%",
+                                "TEForecast": "0.1%"
+                            },
+                            {
+                                "Calendar": "2025-05-15",
+                                "GMT": "06:00 AM",
+                                "Reference": "QoQ Prel",
+                                "Reference.1": "Q1",
+                                "Actual": null,
+                                "Previous": "0.1%",
+                                "Consensus": null,
+                                "TEForecast": "0.6%"
+                            }
+                        ]
+                    },
+                    "S&P Manufacturing PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "S&P Services PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Retail Sales": {
+                        "desc": "Retail sales in the UK rose by 0.4% month-over-month in March 2025, defying forecasts of a 0.4% decline, following a downwardly revised 0.7% increase in the previous month. Sales in non-food stores increased by 1.7%, reaching its highest level since March 2022. Clothing stores saw the strongest growth (+3.7%), with retailers attributing the boost to favorable weather. Other non-food stores also saw a gain (+2.4%), particularly in second-hand goods stores and retailers selling garden supplies. Meanwhile, food store sales declined by 1.3%. Excluding fuel, retail sales grew by 0.5% from a month earlier. On a yearly basis, retail sales climbed 2.6%, exceeding forecasts and February’s 1.8% increase. For the first quarter, retail trade rose by 1.6%, marking the largest three-month increase since July 2021.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-28",
+                                "GMT": "07:00 AM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Feb",
+                                "Actual": "1%",
+                                "Previous": "1.4%",
+                                "Consensus": "-0.3%",
+                                "TEForecast": "-0.2%"
+                            },
+                            {
+                                "Calendar": "2025-04-25",
+                                "GMT": "06:00 AM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Mar",
+                                "Actual": "0.4%",
+                                "Previous": "0.7%",
+                                "Consensus": "-0.4%",
+                                "TEForecast": "-0.3%"
+                            },
+                            {
+                                "Calendar": "2025-05-23",
+                                "GMT": "06:00 AM",
+                                "Reference": "Retail Sales MoM",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "0.4%",
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Unemployment Rate": {
+                        "desc": "The United Kingdom’s unemployment rate held steady at 4.4% from December to February 2025, unchanged for the fourth consecutive period and in line with expectations. It remains the highest rate since the three months ending May 2024. The number of individuals unemployed for up to 6 months and over 12 months increased, while those unemployed for 6 to 12 months declined. Compared to the same period last year, unemployment rose in both the under-12-month and over-12-month categories. Meanwhile, the number of employed individuals rose by 206 thousand—the largest increase since the three months ending September 2024—reaching a record high of 34 million, largely driven by a rise in full-time employment. The number of people holding second jobs also increased, now representing 3.8% of all employed individuals. Lastly, the economic inactivity rate edged down to 21.4% from 21.5%.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-20",
+                                "GMT": "07:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Jan",
+                                "Actual": "4.4%",
+                                "Previous": "4.4%",
+                                "Consensus": "4.4%",
+                                "TEForecast": "4.4%"
+                            },
+                            {
+                                "Calendar": "2025-04-15",
+                                "GMT": "06:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Feb",
+                                "Actual": "4.4%",
+                                "Previous": "4.4%",
+                                "Consensus": "4.4%",
+                                "TEForecast": "4.4%"
+                            },
+                            {
+                                "Calendar": "2025-05-13",
+                                "GMT": "06:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Mar",
+                                "Actual": null,
+                                "Previous": "4.4%",
+                                "Consensus": null,
+                                "TEForecast": "4.40%"
+                            }
+                        ]
+                    },
+                    "Average Weekly Earnings Growth": {
+                        "desc": "Total average weekly earnings in the UK which includes bonuses rose 5.6% year-on-year to GBP 716 per week in the three months to February 2025, the same as a downwardly revised 5.6% in the previous period and slightly below forecasts of 5.7%. Wage growth eased in the private sector (5.6% vs 5.8%) but accelerated in the public sector (5.7%, the highest since the three months to May vs 5.2%). This follows the public sector pay rises now coming through in the 3-month growth rate. Adjusted for inflation, total earnings grew by 1.9%, the same as in the previous period.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-20",
+                                "GMT": "07:00 AM",
+                                "Reference": "Average Earnings incl. Bonus (3Mo/Yr)",
+                                "Reference.1": "Jan",
+                                "Actual": "5.8%",
+                                "Previous": "6.1%",
+                                "Consensus": "5.9%",
+                                "TEForecast": "5.9%"
+                            },
+                            {
+                                "Calendar": "2025-04-15",
+                                "GMT": "06:00 AM",
+                                "Reference": "Average Earnings incl. Bonus (3Mo/Yr)",
+                                "Reference.1": "Feb",
+                                "Actual": "5.6%",
+                                "Previous": "5.6%",
+                                "Consensus": "5.7%",
+                                "TEForecast": "5.7%"
+                            },
+                            {
+                                "Calendar": "2025-05-13",
+                                "GMT": "06:00 AM",
+                                "Reference": "Average Earnings incl. Bonus (3Mo/Yr)",
+                                "Reference.1": "Mar",
+                                "Actual": null,
+                                "Previous": "5.6%",
+                                "Consensus": null,
+                                "TEForecast": "5.3%"
+                            }
+                        ]
+                    },
+                    "Balance of Trade": {
+                        "desc": "The UK trade balance posted a £ 1.96 billion deficit in February 2025, shifting from a revised £0.30 billion surplus in the previous month. Exports grew 0.2% month-on-month to a 27-month high of £76.24 billion, while imports grew by 3.2% to an eight-month high of £78.19 billion. Goods exports edged down by 0.1%, with exports to non-EU remaining stable, as falls of £0.6 billion in exports of material manufactures and £0.3 billion in miscellaneous manufactures were offset by £0.3 billion rises in exports of machinery and transport equipment, and fuels. Exports to EU countries also stayed stable at £14.01 billion. By contrast, services exports grew 0.4%. Goods imports rose by 5.2%, with imports from non-EU countries rising by 5.8%, mainly boosted by rises in imports of aircraft from the US, while those from the EU climbed by 6.1%, primarily due to rises in imports of machinery and transport equipment, including cars from Germany, Spain, and Belgium. By contrast, service imports fell 0.6%.source:Office for National Statistics",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-28",
+                                "GMT": "07:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Jan",
+                                "Actual": "£-2.64B",
+                                "Previous": "£-2.82B",
+                                "Consensus": null,
+                                "TEForecast": "£-3.5B"
+                            },
+                            {
+                                "Calendar": "2025-04-11",
+                                "GMT": "06:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Feb",
+                                "Actual": "£-1.956B",
+                                "Previous": "£0.301B",
+                                "Consensus": null,
+                                "TEForecast": "£-1.1B"
+                            },
+                            {
+                                "Calendar": "2025-05-15",
+                                "GMT": "06:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Mar",
+                                "Actual": null,
+                                "Previous": "£-1.956B",
+                                "Consensus": null,
+                                "TEForecast": "£ -2.7B"
+                            }
+                        ]
+                    }
+                },
+                "cnh": {
+                    "China Loan Prime Rate": {
+                        "desc": "The People's Bank of China (PBoC) left its key lending rates unchanged for the sixth consecutive month in April, aligning with market expectations as the central bank waits to assess the evolving impact of U.S. trade disputes before introducing further stimulus. The one-year loan prime rate (LPR), a benchmark for most corporate and household loans, was maintained at 3.1%, while the five-year LPR, a reference for property mortgages, remained at 3.6%. Both rates are at record lows following reductions in October and July of last year. The latest decision came after GDP grew more than expected, at 5.4% year-on-year in Q1 of 2025, remaining the highest growth in one and a half years, amid Beijing's ongoing stimulus efforts. Beijing is prioritizing the boost of domestic consumption, including an additional CNY 300 billion in ultra-long special treasury bonds for a consumer goods trade program.source:People's Bank of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-02-20",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": "3.1%",
+                                "Previous": "3.1%",
+                                "Consensus": "3.1%",
+                                "TEForecast": "3.1%"
+                            },
+                            {
+                                "Calendar": "2025-03-20",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": "3.1%",
+                                "Previous": "3.1%",
+                                "Consensus": "3.1%",
+                                "TEForecast": "3.1%"
+                            },
+                            {
+                                "Calendar": "2025-04-21",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": "3.1%",
+                                "Previous": "3.1%",
+                                "Consensus": "3.1%",
+                                "TEForecast": "3.1%"
+                            },
+                            {
+                                "Calendar": "2025-05-20",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": "3.1%",
+                                "Consensus": null,
+                                "TEForecast": "3.1%"
+                            },
+                            {
+                                "Calendar": "2025-06-20",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            },
+                            {
+                                "Calendar": "2025-07-20",
+                                "GMT": "01:15 AM",
+                                "Reference": "Loan Prime Rate 1Y",
+                                "Reference.1": null,
+                                "Actual": null,
+                                "Previous": null,
+                                "Consensus": null,
+                                "TEForecast": null
+                            }
+                        ]
+                    },
+                    "Core CPI YoY": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "CPI YoY": {
+                        "desc": "China's consumer prices fell by 0.1% year-on-year in March 2025, missing market expectations of a 0.1% increase and marking the second consecutive month of drop, as the ongoing trade dispute with the U.S. threatens to exert further downward pressure on prices. Still, the latest drop was significantly milder than February’s 0.7% fall, supported by a smaller decline in food prices as pork prices accelerated and fresh fruit costs rebounded. Meanwhile, non-food prices rose by 0.2%, reversing a slight dip of 0.1% in February, driven by increases in housing (0.1% vs 0.1%), healthcare (0.1% vs 0.2%), and education (0.8% vs -0.5%), despite a continued decline in transport costs (-2.6% vs -2.5%). Core inflation, which excludes volatile food and fuel prices, rose 0.5% in March, rebounding from a 0.1% decrease in February. On a monthly basis, the CPI declined by 0.4%, a steeper fall than a 0.2% drop in February, marking the second straight month of contraction.source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-09",
+                                "GMT": "01:30 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Feb",
+                                "Actual": "-0.7%",
+                                "Previous": "0.5%",
+                                "Consensus": "-0.5%",
+                                "TEForecast": "-0.4%"
+                            },
+                            {
+                                "Calendar": "2025-04-10",
+                                "GMT": "01:30 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "-0.1%",
+                                "Previous": "-0.7%",
+                                "Consensus": "0.1%",
+                                "TEForecast": "0.0%"
+                            },
+                            {
+                                "Calendar": "2025-05-10",
+                                "GMT": "01:30 AM",
+                                "Reference": "Inflation Rate YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "-0.1%",
+                                "Consensus": "-0.1%",
+                                "TEForecast": "0.0%"
+                            }
+                        ]
+                    },
+                    "GDP QoQ": {
+                        "desc": "The Chinese GDP grew by a seasonally adjusted 1.2% in Q1 of 2025, slowing from a 1.6% rise in Q4 and falling short of the market consensus of 1.4%. It marked the softest quarterly expansion since Q2 of 2024 while representing the 11th consecutive quarter of advance. Since February, U.S. President Donald Trump has sharply raised tariffs on Chinese goods to 145%, prompting Beijing to retaliate with duties on American imports. China's policymakers have emphasized that the nation has ample tools to support its economic output, with Premier Li Qiang recently pledging further stimulus. Boosting consumption remains a top priority this year as the government seeks to offset the impact of surging U.S. duties. The Politburo is expected to meet later in April to outline upcoming policy plans. In March, China announced increased fiscal spending, including a higher budget deficit, and officials have signaled more fiscal and monetary support ahead, following a wave of easing measures late last year.source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-01-17",
+                                "GMT": "02:00 AM",
+                                "Reference": "GDP Growth Rate QoQ",
+                                "Reference.1": "Q4",
+                                "Actual": "1.6%",
+                                "Previous": "1.3%",
+                                "Consensus": "1.6%",
+                                "TEForecast": "1.6%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "02:00 AM",
+                                "Reference": "GDP Growth Rate QoQ",
+                                "Reference.1": "Q1",
+                                "Actual": "1.2%",
+                                "Previous": "1.6%",
+                                "Consensus": "1.4%",
+                                "TEForecast": "1.5%"
+                            },
+                            {
+                                "Calendar": "2025-07-15",
+                                "GMT": "02:00 AM",
+                                "Reference": "GDP Growth Rate QoQ",
+                                "Reference.1": "Q2",
+                                "Actual": null,
+                                "Previous": "1.2%",
+                                "Consensus": null,
+                                "TEForecast": "0.4%"
+                            }
+                        ]
+                    },
+                    "NBS Manufacturing PMI": {
+                        "desc": "China's official NBS Manufacturing PMI fell to 49.0 in April 2025 from March’s 12-month high of 50.5, below market expectations of 49.8. This marked the first contraction in factory activity since January and the steepest decline since December 2023, despite Beijing’s stimulus measures aimed at supporting economic recovery amid growing concerns over the impact of the ongoing China-U.S. tariff standoff. Both output (49.8 vs 52.6 in March) and new orders (49.2 vs 51.8) declined after rising in the previous month, with foreign orders shrinking the most in at least eleven months (44.7 vs 49.0). Meanwhile, employment decreased at a faster pace (47.9 vs 48.2). Buying activity fell for the first time in three months (46.3 vs 51.8) while delivery times lengthened, the least since November 2024 (50.2 vs 50.3). On prices, input costs (47.0 vs 49.8) and selling prices (44.8 vs 47.9) both dropped the most in seven months. Lastly, confidence weakened to a seven-month low (52.1 vs 53.8).source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-31",
+                                "GMT": "01:30 AM",
+                                "Reference": "NBS Manufacturing PMI",
+                                "Reference.1": "Mar",
+                                "Actual": 50.5,
+                                "Previous": 50.2,
+                                "Consensus": 50.5,
+                                "TEForecast": 50.5
+                            },
+                            {
+                                "Calendar": "2025-04-30",
+                                "GMT": "01:30 AM",
+                                "Reference": "NBS Manufacturing PMI",
+                                "Reference.1": "Apr",
+                                "Actual": 49.0,
+                                "Previous": 50.5,
+                                "Consensus": 49.8,
+                                "TEForecast": 50.0
+                            },
+                            {
+                                "Calendar": "2025-05-31",
+                                "GMT": "01:30 AM",
+                                "Reference": "NBS Manufacturing PMI",
+                                "Reference.1": "May",
+                                "Actual": null,
+                                "Previous": 49.0,
+                                "Consensus": null,
+                                "TEForecast": 48.6
+                            }
+                        ]
+                    },
+                    "Caixin Manufacturing PMI": {
+                        "desc": "An error occurred: list index out of range",
+                        "table": null
+                    },
+                    "Retail Sales YoY": {
+                        "desc": "China's retail sales increased by 5.9% year-on-year in March 2025, from 4% in the January–February period, exceeding market expectations of a 4.2% gain. It was the strongest growth in retail activity since December 2023, as sales rose across most categories, including grain, oil and food (13.8% vs 11.5% in Jan-Feb), tobacco and alcohol (8.5% vs 5.5%), clothing, shoes, hats (3.6% vs 3.3%), sports and entertainments (26.3% vs 25%), household appliances (35.1% vs 10.9%), jewelry (10.6% vs 5.4%), and personal care (8.8% vs 5.7%). Moreover, sales rebounded for beverages (4.4% vs. -2.6%) and automobiles (5.5% vs. -4.4%). Conversely, sales slowed for office supplies (21.5% vs 21.8%) and medicine (1.4% vs 2.5%), while it declined for petrolium products (-1.9% vs 0.9%). Considering the first three months of the year, retail sales grew by 4.6%. On a monthly basis, retail trade eased to 0.58% in March 2025 from 0.62% in the previous month.source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-17",
+                                "GMT": "02:00 AM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Jan-Feb",
+                                "Actual": "4%",
+                                "Previous": "3.7%",
+                                "Consensus": "4%",
+                                "TEForecast": "3.7%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "02:00 AM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "5.9%",
+                                "Previous": "4%",
+                                "Consensus": "4.2%",
+                                "TEForecast": "4.4%"
+                            },
+                            {
+                                "Calendar": "2025-05-19",
+                                "GMT": "02:00 AM",
+                                "Reference": "Retail Sales YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "5.9%",
+                                "Consensus": null,
+                                "TEForecast": "5.6%"
+                            }
+                        ]
+                    },
+                    "Industrial Production YoY": {
+                        "desc": "China's industrial production rose by 7.7% yoy in March 2025, beating market expectations of a 5.6% increase and accelerating from the 5.9% growth recorded in the January–February period. It was the strongest expansion in industrial output since June 2021, ahead of looming hefty U.S. tariffs. All major sectors grew faster: manufacturing (7.9% vs 6.9% in January–February), electricity, heat, gas, and water production and supply (3.5% vs 1.1%), and mining (9.3% vs 4.3%). Within manufacturing, 39 out of 41 major sectors showed expansion, notably computer and communication (13.1%), heat production (3.3%), ferrous metal smelting and rolling processing (7.7%), non-ferrous metal smelting (6.5%), coal mining and washing (10.6%), cars (11.5%), textiles (5.7%), chemical products (8.8%), and oil and natural gas (6.8%). Monthly, industrial output rose by 0.44% in March. In Q1 of 2025, industrial production grew by 6.5%. Last year, industrial output expanded by 5.8%.source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-17",
+                                "GMT": "02:00 AM",
+                                "Reference": "Industrial Production YoY",
+                                "Reference.1": "Jan-Feb",
+                                "Actual": "5.9%",
+                                "Previous": "6.2%",
+                                "Consensus": "5.3%",
+                                "TEForecast": "5%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "02:00 AM",
+                                "Reference": "Industrial Production YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "7.7%",
+                                "Previous": "5.9%",
+                                "Consensus": "5.6%",
+                                "TEForecast": "5.8%"
+                            },
+                            {
+                                "Calendar": "2025-05-19",
+                                "GMT": "02:00 AM",
+                                "Reference": "Industrial Production YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "7.7%",
+                                "Consensus": null,
+                                "TEForecast": "6.2%"
+                            }
+                        ]
+                    },
+                    "Unemployment Rate": {
+                        "desc": "China’s surveyed unemployment rate fell to 5.2% in March 2025, easing from a two-year high of 5.4% in the previous month and coming in below market expectations of 5.3%. The jobless among the locally registered labor force stood at 5.3%, while the rate for the non-local registered labor force was lower at 4.9%. Within this group, those with agricultural registration saw a jobless rate of 5%. Across 31 major cities, the urban survey unemployment rate also came in at 5.2%. Meanwhile, the average weekly working hours for employees in enterprises nationwide reached 48.5 hours. For the first quarter overall, the national urban survey unemployment rate averaged 5.3%.source:National Bureau of Statistics of China",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-17",
+                                "GMT": "02:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "Feb",
+                                "Actual": "5.4%",
+                                "Previous": "5.2%",
+                                "Consensus": "5.1%",
+                                "TEForecast": "5.1%"
+                            },
+                            {
+                                "Calendar": "2025-04-16",
+                                "GMT": "02:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "March",
+                                "Actual": "5.2%",
+                                "Previous": "5.4%",
+                                "Consensus": "5.3%",
+                                "TEForecast": "5.4%"
+                            },
+                            {
+                                "Calendar": "2025-05-19",
+                                "GMT": "02:00 AM",
+                                "Reference": "Unemployment Rate",
+                                "Reference.1": "April",
+                                "Actual": null,
+                                "Previous": "5.2%",
+                                "Consensus": null,
+                                "TEForecast": "5.2%"
+                            }
+                        ]
+                    },
+                    "Balance of Trade": {
+                        "desc": "China's trade surplus surged to USD 102.64 billion in March 2025, up from USD 58.65 billion in the same period a year earlier, exceeding market expectations of USD 77 billion. The sharp increase was largely driven by a 12.4% year-on-year surge in exports, the fastest rise since last October, surpassing market forecasts of a 4.4% gain, as factories rushed to ship goods ahead of U.S. President Trump's upcoming tariffs. Meanwhile, imports fell by 4.3%, compared to market expectations of a 2% drop and following an 8.4% slump in the January–February period, due to weak domestic demand. The trade surplus with the US stood at USD 27.58 billion in March. For the first quarter of the year, the country posted a USD 273 billion surplus, with exports rising 5.8% while imports falling 7.0%. During the period, the trade surplus with the US reached USD 76.65 billion, as exports advanced 4.5% while imports declined 1.4%.source:General Administration of Customs",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-07",
+                                "GMT": "03:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Jan-Feb",
+                                "Actual": "$170.52B",
+                                "Previous": "$104.84B",
+                                "Consensus": "$142.4B",
+                                "TEForecast": "$152.0B"
+                            },
+                            {
+                                "Calendar": "2025-04-14",
+                                "GMT": "03:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Mar",
+                                "Actual": "$102.64B",
+                                "Previous": "$170.52B",
+                                "Consensus": "$77B",
+                                "TEForecast": "$ 84B"
+                            },
+                            {
+                                "Calendar": "2025-05-09",
+                                "GMT": "03:00 AM",
+                                "Reference": "Balance of Trade",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "$102.64B",
+                                "Consensus": "$89B",
+                                "TEForecast": "$70.0B"
+                            }
+                        ]
+                    },
+                    "Export": {
+                        "desc": "Exports from China surged by 12.4% year-on-year to USD 313.9 billion in March 2025, far above market forecasts of 4.4% and accelerating sharply from a 2.3% rise in the January–February period. It marked the fastest increase in overseas sales since last October, signaling anticipated frontloading before the latest U.S. tariffs took effect. For the first quarter of 2025, exports rose 5.8% compared to the same period in 2024, reaching USD 853.7 billion. During the period, shipments grew for agricultural products (5.7%), fertilizer (42.7%), mechanical and electronic products (7.6%), home appliances (8.7%), mobile phones (0.4%), and LCDs (8.4%). By contrast, exports declined for rare earths (-10.9%), steel (-4.8%), and ceramic products (-19.3%). Among trading partners, exports rose to the U.S. (4.5%), Japan (2.8%), Hong Kong (8.3%), India (13.8%), the U.K. (6.2%), the EU (3.7%), and ASEAN (8.1%), while falling to Russia (-6.3%), South Korea (-1.7%), and Australia (-4.6%).source:General Administration of Customs",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-07",
+                                "GMT": "03:00 AM",
+                                "Reference": "Exports YoY",
+                                "Reference.1": "Jan-Feb",
+                                "Actual": "2.3%",
+                                "Previous": "10.7%",
+                                "Consensus": "5%",
+                                "TEForecast": "10.0%"
+                            },
+                            {
+                                "Calendar": "2025-04-14",
+                                "GMT": "03:00 AM",
+                                "Reference": "Exports YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "12.4%",
+                                "Previous": "2.3%",
+                                "Consensus": "4.4%",
+                                "TEForecast": "5.2%"
+                            },
+                            {
+                                "Calendar": "2025-05-09",
+                                "GMT": "03:00 AM",
+                                "Reference": "Exports YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "12.4%",
+                                "Consensus": "1.9%",
+                                "TEForecast": "-2.0%"
+                            }
+                        ]
+                    },
+                    "Import": {
+                        "desc": "China’s imports fell 4.3% yoy to USD 211.3 billion in March 2025, underperforming market consensus of a 2.0% decline while easing from January- February’s 8.4% drop. This was the second straight month of contraction due to continued weakness in domestic demand ahead of massive U.S. tariff hikes. For the first three months of the year, purchases dipped 7.0% to USD 580.7 billion. During the period, import values dropped for refined oil (-20.2%), natural gas (-16.0%), rare earth (-31.0%), and steel (-10.5%). In contrast, they rose for automatic data equipment (85.0%), high-tech products (9.2%), and integrated circuits (3.2%). Purchase values also grew for unwrought copper & copper material (2.5%) and electrical products (4.2%). Imports shrank from the US (-1.4%), the EU (-6.3%), South Korea (-0.7%), Japan (-4.1%), the UK (-12.1%), India (-25.1%), and Russia (-6.7%) but rose from ASEAN countries (2.8%), Hong Kong (0.7%), and Taiwan (17.8%). In 2024, they rose 1.1% to USD 2.59 trillion.source:General Administration of Customs",
+                        "table": [
+                            {
+                                "Calendar": "2025-03-07",
+                                "GMT": "03:00 AM",
+                                "Reference": "Imports YoY",
+                                "Reference.1": "Jan-Feb",
+                                "Actual": "-8.4%",
+                                "Previous": "1%",
+                                "Consensus": "1%",
+                                "TEForecast": "3.0%"
+                            },
+                            {
+                                "Calendar": "2025-04-14",
+                                "GMT": "03:00 AM",
+                                "Reference": "Imports YoY",
+                                "Reference.1": "Mar",
+                                "Actual": "-4.3%",
+                                "Previous": "-8.4%",
+                                "Consensus": "-2%",
+                                "TEForecast": "-1%"
+                            },
+                            {
+                                "Calendar": "2025-05-09",
+                                "GMT": "03:00 AM",
+                                "Reference": "Imports YoY",
+                                "Reference.1": "Apr",
+                                "Actual": null,
+                                "Previous": "-4.3%",
+                                "Consensus": "-5.9%",
+                                "TEForecast": "-5.0%"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
     }
 ]

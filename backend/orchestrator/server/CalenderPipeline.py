@@ -15,8 +15,7 @@ class CalenderPipeline(ProcessPipeline):
         super().__init__()
         self.extraction_model = extraction_model
         self.analysis_model = analysis_model
-        pass
-
+        
     async def extract_calender_data(self) -> Dict[str, Dict[str, List[Dict[str, str]]]]:
         generation_config = {
         "temperature": 0.1,

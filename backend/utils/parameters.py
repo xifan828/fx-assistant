@@ -84,6 +84,50 @@ ECONOMIC_INDICATORS_WEBSITES = {
     }
 }
 
+ECONOMIC_INDICATORS = {
+    "rate": {
+        "USD": ["Fed Fund Rate"],
+        "EUR": ["ECB Rate (Deposit Facility Rate)"],
+        "JPY": ["BOJ Rate"],
+        "GBP": ["BOE Rate"],
+        "CNH": ["China Loan Prime Rate"]
+    },
+
+    "inflation": {
+        "USD": ["Core PCE YoY", "PCE YoY"],
+        "EUR": ["Core HICP YoY", "HICP YoY"],
+        "JPY": ["Core CPI YoY", "CPI YoY"],
+        "GBP": ["Core CPI YoY", "CPI YoY"],
+        "CNH": ["Core CPI YoY", "CPI YoY"]
+    },
+
+    "growth": {
+        "USD": ["GDP QoQ", "ISM Manufacturing PMI", "ISM Services PMI", "Retail Sales MoM"],
+        "EUR": ["GDP QoQ", "HCOB Manufacturing PMI", "HCOB Services PMI"],
+        "JPY": ["GDP QoQ", "Jibun Bank Manufacturing PMI", "Jibun Bank Services PMI", "Retail Sales YoY"],
+        "GBP": ["GDP QoQ", "S&P Manufacturing PMI", "S&P Services PMI", "Retail Sales"],
+        "CNH": ["GDP QoQ", "NBS Manufacturing PMI", "Caixin Manufacturing PMI", "Retail Sales YoY", "Industrial Production YoY"]
+    },
+
+    "employment": {
+        "USD": ["Unemployment Rate", "NFP", "Average Hourly Earnings MoM"],
+        "EUR": ["Unemployment Rate", "Negotiated Wage Growth"],
+        "JPY": ["Unemployment Rate", "Wage Growth"],
+        "GBP": ["Unemployment Rate", "Average Weekly Earnings Growth"],
+        "CNH": ["Unemployment Rate"]
+    },
+
+    "trade": {
+        "USD": ["Balance of Trade"],
+        "EUR": ["Balance of Trade"],
+        "JPY": ["Balance of Trade"],
+        "GBP": ["Balance of Trade"],
+        "CNH": ["Balance of Trade", "Export", "Import"]
+    },
+}
+
+FED_WATCH_WEBSITE = "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html"
+
 NEWS_ROOT_WEBSITE = {
     "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX",
     "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX",

@@ -150,7 +150,8 @@ def main():
                 
                 st.write("Total weight: ", totalWeight)
                 if totalWeight <= 100 and totalWeight > 0:
-                    st.button("Generate Strategy", use_container_width=True)
+                    if st.button("Generate Strategy", use_container_width=True):
+                        st.write(st.session_state["technical_analysis"])
 
             @st.dialog("Full Analysis")
             def analysis():
@@ -166,6 +167,22 @@ def main():
                 if "customise" not in st.session_state:
                     if st.button("Customise Strategy", use_container_width=True):
                         customise()
+            st.divider()
+            with st.container():
+                    st.html("<div style='text-align: center; font-size: 35px'><b> Ask a question </b></div>")
+                    msgs = st.container(height=200, border=False)
+
+                    if prompt := st.chat_input():
+                        with msgs:
+                            st.session_state["messages"].append({"role": "user", "content": prompt})
+                            message = st.chat_message("user")
+                            message.write(prompt)
+                            #st.chat_message(prompt, is_user=True)
+                            response = agent.chat_completions(st.session_state["prefix_messages"] + st.session_state["messages"])
+                            st.session_state["messages"].append({"role": "assistant", "content": response})
+                            message = st.chat_message("assistant")
+                            message.write(response)
+                            #st.chat_message(response)
             st.divider()
             with st.container():
                 st.write(st.session_state["risk_sentiment"])

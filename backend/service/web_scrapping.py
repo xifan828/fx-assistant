@@ -2,7 +2,7 @@ import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
 import requests
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from backend.utils.parameters import FED_WATCH_WEBSITE
 import pandas as pd
 import io
@@ -14,6 +14,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import traceback
 from selenium.common.exceptions import TimeoutException
 import os
+from backend.utils.logger_config import get_logger
+logger = get_logger(__name__)
 
 
 
@@ -61,7 +63,7 @@ class FedWatchScrapper(SeleniumScrapper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
-    def run(self):
+    def run(self) -> Tuple[pd.DataFrame]:
         try:
             wait = WebDriverWait(self.driver, 20)
 
@@ -89,11 +91,8 @@ class FedWatchScrapper(SeleniumScrapper):
 
 
             return df_rate_next, df_price_next, df_rate_end, df_price_end
-
-
             
         except Exception as e:
-            print(traceback.format_exc())
             raise
         finally:
             self.quit_driver()
@@ -159,6 +158,7 @@ if __name__ == "__main__":
     df_rate_next, df_price_next, df_rate_end, df_price_end = scr.run()
     print("Next Meeting Rate Table:")
     print(df_rate_next)
+    print(df_rate_next.to_markdown(index=False))
     print("Next Meeting Price Table:")
     print(df_price_next)
     print("End of Meeting Rate Table:")

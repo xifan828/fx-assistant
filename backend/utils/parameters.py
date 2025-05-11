@@ -117,13 +117,13 @@ ECONOMIC_INDICATORS = {
         "CNH": ["Unemployment Rate"]
     },
 
-    "trade": {
-        "USD": ["Balance of Trade"],
-        "EUR": ["Balance of Trade"],
-        "JPY": ["Balance of Trade"],
-        "GBP": ["Balance of Trade"],
-        "CNH": ["Balance of Trade", "Export", "Import"]
-    },
+    # "trade": {
+    #     "USD": ["Balance of Trade"],
+    #     "EUR": ["Balance of Trade"],
+    #     "JPY": ["Balance of Trade"],
+    #     "GBP": ["Balance of Trade"],
+    #     "CNH": ["Balance of Trade", "Export", "Import"]
+    # },
 }
 
 FED_WATCH_WEBSITE = "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html"

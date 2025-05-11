@@ -3,7 +3,7 @@ from backend.service.TradingViewScrapper import TradingViewScrapper
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from backend.utils.parameters import INVESTING_ASSETS, CURRENCY_PAIRS, ECONOMIC_INDICATORS_WEBSITES, CURRENCIES
 from backend.utils.logger_config import get_logger
-from backend.service.web_scrapping import TradingEconomicsScraper
+from backend.service.web_scrapping import TradingEconomicsScraper, FedWatchScrapper
 import json
 import os
 from datetime import datetime
@@ -54,7 +54,7 @@ class ScrapePipeline:
         finally:
             scr.quit_driver()
     
-    def _fetech_fundamental(self) -> List[str]:
+    def _fetech_fundamental(self) -> Dict:
         """
         Fetch fundamental data from TradingEconomics
         """
@@ -73,6 +73,26 @@ class ScrapePipeline:
             logger.error(f"Error fetching fundamental data: {e}")
             results = {}
         return results
+    
+    def _fetech_fed_watch(self) -> Dict[str, Dict[str, str]]:
+        """
+        Fetch Fed Watch data from CME Group
+        """
+        try:
+            scr = FedWatchScrapper()
+            df_rate_next, df_price_next, df_rate_end, df_price_end = scr.run()
+            results = {
+                "rate_next": df_rate_next.to_dict(orient="records"),
+                "price_next": df_price_next.to_dict(orient="records"),
+                "rate_end": df_rate_end.to_dict(orient="records"),
+                "price_end": df_price_end.to_dict(orient="records")
+            }
+            logger.info("Fetched Fed Watch data")
+
+            return results
+        except Exception as e:
+            logger.error(f"Error fetching Fed Watch data: {e}")
+            return {}
         
             
     def fetch_all(self) -> Dict: 
@@ -99,6 +119,9 @@ class ScrapePipeline:
             
             # economic indicators tasks
             futures[executor.submit(self._fetech_fundamental)] = "fundamental"
+
+            # fed watch tasks
+            futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
 
 
             for future in as_completed(futures):

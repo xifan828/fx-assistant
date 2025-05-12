@@ -34,6 +34,7 @@ class CalenderPipeline(ProcessPipeline):
                     chart_path=chat_path,
                     gemini_model=model,
                     generation_config=config,
+                    gemini_api_key=os.environ["GEMINI_API_KEY_CONG"],
                 )
                 return await extraction_agent.run()
             except Exception as e:

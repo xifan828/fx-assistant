@@ -1,0 +1,10 @@
+[
+    {
+        "timestamp": "2025-05-12T21:55:06Z",
+        "analysis": "**Fed Outlook Summary:**\n\nMarket pricing has shifted notably over the past month, reflecting a more hawkish near-term view. For the upcoming FOMC meeting, the market is now overwhelmingly pricing in the current 425-450 bps target range (88.6%), a significant increase from a month ago when lower ranges dominated expectations.\n\nHowever, looking towards year-end, the consensus remains for substantial rate cuts from the current level. The implied rate of 3.81% suggests approximately 50 bps of easing is priced in from the current range.\n\nThis divergence implies the market anticipates a higher, potentially shorter peak in rates followed by a relatively swift pivot to easing, likely on growth/inflation dynamics. This structure could favor assets sensitive to lower future rates."
+    },
+    {
+        "timestamp": "2025-05-12T21:56:30Z",
+        "analysis": "Here is a Fed Outlook Summary based on the provided data:\n\nFed policy expectations have undergone a notable shift over the past month. For the next FOMC meeting, market pricing has moved decisively from anticipating a rate cut (64.4% for 400-425 bps a month ago) to a strong consensus for holding rates steady at the current 425-450 bps level (88.6% now). Looking towards year-end, the implied rate has risen to 3.81%, reflecting a significant reduction in the number of expected rate cuts. The peak probability distribution has shifted higher, now centered around the 375-400 bps range, compared to 350-375 bps a month prior. This repricing suggests diminished expectations for aggressive easing, potentially supporting higher yields and posing challenges for duration-sensitive assets."
+    }
+]

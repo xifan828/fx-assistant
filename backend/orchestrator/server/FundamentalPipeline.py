@@ -99,7 +99,7 @@ class FundamentalPipeline(ProcessPipeline):
             {analysis}
             </{category}>\n\n"""
         
-        key = os.environ["GEMINI_API_KEY_XIFAN_3"]
+        key = os.environ["GEMINI_API_KEY_XIFAN"]
 
         agent = SynthesisAgent(gemini_model=self.analysis_model,
                                user_message=user_message,
@@ -177,8 +177,8 @@ class FundamentalPipeline(ProcessPipeline):
 if __name__ == "__main__":
     pipeline = FundamentalPipeline()
     #pipeline.prepare_data("inflation", "USD")
-    #print(pipeline.get_update())
+    print(pipeline.get_fund_update())
 
-    result_dict = asyncio.run(pipeline.run())
+    #result_dict = asyncio.run(pipeline.run())
 
 

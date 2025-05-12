@@ -46,9 +46,7 @@ class GeminiChartAgent(ABC):
             )
             return response
         except Exception as e:
-            print(f"Error in analyzing chart: {e}")
-            return None
-
+            raise e
     async def run_text(self):
         client = GeminiClient(
             model_name=self.gemini_model,
@@ -62,5 +60,4 @@ class GeminiChartAgent(ABC):
             )
             return response
         except Exception as e:
-            print(f"Error in analyzing chart: {e}")
-            return None
+            raise e

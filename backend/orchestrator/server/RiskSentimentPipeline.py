@@ -16,6 +16,8 @@ class RiskSentimentPipeline(ProcessPipeline):
         super().__init__()
         self.model_name = model_name
         self.temperature = temperature
+        self.dir_path = os.path.join("data", "process", "risk_sentiment")
+        os.makedirs(self.dir_path, exist_ok=True)
     
     def _compute_spreads(self, results_df: pd.DataFrame, currency_pair: str) -> str:
         us_2y_yield = float(results_df[results_df['Asset'] == 'US 2Y Yield']['Last Price'].values[0])
@@ -66,7 +68,7 @@ class RiskSentimentPipeline(ProcessPipeline):
 
     def _fetch_news_synthesis(self, currency_pair: str) -> Union[str, Dict[str, str]]:
         currency_pair = currency_pair.replace("/", "_").lower()
-        news_summary_file_path = os.path.join("data", "process", f"{currency_pair}_news_synthesis.json")
+        news_summary_file_path = os.path.join("data", "process", "news", f"{currency_pair}_news_synthesis.json")
         try:
             if os.path.exists(news_summary_file_path):
                 news_synthesis: Dict[str, str] = self._load_json(news_summary_file_path)[-1]
@@ -113,7 +115,7 @@ class RiskSentimentPipeline(ProcessPipeline):
             result["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
             sentiment_results[pair] = result
         
-        self._save_risk_sentiment_json(sentiment_results, os.path.join(self.process_dir_path, "risk_sentiment.json"))
+        self._save_risk_sentiment_json(sentiment_results, os.path.join(self.dir_path, "risk_sentiment.json"))
         logger.info(f"Risk sentiment analysis results saved to json")
         
         return sentiment_results

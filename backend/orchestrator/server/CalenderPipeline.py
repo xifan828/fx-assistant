@@ -15,6 +15,8 @@ class CalenderPipeline(ProcessPipeline):
         super().__init__()
         self.extraction_model = extraction_model
         self.analysis_model = analysis_model
+        self.dir_path = os.path.join("data", "process", "calender")
+        os.makedirs(self.dir_path, exist_ok=True)
         
     async def extract_calender_data(self) -> Dict[str, Dict[str, List[Dict[str, str]]]]:
         generation_config = {
@@ -67,17 +69,17 @@ class CalenderPipeline(ProcessPipeline):
                 "upcoming": upcoming_events
             }
         
-        self._save_results(calender_data, os.path.join("data", "process", "calender.json"), truncate=True, limit=5)
+        self._save_results(calender_data, os.path.join(self.dir_path, "calender.json"), truncate=True, limit=5)
         logger.info(f"Calendar data saved to json")
         
         return calender_data
 
     def get_new_calender(self):
-        calender_data = self._load_json(os.path.join("data", "process", "calender.json"))
+        calender_data = self._load_json(os.path.join(self.dir_path, "calender.json"))
         latest_calender = calender_data[-1]
         previous_calender = calender_data[-2] if len(calender_data) > 1 else None
 
-        if os.path.exists(os.path.join("data", "process", "calender_synthesis.json")):
+        if not os.path.exists(os.path.join(self.dir_path, "eur_usd_calender_analysis.json")):
             return latest_calender
 
         if previous_calender is None:
@@ -134,7 +136,7 @@ class CalenderPipeline(ProcessPipeline):
 
     def save_calender_analysis(self, calender_analysis: Dict[str, str]) -> None:
         for pair, analysis in calender_analysis.items():
-            file_path = os.path.join("data", "process", f"{pair}_calender_analysis.json")
+            file_path = os.path.join(self.dir_path, f"{pair}_calender_analysis.json")
             analysis_dict = {
                 "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "analysis": analysis
@@ -149,6 +151,7 @@ class CalenderPipeline(ProcessPipeline):
         if not new_calender:
             logger.info("No new calendar data to analyze")
             return {}
+        logger.info(f"New calendar data found for {new_calender.keys()}. Starting analysis.")
         
         calender_analysis = await self.analyze_calender_data(new_calender)
         self.save_calender_analysis(calender_analysis)
@@ -157,5 +160,6 @@ class CalenderPipeline(ProcessPipeline):
 
 if __name__ == "__main__":
     calender_pipeline = CalenderPipeline()
-    calender_analysis = asyncio.run(calender_pipeline.run())
+    print(calender_pipeline.get_new_calender())
+    #calender_analysis = asyncio.run(calender_pipeline.run())
 

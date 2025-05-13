@@ -12,18 +12,20 @@ class FedWatchPipeline(ProcessPipeline):
         super().__init__()
         self.analysis_model = analysis_model
         self.analysis_path = os.path.join("data", "process", "fedwatch")
+        os.makedirs(self.analysis_path, exist_ok=True)
     
     def get_fed_watch_update(self) -> bool:
         analysis_file_path = os.path.join(self.analysis_path, "analysis.json")
         if not os.path.exists(analysis_file_path):
             return True
-        else:
-            fed_watch_curr = self.scrape_results_curr["fed_watch"]
+        
+        fed_watch_curr = self.scrape_results_curr["fed_watch"]
+
+        if self.scrape_results_prev:
             fed_watch_prev = self.scrape_results_prev["fed_watch"]
-            if fed_watch_curr != fed_watch_prev:
-                return True
-            else:
+            if fed_watch_curr == fed_watch_prev:
                 return False
+        return True
 
     def prepare_data(self) -> str:
 
@@ -64,8 +66,6 @@ Market expectations are as follows:
 
     async def run(self):
         try:
-            if not os.path.exists(self.analysis_path):
-                os.makedirs(self.analysis_path)
             
             if not self.get_fed_watch_update():
                 logger.info("No new FedWatch data to analyze.")

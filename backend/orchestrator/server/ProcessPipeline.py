@@ -40,6 +40,12 @@ class ProcessPipeline:
             prev_url = record["url"]
         return new_records
     
+    def _atomic_save_json(self, data: List[Dict], file_path: str):
+        temp_file_path = file_path + ".tmp"
+        with open(temp_file_path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+        os.replace(temp_file_path, file_path)
+    
     def _save_results(self, data: Union[Dict, List[Dict]], file_path: str, truncate: bool = False, limit: int = 5):
         if isinstance(data, dict):
             if os.path.exists(file_path):
@@ -57,33 +63,35 @@ class ProcessPipeline:
                     records = records[-limit:]
             else:
                 records = data
-        self._save_json(records, file_path)
+        self._atomic_save_json(records, file_path)
     
     def _save_summary_json(self, data: List[Dict], file_path: str):
-
         if os.path.exists(file_path):
             records = self._load_json(file_path)
             records.extend(data)
             records = self._remove_redundant_mace_summary(records)
+            records = records[-10:]
         else:
             records = data
-        self._save_json(records, file_path)
+        self._atomic_save_json(records, file_path)
     
     def _save_synthesis_json(self, data: Dict[str, str], file_path: str):
         if os.path.exists(file_path):
             records = self._load_json(file_path)
             records.append(data)
+            records = records[-5:]
         else:
             records = [data]
-        self._save_json(records, file_path)
+        self._atomic_save_json(records, file_path)
     
     def _save_risk_sentiment_json(self, data: Dict[str, str], file_path: str):
         if os.path.exists(file_path):
             records = self._load_json(file_path)
             records.append(data)
+            records = records[-5:]
         else:
             records = [data]
-        self._save_json(records, file_path)
+        self._atomic_save_json(records, file_path)
 
 
 

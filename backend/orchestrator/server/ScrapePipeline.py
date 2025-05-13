@@ -16,6 +16,8 @@ class ScrapePipeline:
 
     def __init__(self, currency_pair: str):
         self.currency_pair = currency_pair
+        self.dir_path = os.path.join("data", "scrape")
+        os.makedirs(self.dir_path, exist_ok=True)
 
     def _fetch_technicals(self, currency_pair: str):
         scr = TradingViewScrapper(currency_pair)
@@ -163,8 +165,11 @@ class ScrapePipeline:
             "data": data
         })
 
-        with open(filename, "w", encoding="utf-8") as f:
+        temp_filename = filename + ".tmp"
+        with open(temp_filename, "w", encoding="utf-8") as f:
             json.dump(records, f, ensure_ascii=False, indent=4)
+        
+        os.replace(temp_filename, filename)
     
 
 

@@ -20,6 +20,8 @@ class NewsPipeline(ProcessPipeline):
         self.summry_model = summry_model
         self.temperature = temperature
         self.systhesis_model = systhesis_model
+        self.dir_path = os.path.join("data", "process", "news")
+        os.makedirs(self.dir_path, exist_ok=True)
     
     @staticmethod
     def _process_news_urls(urls: List[str]) -> List[str]:
@@ -61,7 +63,7 @@ class NewsPipeline(ProcessPipeline):
 
             current_news_urls = news_urls[currency_pair]   
 
-            news_summary_file_path = os.path.join("data", "process", f"{currency_pair}_news_summary.json")
+            news_summary_file_path = os.path.join(self.dir_path, f"{currency_pair}_news_summary.json")
 
             if os.path.exists(news_summary_file_path):
                 news_urls_to_add = []
@@ -122,7 +124,7 @@ class NewsPipeline(ProcessPipeline):
         for pair in PAIRS:
             if result[pair]:
                 try:
-                    self._save_summary_json(result[pair][::-1], os.path.join("data", "process", f"{pair}_news_summary.json"))
+                    self._save_summary_json(result[pair][::-1], os.path.join(self.dir_path, f"{pair}_news_summary.json"))
                     logger.info(f"Saved {pair} news summary to JSON file")
                 except Exception as e:
                     logger.error(f"Error saving {pair} news summary: {e}")
@@ -138,7 +140,7 @@ class NewsPipeline(ProcessPipeline):
         summaries = {}
         for currency_pair in pairs:
             # read the news summary from the JSON file
-            news_summary_file_path = os.path.join("data", "process", f"{currency_pair}_news_summary.json")
+            news_summary_file_path = os.path.join(self.dir_path, f"{currency_pair}_news_summary.json")
             news_summary: List[Dict] = self._load_json(news_summary_file_path)
             # order, take the last k news summary
             news_summary = news_summary[::-1][:self.k]
@@ -171,7 +173,7 @@ class NewsPipeline(ProcessPipeline):
             logger.info(f"Synthesized news for {currency_pair}")
             synthesis["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
             result[currency_pair] = synthesis
-            systhesis_file_path = os.path.join("data", "process", f"{currency_pair}_news_synthesis.json")
+            systhesis_file_path = os.path.join(self.dir_path, f"{currency_pair}_news_synthesis.json")
             self._save_synthesis_json(synthesis, systhesis_file_path)
             logger.info(f"Saved {currency_pair} news synthesis to JSON file")
         

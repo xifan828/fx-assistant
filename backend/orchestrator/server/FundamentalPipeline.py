@@ -15,10 +15,12 @@ class FundamentalPipeline(ProcessPipeline):
         super().__init__()
         self.analysis_model = analysis_model
         self.analysis_path = os.path.join("data", "process", "fundamental")
+        os.makedirs(self.analysis_path, exist_ok=True)
     
     def get_fund_update(self) -> List[str]:
         
-        if not os.path.exists(self.analysis_path):
+        file_path = os.path.join(self.analysis_path, "eur_usd_analysis.json")
+        if not os.path.exists(file_path):
             update_currs = [i.lower() for i in CURRENCIES]
         
         else:
@@ -29,6 +31,11 @@ class FundamentalPipeline(ProcessPipeline):
                 if self.scrape_results_prev is not None:
                     prev_fund = self.scrape_results_prev["fundamental"][currency]
                     if curr_fund != prev_fund:
+                        # print(f"Currency {currency} has changed")
+                        # # show the change
+                        # for key in curr_fund.keys():
+                        #     if curr_fund[key] != prev_fund[key]:
+                        #         print(f"{key}: {prev_fund[key]} -> {curr_fund[key]}")
                         update_currs.append(currency)
                 else:
                     update_currs.append(currency)

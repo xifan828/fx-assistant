@@ -132,7 +132,7 @@
                 },
                 {
                     "time": "05-15 14:30",
-                    "area": "None",
+                    "area": "United States",
                     "event_name": "Retail Sales MoM",
                     "actual_value": "None",
                     "forecast_value": "0%",
@@ -156,7 +156,7 @@
                 },
                 {
                     "time": "05-16 14:30",
-                    "area": "None",
+                    "area": "United States",
                     "event_name": "Housing Starts",
                     "actual_value": "None",
                     "forecast_value": "1.37 M",
@@ -227,7 +227,7 @@
                 {
                     "time": "05-15 08:00",
                     "area": "UK",
-                    "event_name": "GDP MoM",
+                    "event_name": "GDP MOM",
                     "actual_value": "None",
                     "forecast_value": "0%",
                     "prior_value": "0.5%"
@@ -409,7 +409,7 @@
                 {
                     "time": "05-16 16:00",
                     "area": "United States",
-                    "event_name": "Michigan Consumer Sentime...",
+                    "event_name": "Michigan Consumer Sentiment",
                     "actual_value": "None",
                     "forecast_value": "53.4",
                     "prior_value": "52.2"
@@ -506,7 +506,7 @@
                 },
                 {
                     "time": "05-13 14:30",
-                    "area": "USA",
+                    "area": "US",
                     "event_name": "Core Inflation Rate MoM",
                     "actual_value": "0.2%",
                     "forecast_value": "0.3%",
@@ -514,7 +514,7 @@
                 },
                 {
                     "time": "05-13 14:30",
-                    "area": "USA",
+                    "area": "US",
                     "event_name": "Core Inflation Rate YoY",
                     "actual_value": "2.8%",
                     "forecast_value": "2.8%",
@@ -522,7 +522,7 @@
                 },
                 {
                     "time": "05-13 14:30",
-                    "area": "USA",
+                    "area": "US",
                     "event_name": "Inflation Rate MoM",
                     "actual_value": "0.2%",
                     "forecast_value": "0.3%",
@@ -530,7 +530,7 @@
                 },
                 {
                     "time": "05-13 14:30",
-                    "area": "USA",
+                    "area": "US",
                     "event_name": "Inflation Rate YoY",
                     "actual_value": "2.3%",
                     "forecast_value": "2.4%",
@@ -739,667 +739,7 @@
                 {
                     "time": "05-16 16:00",
                     "area": "United States",
-                    "event_name": "Michigan Consumer Sentiment",
-                    "actual_value": "None",
-                    "forecast_value": "53.4",
-                    "prior_value": "52.2"
-                }
-            ]
-        },
-        "usd_jpy": {
-            "today": [
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "None",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 01:50",
-                    "area": "Japan",
-                    "event_name": "GDP Growth Rate QoQ Prel",
-                    "actual_value": "None",
-                    "forecast_value": "-0.1%",
-                    "prior_value": "0.6%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "None",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                }
-            ]
-        },
-        "gbp_usd": {
-            "today": [
-                {
-                    "time": "05-13 08:00",
-                    "area": "UK",
-                    "event_name": "Unemployment Rate",
-                    "actual_value": "4.5%",
-                    "forecast_value": "4.5%",
-                    "prior_value": "4.4%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP Growth Rate QoQ Prel",
-                    "actual_value": "None",
-                    "forecast_value": "0.6%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP Growth Rate YoY Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.2%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP MOM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "0.5%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "USA",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "USA",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                }
-            ]
-        },
-        "usd_cnh": {
-            "today": [
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                },
-                {
-                    "time": "05-16 16:00",
-                    "area": "United States",
                     "event_name": "Michigan Consumer Sentime...",
-                    "actual_value": "None",
-                    "forecast_value": "53.4",
-                    "prior_value": "52.2"
-                }
-            ]
-        }
-    },
-    {
-        "eur_usd": {
-            "today": [
-                {
-                    "time": "05-13 11:00",
-                    "area": "Germany",
-                    "event_name": "ZEW Economic Sentiment Index",
-                    "actual_value": "25.2",
-                    "forecast_value": "11.9",
-                    "prior_value": "-14"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                },
-                {
-                    "time": "05-16 16:00",
-                    "area": "United States",
-                    "event_name": "Michigan Consumer Sentiment",
-                    "actual_value": "None",
-                    "forecast_value": "53.4",
-                    "prior_value": "52.2"
-                }
-            ]
-        },
-        "usd_jpy": {
-            "today": [
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 01:50",
-                    "area": "Japan",
-                    "event_name": "GDP Growth Rate QoQ Prel",
-                    "actual_value": "None",
-                    "forecast_value": "-0.1%",
-                    "prior_value": "0.6%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                }
-            ]
-        },
-        "gbp_usd": {
-            "today": [
-                {
-                    "time": "05-13 08:00",
-                    "area": "UK",
-                    "event_name": "Unemployment Rate",
-                    "actual_value": "4.5%",
-                    "forecast_value": "4.5%",
-                    "prior_value": "4.4%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USA",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USA",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USA",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USA",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP Growth Rate QoQ Prel",
-                    "actual_value": "None",
-                    "forecast_value": "0.6%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP Growth Rate YoY Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.2%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-15 08:00",
-                    "area": "UK",
-                    "event_name": "GDP MOM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "0.5%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "USA",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "USA",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                }
-            ]
-        },
-        "usd_cnh": {
-            "today": [
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                },
-                {
-                    "time": "05-16 16:00",
-                    "area": "United States",
-                    "event_name": "Michigan Consumer Sentime...",
-                    "actual_value": "None",
-                    "forecast_value": "53.4",
-                    "prior_value": "52.2"
-                }
-            ]
-        }
-    },
-    {
-        "eur_usd": {
-            "today": [
-                {
-                    "time": "05-13 11:00",
-                    "area": "Germany",
-                    "event_name": "ZEW Economic Sentiment Index",
-                    "actual_value": "25.2",
-                    "forecast_value": "11.9",
-                    "prior_value": "-14"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
-                }
-            ],
-            "upcoming": [
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "PPI MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0.2%",
-                    "prior_value": "-0.4%"
-                },
-                {
-                    "time": "05-15 14:30",
-                    "area": "United States",
-                    "event_name": "Retail Sales MoM",
-                    "actual_value": "None",
-                    "forecast_value": "0%",
-                    "prior_value": "1.5%"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Building Permits Prel",
-                    "actual_value": "None",
-                    "forecast_value": "1.45 M",
-                    "prior_value": "1.467 M"
-                },
-                {
-                    "time": "05-16 14:30",
-                    "area": "United States",
-                    "event_name": "Housing Starts",
-                    "actual_value": "None",
-                    "forecast_value": "1.37 M",
-                    "prior_value": "1.324 M"
-                },
-                {
-                    "time": "05-16 16:00",
-                    "area": "United States",
-                    "event_name": "Michigan Consumer Sentiment",
                     "actual_value": "None",
                     "forecast_value": "53.4",
                     "prior_value": "52.2"
@@ -1603,6 +943,466 @@
                     "actual_value": "2.3%",
                     "forecast_value": "2.4%",
                     "prior_value": "2.4%"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                },
+                {
+                    "time": "05-16 16:00",
+                    "area": "United States",
+                    "event_name": "Michigan Consumer Sentime...",
+                    "actual_value": "None",
+                    "forecast_value": "53.4",
+                    "prior_value": "52.2"
+                }
+            ]
+        }
+    },
+    {
+        "eur_usd": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                },
+                {
+                    "time": "05-16 16:00",
+                    "area": "United States",
+                    "event_name": "Michigan Consumer Sentime...",
+                    "actual_value": "None",
+                    "forecast_value": "53.4",
+                    "prior_value": "52.2"
+                }
+            ]
+        },
+        "usd_jpy": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 01:50",
+                    "area": "Japan",
+                    "event_name": "GDP Growth Rate QoQ Prel",
+                    "actual_value": "None",
+                    "forecast_value": "-0.1%",
+                    "prior_value": "0.6%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                }
+            ]
+        },
+        "gbp_usd": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP Growth Rate QoQ Prel",
+                    "actual_value": "None",
+                    "forecast_value": "0.6%",
+                    "prior_value": "0.1%"
+                },
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP Growth Rate YoY Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.2%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "0.5%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "USA",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "USA",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                }
+            ]
+        },
+        "usd_cnh": {
+            "today": [
+                {
+                    "time": "05-13 14:30",
+                    "area": "USD",
+                    "event_name": "Core Inflation Rate MoM",
+                    "actual_value": "0.2%",
+                    "forecast_value": "0.3%",
+                    "prior_value": "0.1%"
+                },
+                {
+                    "time": "05-13 14:30",
+                    "area": "USD",
+                    "event_name": "Core Inflation Rate YoY",
+                    "actual_value": "2.8%",
+                    "forecast_value": "2.8%",
+                    "prior_value": "2.8%"
+                },
+                {
+                    "time": "05-13 14:30",
+                    "area": "USD",
+                    "event_name": "Inflation Rate MoM",
+                    "actual_value": "0.2%",
+                    "forecast_value": "0.3%",
+                    "prior_value": "-0.1%"
+                },
+                {
+                    "time": "05-13 14:30",
+                    "area": "USD",
+                    "event_name": "Inflation Rate YoY",
+                    "actual_value": "2.3%",
+                    "forecast_value": "2.4%",
+                    "prior_value": "2.4%"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                },
+                {
+                    "time": "05-16 16:00",
+                    "area": "United States",
+                    "event_name": "Michigan Consumer Sentime...",
+                    "actual_value": "None",
+                    "forecast_value": "53.4",
+                    "prior_value": "52.2"
+                }
+            ]
+        }
+    },
+    {
+        "eur_usd": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                },
+                {
+                    "time": "05-16 16:00",
+                    "area": "United States",
+                    "event_name": "Michigan Consumer Sentime...",
+                    "actual_value": "None",
+                    "forecast_value": "53.4",
+                    "prior_value": "52.2"
+                }
+            ]
+        },
+        "usd_jpy": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "United States",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-16 01:50",
+                    "area": "Japan",
+                    "event_name": "GDP Growth Rate QoQ Prel",
+                    "actual_value": "None",
+                    "forecast_value": "-0.1%",
+                    "prior_value": "0.6%"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Building Permits Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.45 M",
+                    "prior_value": "1.467 M"
+                },
+                {
+                    "time": "05-16 14:30",
+                    "area": "United States",
+                    "event_name": "Housing Starts",
+                    "actual_value": "None",
+                    "forecast_value": "1.37 M",
+                    "prior_value": "1.324 M"
+                }
+            ]
+        },
+        "gbp_usd": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
+                }
+            ],
+            "upcoming": [
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP Growth Rate QoQ Prel",
+                    "actual_value": "None",
+                    "forecast_value": "0.6%",
+                    "prior_value": "0.1%"
+                },
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP Growth Rate YoY Prel",
+                    "actual_value": "None",
+                    "forecast_value": "1.2%",
+                    "prior_value": "1.5%"
+                },
+                {
+                    "time": "05-15 08:00",
+                    "area": "UK",
+                    "event_name": "GDP MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "0.5%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "USA",
+                    "event_name": "PPI MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0.2%",
+                    "prior_value": "-0.4%"
+                },
+                {
+                    "time": "05-15 14:30",
+                    "area": "USA",
+                    "event_name": "Retail Sales MoM",
+                    "actual_value": "None",
+                    "forecast_value": "0%",
+                    "prior_value": "1.5%"
+                }
+            ]
+        },
+        "usd_cnh": {
+            "today": [
+                {
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
                 }
             ],
             "upcoming": [

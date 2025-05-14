@@ -36,12 +36,16 @@ class TradingEconomicsScraper:
                     # find historical description
                     content = soup.find('div', id='historical-desc').get_text(strip=True)
                     # find tables with <table class="table table-hover" id="calendar"> get all thead and tbody
-                    table = soup.find_all('table', class_='table table-hover', id='calendar')[0]
-                    df = pd.read_html(io.StringIO(str(table)))[0]
-                    df = df.astype(object)
-                    df = df.where(pd.notnull(df), None)
+                    tables = soup.find_all('table', class_='table table-hover', id='calendar')
+                    if tables:
+                        table = tables[0]
+                        df = pd.read_html(io.StringIO(str(table)))[0]
+                        df = df.astype(object)
+                        df = df.where(pd.notnull(df), None)
+                    else:
+                        df = None
     
-                    return name, content, df.to_dict(orient='records')
+                    return name, content, df.to_dict(orient='records') if df is not None else None
                 else:
                     return name, f'Failed to retrieve the page. Status code: {response.status}', None
         except Exception as e:

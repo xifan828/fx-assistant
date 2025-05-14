@@ -53,43 +53,41 @@ class InvestingScrapper(SeleniumScrapper):
     
     def get_asset(self, name, url) -> List[str]:
         logger.info(f"Fetching data for {name} from {url}")
-        self.driver.get(url)
-        wait = WebDriverWait(self.driver, 10)
+        max_retries = 3
+        retry_delay = 2  # seconds
 
-        # try:
-        #     price = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]').text
-        #     change = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]').text
-        #     change_pct = self.driver.find_element(By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]').text
-        #     logger.info(f"Fetched data for {name}: Price: {price}, Change: {change}, Change (%): {change_pct}")
-        #     return [name, price, change, change_pct]
-        # except Exception as e:
-        #     logger.error(f"Error fetching data for {name}: {e}")
-        #     return [name, None, None, None]
-        try:
-        # wait until the price element is present in the DOM and visible
-            price_el = wait.until(EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]')
-            ))
-            change_el = wait.until(EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]')
-            ))
-            change_pct_el = wait.until(EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]')
-            ))
+        for attempt in range(1, max_retries + 1):
+            try:
+                self.driver.get(url)
+                wait = WebDriverWait(self.driver, 10)
 
-            price = price_el.text
-            change = change_el.text
-            change_pct = change_pct_el.text
+                # Wait until the required elements are visible
+                price_el = wait.until(EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, 'span[data-test="instrument-price-last"]')
+                ))
+                change_el = wait.until(EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, 'span[data-test="instrument-price-change"]')
+                ))
+                change_pct_el = wait.until(EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, 'span[data-test="instrument-price-change-percent"]')
+                ))
 
-            logger.info(f"Fetched data for {name}")
-            return [name, price, change, change_pct]
+                price = price_el.text
+                change = change_el.text
+                change_pct = change_pct_el.text
 
-        except TimeoutException:
-            logger.error(f"Timed out waiting for price data for {name} at {url}")
-            return [name, None, None, None]
-        except Exception as e:
-            logger.error(f"Error fetching data for {name}: {e}")
-            return [name, None, None, None]
+                logger.info(f"Fetched data for {name} on attempt {attempt}")
+                return [name, price, change, change_pct]
+
+            except TimeoutException:
+                logger.error(f"Attempt {attempt}: Timed out waiting for price data for {name} at {url}")
+            except Exception as e:
+                logger.error(f"Attempt {attempt}: Error fetching data for {name} at {url}: {e}")
+            
+            time.sleep(retry_delay)
+
+        logger.error(f"Failed to fetch data for {name} after {max_retries} attempts")
+        return [name, None, None, None]
 
     def get_all_assets(self) -> str:
         results = []

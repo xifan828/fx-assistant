@@ -66,51 +66,64 @@ class TradingViewScrapper(SeleniumScrapper):
                         pivot_img = img.crop((0, pivot_top_crop, width-pivot_right_crop, width-pivot_bottom_crop))
                         pivot_file_name = file_name.replace("technicals", "pivot")
                         pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
-    
     def get_economic_calenders(self):
-        try:
-            self.driver.get(self.calender_url)
-            self.driver.execute_script("window.scrollBy(0, 400);")
-            time.sleep(2)
-            
-            self.close_ads()
-
-            screen_shot_width = 900
-            normal_width = 1920
-            normal_height = 1080
-            line_positions = [500, 620, 750]
-
-            importance_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-name='importance-button']")
-            importance_button.click()
-            time.sleep(2)
-
-            dir_path = os.path.join("data", "calender", self.currency_pair_formatted)
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
-
-            self.driver.set_window_size(screen_shot_width, normal_height)
-            self.driver.save_screenshot(os.path.join(dir_path, "upcoming.png"))
-            self.driver.set_window_size(normal_width, normal_height)
-
-            today_button = self.driver.find_element(By.ID, "Today")
-            today_button.click()
-            time.sleep(2)
-            self.driver.set_window_size(screen_shot_width, normal_height)
-
-            self.driver.save_screenshot(os.path.join(dir_path, "today.png"))
-
-            for file_name in os.listdir(dir_path):
-                with Image.open(os.path.join(dir_path, file_name)) as img:
-                    cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
-                    draw = ImageDraw.Draw(cropped_img)
-                    for line_position in line_positions:
-                        draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
-                    
-
-                    cropped_img.save(os.path.join(dir_path, file_name))
-                    
-        except Exception as e:
-            logger.error(f"Error occurred while getting economic calenders: {e}")
+        retry_attempts = 3
+        for attempt in range(1, retry_attempts + 1):
+            try:
+                self.driver.get(self.calender_url)
+                self.driver.execute_script("window.scrollBy(0, 400);")
+                time.sleep(2)
+                
+                self.close_ads()
+                
+                # Wait for the importance button to be clickable
+                wait = WebDriverWait(self.driver, 10)
+                importance_button = wait.until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-name='importance-button']"))
+                )
+                importance_button.click()
+                time.sleep(2)
+    
+                screen_shot_width = 900
+                normal_width = 1920
+                normal_height = 1080
+                line_positions = [500, 620, 750]
+    
+                dir_path = os.path.join("data", "calender", self.currency_pair_formatted)
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+    
+                self.driver.set_window_size(screen_shot_width, normal_height)
+                self.driver.save_screenshot(os.path.join(dir_path, "upcoming.png"))
+                self.driver.set_window_size(normal_width, normal_height)
+    
+                # Wait for the Today button to be clickable
+                today_button = wait.until(EC.element_to_be_clickable((By.ID, "Today")))
+                today_button.click()
+                time.sleep(2)
+                self.driver.set_window_size(screen_shot_width, normal_height)
+    
+                self.driver.save_screenshot(os.path.join(dir_path, "today.png"))
+    
+                for file_name in os.listdir(dir_path):
+                    file_path = os.path.join(dir_path, file_name)
+                    with Image.open(file_path) as img:
+                        cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
+                        draw = ImageDraw.Draw(cropped_img)
+                        for line_position in line_positions:
+                            draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
+                        cropped_img.save(file_path)
+    
+                # If completed successfully, exit the retry loop
+                logger.info("Successfully fetched economic calenders.")
+                return
+    
+            except Exception as e:
+                logger.error(f"Attempt {attempt}: Error occurred while getting economic calenders: {e}")
+                if attempt < retry_attempts:
+                    time.sleep(2 ** attempt)
+                else:
+                    logger.error("Failed to process economic calenders after multiple attempts.")
     
     def get_news_websites(self) -> List[str]:
         attempt = 0

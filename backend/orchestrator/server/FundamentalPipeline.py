@@ -95,7 +95,7 @@ class FundamentalPipeline(ProcessPipeline):
             response = await agent.run_text()
             return response
         except Exception as e:
-            logger.error(f"Error in analyzing chart: {e}")
+            logger.error(f"Error in analyzing fundamental {category} for {currency_pair}: {e}")
             return "Error in analysis"
     
     async def synthesize_fund(self, currency_pair: str, fund_analysis: Dict[str, str]) -> str:

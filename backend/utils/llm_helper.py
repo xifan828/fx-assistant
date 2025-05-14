@@ -9,6 +9,8 @@ from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from typing import List
 from pydantic import BaseModel
+from backend.utils.logger_config import get_logger
+logger = get_logger(__name__)
 
 class Config:
     def __init__(self, model_name: str = "gpt-4o-mini", temperature: float = 0, max_tokens: int = None):
@@ -84,52 +86,71 @@ class GeminiClient:
             return await f.read()
 
 
-    async def call_gemini_vision_api(self, user_message, history=[], image_path=None):
-        try:
-            chat_session = self.client.aio.chats.create(history=history,
-                                                    model=self.model_name,
-                                                    config=self.generation_config
-                                                    )
-            parts = [user_message]
-            if image_path:
-                if not os.path.exists(image_path):
-                    print(f"Error: Image file not found at path: {image_path}")
-                    return None
+    async def call_gemini_vision_api(self, user_message, history=None, image_path=None):
+        max_attempts = 2
+        if history is None:
+            history = []
+
+        for attempt in range(max_attempts):
+
+            try:
+                chat_session = self.client.aio.chats.create(history=history,
+                                                        model=self.model_name,
+                                                        config=self.generation_config
+                                                        )
+                parts = [user_message]
+                if image_path:
+                    if not os.path.exists(image_path):
+                        print(f"Error: Image file not found at path: {image_path}")
+                        return None
+                    
+                    mime_type, _ = mimetypes.guess_type(image_path)
+                    image_data = await self.read_file_async(image_path)
+                    parts.append(
+                    types.Part.from_bytes(data=image_data, mime_type=mime_type)
+                    )
+
+                response = await chat_session.send_message(parts)
+
+                if self.generation_config["response_mime_type"] == "text/plain":
+                    response_text = response.text
+                    return response_text, chat_session
                 
-                mime_type, _ = mimetypes.guess_type(image_path)
-                image_data = await self.read_file_async(image_path)
-                parts.append(
-                types.Part.from_bytes(data=image_data, mime_type=mime_type)
+                elif self.generation_config["response_mime_type"] == "application/json":
+                    response_json = response.parsed
+                    return response_json, chat_session
+            
+            except Exception as e:
+                logger.error(f"Call gemini vision API attempt {attempt + 1} failed: {e}")
+                if attempt == max_attempts - 1:
+                    logger.error(f"All attempts failed. Raising exception: {e}")
+                    raise e
+                await asyncio.sleep(10)
+    
+    async def call_gemini_api(self, user_message, history=None):
+        max_attempts = 2
+
+        if history is None:
+            history = []
+
+        for attempt in range(max_attempts):
+            try:
+                chat_session = self.client.aio.chats.create(
+                    history=history,
+                    model=self.model_name,
+                    config=self.generation_config
                 )
-
-            response = await chat_session.send_message(parts)
-
-            if self.generation_config["response_mime_type"] == "text/plain":
+                response = await chat_session.send_message(user_message)
                 response_text = response.text
                 return response_text, chat_session
-            
-            elif self.generation_config["response_mime_type"] == "application/json":
-                response_json = response.parsed
-                return response_json, chat_session
-        
-        except Exception as e:
-            print(f"Error in call_api: {e}, api is {self.api_key}")
-            raise e
-    
-    async def call_gemini_api(self, user_message, history=[]):
-        try:
-            chat_session = self.client.aio.chats.create(
-                history=history,
-                model=self.model_name,
-                config=self.generation_config
-            )
-            response = await chat_session.send_message(user_message) # Pass user_message directly
-            response_text = response.text
-            return response_text, chat_session
 
-        except Exception as e:
-            print(f"Error in call_gemini_api: {e}, api key is {self.api_key}")
-            raise e
+            except Exception as e:
+                logger.error(f"Call gemini API attempt {attempt + 1} failed: {e}")
+                if attempt == max_attempts - 1:
+                    logger.error(f"All attempts failed. Raising exception: {e}")
+                    raise e
+                # wait for a short period before retrying
+                await asyncio.sleep(10)
 
 
 async def main():

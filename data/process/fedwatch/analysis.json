@@ -1,13 +1,5 @@
 [
     {
-        "timestamp": "2025-05-13T20:37:59Z",
-        "analysis": "Here is a Fed Outlook Summary based on the provided data:\n\nMarket expectations for Fed policy have shifted notably higher over the past month. For the upcoming meeting, the overwhelming consensus (91.7%) is now for rates to remain unchanged at 4.25-4.50%. This is a stark contrast to a month ago, when a cut to 4.00-4.25% was the dominant expectation (64.4%). Looking ahead to year-end, the implied rate has also moved higher. The 3.75-4.00% range is now the most probable outcome (37.8%), up significantly from a month ago. This indicates market participants expect fewer or later rate cuts than previously anticipated. The repricing suggests a less dovish outlook, potentially supporting higher yields or a stronger dollar."
-    },
-    {
-        "timestamp": "2025-05-13T20:56:13Z",
-        "analysis": "**Fed Outlook Summary: Market Expectations Shift Higher**\n\nMarket expectations for Fed policy have tightened considerably over the past month. For the upcoming FOMC meeting, the consensus has dramatically shifted from anticipating a rate cut (previously favoring 4.00-4.25%) to overwhelmingly expecting the Fed to hold steady at the current 4.25-4.50% range (91.8% probability).\n\nYear-end expectations have also moved higher. The most likely outcome is now seen in the 3.75-4.00% range, a notable increase from the 3.50-3.75% range favored a month ago. This repricing reflects reduced conviction in near-term rate cuts and aligns with a \"higher for longer\" narrative, implying less dovish sentiment priced into fixed income and potential USD support."
-    },
-    {
         "timestamp": "2025-05-13T21:32:34Z",
         "analysis": "Here is a Fed Outlook Summary based on the provided data:\n\nMarket-implied probabilities reveal a significant shift in Fed expectations over the past month. For the upcoming meeting, the consensus for holding the target rate at 4.25-4.50% has surged from 21.9% to an overwhelming 91.8%. This marks a dramatic change from a month ago when a further hike was widely anticipated.\n\nLooking towards year-end, the market continues to price in rate cuts. The implied rate of 3.84% suggests expectations for 50-100 basis points of easing from current levels, with the highest probabilities centered around the 350-400 bps range.\n\nThis outlook implies the market believes the Fed is likely done hiking for this cycle but anticipates economic conditions will necessitate cuts later in the year. This stance generally supports assets sensitive to future rate reductions while acknowledging the current restrictive policy environment."
     },
@@ -18,5 +10,13 @@
     {
         "timestamp": "2025-05-14T18:53:45Z",
         "analysis": "**Fed Outlook Summary: Market-Implied Probabilities**\n\nMarket expectations for Fed policy have shifted notably over the past month, reflecting a 'higher for longer' narrative gaining traction.\n\nFor the upcoming meeting, conviction for maintaining the current 4.25-4.50% target range has surged to over 90%, a dramatic increase from ~25% a month ago. Expectations of an immediate rate cut are now negligible.\n\nLooking towards year-end, the implied rate has moved higher. A month ago, the consensus centered around 3.25-3.50%. The highest probability now lies in the 3.75-4.00% range, with increased odds of rates remaining above 4.00%.\n\nThe market consensus firmly anticipates the Fed holding steady at the next meeting and pricing in fewer, later cuts than previously expected. This reinforces a higher-for-longer outlook, potentially supportive for the USD and a headwind for assets sensitive to funding costs."
+    },
+    {
+        "timestamp": "2025-05-14T21:09:54Z",
+        "analysis": "**Fed Outlook Summary: Market Pricing Shifts Hawkishly**\n\nMarket expectations for the Federal Reserve's policy path have shifted materially over the past month, reflecting a less dovish outlook. For the upcoming FOMC meeting, the consensus has solidified around maintaining the current 425-450 bps target range, with probabilities exceeding 90% – a significant increase from a month ago when a rate cut was widely anticipated.\n\nLooking towards year-end, the market is now pricing in a higher terminal rate and fewer rate cuts than previously expected. The implied year-end rate stands at 3.88%, suggesting perhaps 1-2 cuts from current levels, a less aggressive easing path compared to earlier forecasts. This hawkish repricing implies continued upward pressure on bond yields and may temper enthusiasm for risk assets reliant on significant monetary easing."
+    },
+    {
+        "timestamp": "2025-05-14T21:25:55Z",
+        "analysis": "Here is a Fed Outlook Summary based on the provided data:\n\nMarket expectations for the next FOMC meeting have solidified dramatically over the past month. The consensus now overwhelmingly favors a 25 basis point hike, with a 91.7% probability for the 425-450 bps range, a significant increase from 24.5% a month ago.\n\nIn contrast, year-end rate expectations have fallen sharply. The market is now pricing in cuts from the current level, with the implied rate at 3.89% and the highest probabilities centered around the 375-400 bps range (37.5%), a stark contrast to the lower peak but less aggressive cutting priced a month prior.\n\nThis divergence implies traders anticipate the Fed is nearing its terminal rate and will need to ease policy relatively quickly, potentially supporting bond markets and challenging the 'higher for longer' narrative."
     }
 ]

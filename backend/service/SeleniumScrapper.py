@@ -12,7 +12,7 @@ import time
 from PIL import Image, ImageDraw, ImageFont
 import os
 from backend.utils.logger_config import get_logger
-import tempfile, shutil, atexit, threading, time
+import threading, time
 
 logger = get_logger(__name__)
 
@@ -29,11 +29,8 @@ class SeleniumScrapper:
 
     def _init_driver(self, headless: bool):
         opts = Options()
-
-        # modern headless mode (works from Chrome 109+)
         if headless:
             opts.add_argument("--headless=new")
-
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-extensions")
@@ -45,17 +42,14 @@ class SeleniumScrapper:
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/123.0.0.0 Safari/537.36"
         )
+        # ←— no --user-data-dir here
 
-        profile_dir = tempfile.mkdtemp(prefix="selenium_profile_")
-        opts.add_argument(f"--user-data-dir={profile_dir}")
+        # point at the chromium binary you installed via apt, not the snap
+        opts.binary_location = "/usr/bin/chromium-browser"
 
-        atexit.register(shutil.rmtree, profile_dir, ignore_errors=True)
-
-        opts.binary_location = "/snap/bin/chromium"
-
-        service = Service()  # empty -> let Selenium Manager handle it
+        service = Service(ChromeDriverManager().install())
         return webdriver.Chrome(service=service, options=opts)
-
+    
     def wait_for_popup(self, timeout: int = 5):
         try:
             WebDriverWait(self.driver, timeout).until(

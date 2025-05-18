@@ -12,6 +12,9 @@ from backend.service.JinaAIScrapper import JinaAIScrapper
 import asyncio
 from typing import List, Dict
 from backend.utils.logger_config import get_logger
+import shutil
+from glob import glob
+
 
 logger = get_logger(__name__)
 
@@ -66,6 +69,7 @@ class TradingViewScrapper(SeleniumScrapper):
                         pivot_img = img.crop((0, pivot_top_crop, width-pivot_right_crop, width-pivot_bottom_crop))
                         pivot_file_name = file_name.replace("technicals", "pivot")
                         pivot_img.save(f"data/technical_indicators/{pivot_file_name}")
+
     def get_economic_calenders(self):
         retry_attempts = 3
         for attempt in range(1, retry_attempts + 1):
@@ -90,8 +94,9 @@ class TradingViewScrapper(SeleniumScrapper):
                 line_positions = [500, 620, 750]
     
                 dir_path = os.path.join("data", "calender", self.currency_pair_formatted)
-                if not os.path.exists(dir_path):
-                    os.makedirs(dir_path)
+                if os.path.exists(dir_path):
+                    shutil.rmtree(dir_path)
+                os.makedirs(dir_path)
     
                 self.driver.set_window_size(screen_shot_width, normal_height)
                 self.driver.save_screenshot(os.path.join(dir_path, "upcoming.png"))
@@ -104,15 +109,18 @@ class TradingViewScrapper(SeleniumScrapper):
                 self.driver.set_window_size(screen_shot_width, normal_height)
     
                 self.driver.save_screenshot(os.path.join(dir_path, "today.png"))
-    
-                for file_name in os.listdir(dir_path):
-                    file_path = os.path.join(dir_path, file_name)
-                    with Image.open(file_path) as img:
-                        cropped_img = img.crop((0, 200, screen_shot_width, normal_height - 400))
-                        draw = ImageDraw.Draw(cropped_img)
-                        for line_position in line_positions:
-                            draw.line((line_position, 0, line_position, cropped_img.height), fill="black", width=3)
-                        cropped_img.save(file_path)
+
+                for file_path in glob(os.path.join(dir_path, "*.png")):
+                    try:
+                        with Image.open(file_path) as img:
+                            w, h = img.size
+                            left, upper = max(0, left), max(0, upper)
+                            right  = min(w, right)
+                            lower  = min(h, lower)
+                            cropped = img.crop((left, upper, right, lower))
+                            cropped.save(file_path)
+                    except Exception as e:
+                        logger.warning(f"Skipping {file_path}: {e}")
     
                 # If completed successfully, exit the retry loop
                 logger.info("Successfully fetched economic calenders.")

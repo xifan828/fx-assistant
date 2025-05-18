@@ -31,10 +31,15 @@ class SeleniumScrapper:
         opts = Options()
         if headless:
             opts.add_argument("--headless=new")
+
+        # sandbox / shm / gpu
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--disable-gpu")
         opts.add_argument("--disable-extensions")
         opts.add_argument("--disable-infobars")
+        opts.add_argument("--remote-debugging-port=0")
+
         opts.add_argument("--window-size=1920,1080")
         opts.page_load_strategy = "eager"
         opts.add_argument(
@@ -42,10 +47,9 @@ class SeleniumScrapper:
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/123.0.0.0 Safari/537.36"
         )
-        # ←— no --user-data-dir here
 
-        # point at the chromium binary you installed via apt, not the snap
-        opts.binary_location = "/usr/bin/chromium-browser"
+        # use the system Chrome, not the Snap one
+        opts.binary_location = "/usr/bin/chromium-browser"  # or your Chrome path
 
         service = Service(ChromeDriverManager().install())
         return webdriver.Chrome(service=service, options=opts)

@@ -25,7 +25,7 @@ def simple_selenium_test():
     opts.add_argument(
         "user-agent=Mozilla/5.0 (X11; Linux x86_64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/123.0.0.0 Safari/537.36" # Update to your actual Chrome version
+        "Chrome/136.0.7103.113 Safari/537.36" # Update to your actual Chrome version
     )
     opts.binary_location = chrome_binary_path
 

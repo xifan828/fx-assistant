@@ -30,6 +30,7 @@ class ScrapePipeline:
         scr = TradingViewScrapper(currency_pair)
         try:
             scr.get_economic_calenders()
+            logger.info(f"Fetched economic calenders for {currency_pair}")
         except Exception as e:
             logger.error(f"Error fetching economic calenders for {currency_pair}: {e}")
         finally:
@@ -107,7 +108,7 @@ class ScrapePipeline:
             for name, url in subdict.items()
         }
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=4) as executor:
             futures = {}
             # tradingview tasks
             for currency_pair in CURRENCY_PAIRS:

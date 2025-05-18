@@ -3,44 +3,12 @@
         "eur_usd": {
             "today": [
                 {
-                    "time": "05-13 11:00",
-                    "area": "Germany",
-                    "event_name": "ZEW Economic Sentiment In...",
-                    "actual_value": "25.2",
-                    "forecast_value": "11.9",
-                    "prior_value": "-14"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "United States",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
                 }
             ],
             "upcoming": [
@@ -89,36 +57,12 @@
         "usd_jpy": {
             "today": [
                 {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
                 }
             ],
             "upcoming": [
@@ -132,7 +76,7 @@
                 },
                 {
                     "time": "05-15 14:30",
-                    "area": "None",
+                    "area": "United States",
                     "event_name": "Retail Sales MoM",
                     "actual_value": "None",
                     "forecast_value": "0%",
@@ -156,7 +100,7 @@
                 },
                 {
                     "time": "05-16 14:30",
-                    "area": "None",
+                    "area": "United States",
                     "event_name": "Housing Starts",
                     "actual_value": "None",
                     "forecast_value": "1.37 M",
@@ -167,44 +111,12 @@
         "gbp_usd": {
             "today": [
                 {
-                    "time": "05-13 08:00",
-                    "area": "UK",
-                    "event_name": "Unemployment Rate",
-                    "actual_value": "4.5%",
-                    "forecast_value": "4.5%",
-                    "prior_value": "4.4%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "US",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
                 }
             ],
             "upcoming": [
@@ -495,36 +407,12 @@
         "usd_cnh": {
             "today": [
                 {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Core Inflation Rate YoY",
-                    "actual_value": "2.8%",
-                    "forecast_value": "2.8%",
-                    "prior_value": "2.8%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate MoM",
-                    "actual_value": "0.2%",
-                    "forecast_value": "0.3%",
-                    "prior_value": "-0.1%"
-                },
-                {
-                    "time": "05-13 14:30",
-                    "area": "USD",
-                    "event_name": "Inflation Rate YoY",
-                    "actual_value": "2.3%",
-                    "forecast_value": "2.4%",
-                    "prior_value": "2.4%"
+                    "time": "None",
+                    "area": "None",
+                    "event_name": "None",
+                    "actual_value": "None",
+                    "forecast_value": "None",
+                    "prior_value": "None"
                 }
             ],
             "upcoming": [

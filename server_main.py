@@ -7,6 +7,7 @@ from backend.orchestrator.server.CalenderPipeline import CalenderPipeline
 from backend.orchestrator.server.FundamentalPipeline import FundamentalPipeline
 from backend.orchestrator.server.FedWatchPipeline import FedWatchPipeline
 import asyncio
+import os
 
 async def main():
     logger = get_logger(__name__)
@@ -39,4 +40,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+ 
+	
+    	
+	#asyncio.run(main())

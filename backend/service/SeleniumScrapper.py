@@ -20,8 +20,9 @@ class SeleniumScrapper:
 
     _local = threading.local()      # thread-local storage
 
-    def __init__(self, headless: bool = True):
+    def __init__(self, driver_path = None, headless: bool = True):
         # reuse the driver if this thread already has one
+        self.driver_path = driver_path
         if getattr(self._local, "driver", None) is None:
             self._local.driver = self._init_driver(headless)
         self.driver = self._local.driver

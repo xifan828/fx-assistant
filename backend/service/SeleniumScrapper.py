@@ -17,13 +17,17 @@ import threading, time
 logger = get_logger(__name__)
 
 class SeleniumScrapper:
+    _local = threading.local()
 
-    _local = threading.local()      # thread-local storage
+    def __init__(self, driver_path=None, headless: bool = True):
 
-    def __init__(self, driver_path = None, headless: bool = True):
-        # reuse the driver if this thread already has one
-        self.driver_path = driver_path
+        self.driver_path = "/usr/local/bin/chromedriver"
+
+        # Path to Google Chrome binary
+        self.chrome_binary_path = "/opt/google/chrome/chrome" # Or /usr/bin/google-chrome-stable
+
         if getattr(self._local, "driver", None) is None:
+            # logger.info(f"Thread {threading.get_ident()}: Initializing new WebDriver instance with Google Chrome.")
             self._local.driver = self._init_driver(headless)
         self.driver = self._local.driver
 
@@ -32,28 +36,35 @@ class SeleniumScrapper:
         if headless:
             opts.add_argument("--headless=new")
 
-        # sandbox / shm / gpu
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--disable-extensions")
         opts.add_argument("--disable-infobars")
         opts.add_argument("--remote-debugging-port=0")
-
         opts.add_argument("--window-size=1920,1080")
+        opts.add_argument("--disable-blink-features=AutomationControlled")
         opts.page_load_strategy = "eager"
         opts.add_argument(
             "user-agent=Mozilla/5.0 (X11; Linux x86_64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/123.0.0.0 Safari/537.36"
+            "Chrome/123.0.0.0 Safari/537.36" # Update this to your Chrome version
         )
 
-        # use the system Chrome, not the Snap one
-        opts.binary_location = "/usr/bin/chromium-browser"  # or your Chrome path
+        # Explicitly set the binary location for Google Chrome
+        opts.binary_location = self.chrome_binary_path
 
-        service = Service(ChromeDriverManager().install())
-        return webdriver.Chrome(service=service, options=opts)
-    
+        service = Service(executable_path=self.driver_path)
+
+        try:
+            # logger.info(f"Attempting to start Google Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
+            driver = webdriver.Chrome(service=service, options=opts)
+            # logger.info("WebDriver for Google Chrome initialized successfully.")
+            return driver
+        except Exception as e:
+            # logger.error(f"Failed to initialize WebDriver for Google Chrome: {e}", exc_info=True)
+            raise
+
     def wait_for_popup(self, timeout: int = 5):
         try:
             WebDriverWait(self.driver, timeout).until(
@@ -88,10 +99,15 @@ class SeleniumScrapper:
                     logger.warning("Failed to click element: %s", e)
 
     def quit_driver(self):
-        # quit *and* drop the thread-local reference
         if getattr(self._local, "driver", None):
-            self._local.driver.quit()
-            self._local.driver = None
+            # logger.info(f"Thread {threading.get_ident()}: Quitting WebDriver instance (Google Chrome).")
+            try:
+                self._local.driver.quit()
+            except Exception as e:
+                # logger.error(f"Error quitting WebDriver (Google Chrome): {e}", exc_info=True)
+                pass
+            finally:
+                self._local.driver = None
 
 
 # Set up Chrome options

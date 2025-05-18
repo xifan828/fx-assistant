@@ -172,3 +172,7 @@ simulation/forward_test/
 
 # app.log
 app.log
+
+# ignore logs dir and things in it
+logs/
+logs/*.log

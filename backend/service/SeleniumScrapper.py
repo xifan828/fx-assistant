@@ -12,83 +12,87 @@ import time
 from PIL import Image, ImageDraw, ImageFont
 import os
 from backend.utils.logger_config import get_logger
+import tempfile, shutil, atexit, threading, time
+
 logger = get_logger(__name__)
 
-class SeleniumScrapper:
+class SeleniumScraper:
 
-    def __init__(self, driver_path = None, is_headless = True):
-        self.driver = self.init_driver(driver_path, is_headless)
-    
-    def init_driver(self, driver_path, is_headless):
-        chrome_options = Options()
-        if is_headless:
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--disable-gpu")  # Especially on Windows
-        chrome_options.add_argument("--disable-infobars")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--start-maximized")  # Starts the browser maximized
-        chrome_options.add_argument("--window-size=1920,1080")  # Sets a default window size
+    _local = threading.local()      # thread-local storage
 
-        chrome_options.page_load_strategy = "eager"
+    def __init__(self, headless: bool = True):
+        # reuse the driver if this thread already has one
+        if getattr(self._local, "driver", None) is None:
+            self._local.driver = self._init_driver(headless)
+        self.driver = self._local.driver
 
-        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
-    (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36")
+    def _init_driver(self, headless: bool):
+        opts = Options()
 
-        if driver_path is None:
-            try:
-                chrome_driver_path = r"C:\Windows\chromedriver.exe"  # Replace with your actual path
-                service = Service(chrome_driver_path)
-                return webdriver.Chrome(service=service, options=chrome_options)
-            except:
-                chrome_path = '/usr/bin/chromium'
-                chromedriver_path = '/usr/bin/chromedriver'
-                chrome_options.binary_location = chrome_path
-                service = Service(chromedriver_path)
-                return webdriver.Chrome(service=service, options=chrome_options)
-        else:
-            service = Service(driver_path)
-            return webdriver.Chrome(service=service, options=chrome_options)
-    
-    def wait_for_popup(self, timeout=5):
+        # modern headless mode (works from Chrome 109+)
+        if headless:
+            opts.add_argument("--headless=new")
+
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--disable-extensions")
+        opts.add_argument("--disable-infobars")
+        opts.add_argument("--window-size=1920,1080")
+        opts.page_load_strategy = "eager"
+        opts.add_argument(
+            "user-agent=Mozilla/5.0 (X11; Linux x86_64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/123.0.0.0 Safari/537.36"
+        )
+
+        profile_dir = tempfile.mkdtemp(prefix="selenium_profile_")
+        opts.add_argument(f"--user-data-dir={profile_dir}")
+
+        atexit.register(shutil.rmtree, profile_dir, ignore_errors=True)
+
+        opts.binary_location = "/snap/bin/chromium"
+
+        service = Service()  # empty -> let Selenium Manager handle it
+        return webdriver.Chrome(service=service, options=opts)
+
+    def wait_for_popup(self, timeout: int = 5):
         try:
             WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located((By.XPATH, "//*[text()='×' or contains(@class, 'close') or contains(@id, 'close')]"))
+                EC.presence_of_element_located(
+                    (By.XPATH,
+                     "//*[text()='×' or contains(@class,'close') "
+                     "or contains(@id,'close')]")
+                )
             )
             logger.info("Popup appeared.")
-        except:
-            logger.info(f"No popup appeared within the {timeout} period.")
-    
+        except Exception:
+            logger.info("No popup appeared within %s s.", timeout)
+
     def close_ads(self):
-        try:
-            # Use a list of known close button selectors to check for common patterns
-            close_selectors = [
-                "//div[contains(@class, 'popup') or contains(@class, 'modal') or contains(@class, 'overlay')]//*[text()='×']",
-                "//button[contains(text(), '×')]",
-                "//div[contains(@aria-label, 'Close')]",
-                "//div[contains(@class, 'close') or contains(@id, 'close')]",
-                "//div[@role='dialog']//button[contains(@class, 'close')]",
-            ]
-            
-            for selector in close_selectors:
-                elements = self.driver.find_elements(By.XPATH, selector)
-                for el in elements:
-                    try:
-                        if el.is_displayed():
-                            el.click()
-                            logger.info("Ad closed.")
-                            time.sleep(1)  # Allow UI to refresh
-                            return
-                    except Exception as e:
-                        logger.warning(f"Failed to click on element: {e}")
-        except Exception as e:
-            logger.error(f"Error while attempting to close ads: {e}")
+        selectors = [
+            "//div[contains(@class,'popup') or contains(@class,'modal') "
+            "or contains(@class,'overlay')]//*[text()='×']",
+            "//button[contains(text(),'×')]",
+            "//div[contains(@aria-label,'Close')]",
+            "//div[contains(@class,'close') or contains(@id,'close')]",
+            "//div[@role='dialog']//button[contains(@class,'close')]",
+        ]
+        for sel in selectors:
+            for el in self.driver.find_elements(By.XPATH, sel):
+                try:
+                    if el.is_displayed():
+                        el.click()
+                        logger.info("Ad closed.")
+                        time.sleep(0.5)
+                        return
+                except Exception as e:
+                    logger.warning("Failed to click element: %s", e)
 
-    
     def quit_driver(self):
-        self.driver.quit()
-
+        # quit *and* drop the thread-local reference
+        if getattr(self._local, "driver", None):
+            self._local.driver.quit()
+            self._local.driver = None
 
 
 # Set up Chrome options

@@ -16,7 +16,7 @@ import tempfile, shutil, atexit, threading, time
 
 logger = get_logger(__name__)
 
-class SeleniumScraper:
+class SeleniumScrapper:
 
     _local = threading.local()      # thread-local storage
 

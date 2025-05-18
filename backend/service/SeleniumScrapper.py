@@ -7,7 +7,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.common.action_chains import ActionChains
 
-from webdriver_manager.chrome import ChromeDriverManager
 import time
 from PIL import Image, ImageDraw, ImageFont
 import os
@@ -25,13 +24,17 @@ class SeleniumScrapper:
 
         # Path to Google Chrome binary
         self.chrome_binary_path = "/opt/google/chrome/chrome" # Or /usr/bin/google-chrome-stable
+        logger.info(f"Thread {threading.get_ident()}: SeleniumScrapper __init__ called. Headless: {headless}")
 
         if getattr(self._local, "driver", None) is None:
-            # logger.info(f"Thread {threading.get_ident()}: Initializing new WebDriver instance with Google Chrome.")
+            logger.info(f"Thread {threading.get_ident()}: No existing driver found for this thread. Initializing new WebDriver instance.")
             self._local.driver = self._init_driver(headless)
+        else:
+            logger.info(f"Thread {threading.get_ident()}: Reusing existing WebDriver instance for this thread.")
         self.driver = self._local.driver
 
     def _init_driver(self, headless: bool):
+        logger.info(f"Thread {threading.get_ident()}: _init_driver called. Headless: {headless}")
         opts = Options()
         if headless:
             opts.add_argument("--headless=new")
@@ -57,12 +60,12 @@ class SeleniumScrapper:
         service = Service(executable_path=self.driver_path)
 
         try:
-            # logger.info(f"Attempting to start Google Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
+            logger.info(f"Thread {threading.get_ident()}: Attempting to start Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
             driver = webdriver.Chrome(service=service, options=opts)
-            # logger.info("WebDriver for Google Chrome initialized successfully.")
+            logger.info(f"Thread {threading.get_ident()}: WebDriver initialized successfully for this thread.")
             return driver
         except Exception as e:
-            # logger.error(f"Failed to initialize WebDriver for Google Chrome: {e}", exc_info=True)
+            logger.error(f"Thread {threading.get_ident()}: Failed to initialize WebDriver: {e}", exc_info=True)
             raise
 
     def wait_for_popup(self, timeout: int = 5):

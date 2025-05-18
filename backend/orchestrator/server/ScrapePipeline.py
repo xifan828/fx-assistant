@@ -107,23 +107,24 @@ class ScrapePipeline:
             for name, url in subdict.items()
         }
 
-        with ThreadPoolExecutor(max_workers=6) as executor:
+        with ThreadPoolExecutor(max_workers=1) as executor:
             futures = {}
             # tradingview tasks
-            for currency_pair in CURRENCY_PAIRS:
+            #for currency_pair in CURRENCY_PAIRS:
+            for currency_pair in ["EUR/USD"]:
                 currency_pair_formatted = currency_pair.replace("/", "_").lower()
                 futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
-                futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
+                #futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
 
-            # investing tasks
-            for name, url in asset_dict.items():
-                futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
+            # # investing tasks
+            # for name, url in asset_dict.items():
+            #     futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
             
-            # economic indicators tasks
-            futures[executor.submit(self._fetech_fundamental)] = "fundamental"
+            # # economic indicators tasks
+            # futures[executor.submit(self._fetech_fundamental)] = "fundamental"
 
-            # fed watch tasks
-            futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
+            # # fed watch tasks
+            # futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
 
 
             for future in as_completed(futures):

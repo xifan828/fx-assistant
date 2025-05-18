@@ -114,10 +114,7 @@ class TradingViewScrapper(SeleniumScrapper):
                     try:
                         with Image.open(file_path) as img:
                             w, h = img.size
-                            left, upper = max(0, left), max(0, upper)
-                            right  = min(w, right)
-                            lower  = min(h, lower)
-                            cropped = img.crop((left, upper, right, lower))
+                            cropped = img.crop((0, 200, w, h - 400))
                             cropped.save(file_path)
                     except Exception as e:
                         logger.warning(f"Skipping {file_path}: {e}")

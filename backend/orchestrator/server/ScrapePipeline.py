@@ -118,8 +118,8 @@ class ScrapePipeline:
                 futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
 
             # # investing tasks
-            # for name, url in asset_dict.items():
-            #     futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
+            for name, url in asset_dict.items():
+                futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
             
             # # economic indicators tasks
             # futures[executor.submit(self._fetech_fundamental)] = "fundamental"

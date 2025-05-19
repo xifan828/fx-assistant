@@ -171,11 +171,9 @@ class InvestingScrapper(SeleniumScrapper):
 
 
 if __name__ == "__main__":
-    import time
-    begin = time.time()
+
     scrapper = InvestingScrapper("EUR/USD")
-    #scrapper.get_news_websites()
-    print(scrapper.get_all_assets_parallel(max_workers=8))
-    #print(scrapper.get_all_assets())
-    end = time.time()
-    print(f"Execution time: {end - begin:.2f} seconds")
+    
+    asset_data = scrapper.get_asset("S&P 500", "https://www.investing.com/indices/us-spx-500")
+
+    print(asset_data)

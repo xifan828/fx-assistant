@@ -108,14 +108,14 @@ class ScrapePipeline:
             for name, url in subdict.items()
         }
 
-        with ThreadPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             futures = {}
             # tradingview tasks
             for currency_pair in CURRENCY_PAIRS:
             #for currency_pair in ["EUR/USD"]:
                 currency_pair_formatted = currency_pair.replace("/", "_").lower()
                 futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
-                #futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
+                futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
 
             # # investing tasks
             # for name, url in asset_dict.items():

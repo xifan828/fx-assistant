@@ -57,15 +57,22 @@ class SeleniumScrapper:
         # Explicitly set the binary location for Google Chrome
         opts.binary_location = self.chrome_binary_path
 
-        service = Service(executable_path=self.driver_path)
+        service = Service(
+            executable_path=self.driver_path,
+            service_args = ["--verbose"],
+            log_output="chromedriver.log" 
+            )
+        
 
         try:
             logger.info(f"Thread {threading.get_ident()}: Attempting to start Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
             driver = webdriver.Chrome(service=service, options=opts)
+            driver.set_page_load_timeout(60)
             logger.info(f"Thread {threading.get_ident()}: WebDriver initialized successfully for this thread.")
             return driver
         except Exception as e:
             logger.error(f"Thread {threading.get_ident()}: Failed to initialize WebDriver: {e}", exc_info=True)
+            logger.error(f"Using chromedriver: {self.driver_path}, chrome binary: {self.chrome_binary_path}")
             raise
 
     def wait_for_popup(self, timeout: int = 5):

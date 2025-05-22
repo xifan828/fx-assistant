@@ -62,10 +62,10 @@ class RiskSentimentPipeline(ProcessPipeline):
             currency_asset_names = INVESTING_ASSETS[currency].keys()
             all_asset_names = list(general_asset_names) + list(symbol_asset_names) + list(currency_asset_names)
 
-            data = [asset_data.get(name, None) for name in all_asset_names]
-            df = pd.DataFrame(data, columns=["Asset", "Last Price", "Change", "Change (%)"])
-            results_md = df.to_markdown(index=False)
-            assests_str = results_md + "\n\n" + self._compute_spreads(df, currency_pair)
+            data = [{"Asset": name, **asset_data.get(name, None)} for name in all_asset_names]
+            df = pd.DataFrame(data)
+            df.columns = ["Asset", "Last Price", "Change", "Change Percentage"]
+            assests_str = str(data) + "\n\n" + self._compute_spreads(df, currency_pair)
         except Exception as e:
             logger.error(f"Error preparaing asset data for {currency_pair} for risk sentiment synthetis: {e}")
             assests_str = f"Error preparaing asset data for {currency_pair}: {e}"
@@ -176,5 +176,6 @@ if __name__ == "__main__":
     pipeline = RiskSentimentPipeline()
     asset_data = asyncio.run(pipeline._scrape_and_extract_asset_data())
     print(asset_data)
+    print(pipeline._prepare_assets_data("EUR/USD", asset_data))
 
     #asyncio.run(pipeline.synthesize_sentiments())

@@ -111,14 +111,14 @@ class ScrapePipeline:
         with ThreadPoolExecutor(max_workers=1) as executor:
             futures = {}
             # tradingview tasks
-            # for currency_pair in CURRENCY_PAIRS:
-            #     currency_pair_formatted = currency_pair.replace("/", "_").lower()
-            #     futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
-            #     futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
+            for currency_pair in CURRENCY_PAIRS:
+                currency_pair_formatted = currency_pair.replace("/", "_").lower()
+                futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
+                futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
 
             # # investing tasks
-            for name, url in asset_dict.items():
-                futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
+            # for name, url in asset_dict.items():
+            #     futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
             
             # # economic indicators tasks
             # futures[executor.submit(self._fetech_fundamental)] = "fundamental"

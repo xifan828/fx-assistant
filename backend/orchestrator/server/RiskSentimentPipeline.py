@@ -1,4 +1,4 @@
-from backend.agents.sentiment.RiskSentimentAgent import RiskSentimentAgent, RiskSentimentAnalysis
+from backend.agents.sentiment.RiskSentimentAgent import RiskSentimentAgent, RiskSentimentAnalysis, AssetData, ExtractAssetAgent
 from backend.orchestrator.server.ProcessPipeline import ProcessPipeline
 from backend.utils.parameters import CURRENCY_PAIRS, INVESTING_ASSETS
 from backend.utils.logger_config import get_logger
@@ -7,14 +7,19 @@ import pandas as pd
 import os
 import asyncio
 from datetime import datetime
+import aiohttp
+from backend.service.JinaAIScrapper import JinaAIScrapper
+from collections import defaultdict
+
 
 logger = get_logger(__name__)
 
 
 class RiskSentimentPipeline(ProcessPipeline):
-    def __init__(self, model_name: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2):
+    def __init__(self, extraction_model_name: str = "gpt-4.1-mini-2025-04-14", synthesis_model_name: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2):
         super().__init__()
-        self.model_name = model_name
+        self.synthesis_model_name = synthesis_model_name
+        self.extraction_model_name = extraction_model_name
         self.temperature = temperature
         self.dir_path = os.path.join("data", "process", "risk_sentiment")
         os.makedirs(self.dir_path, exist_ok=True)
@@ -48,7 +53,7 @@ class RiskSentimentPipeline(ProcessPipeline):
             spread_str = f"US 2Y - China 2Y spread: {us_china_2y_spread:.2f} bps\nUS 10Y - China 10Y spread: {us_china_10y_spread:.2f} bps"
         return spread_str
     
-    def _fetch_assets_data(self, currency_pair: str) -> str:
+    def _prepare_assets_data(self, currency_pair: str, asset_data: Dict[str, Dict[str, str]]) -> str:
         try:
             symbol = currency_pair.split("/")[0]
             currency = currency_pair.split("/")[1]
@@ -57,7 +62,7 @@ class RiskSentimentPipeline(ProcessPipeline):
             currency_asset_names = INVESTING_ASSETS[currency].keys()
             all_asset_names = list(general_asset_names) + list(symbol_asset_names) + list(currency_asset_names)
 
-            data = [self.scrape_results_curr["asset"].get(name, None) for name in all_asset_names]
+            data = [asset_data.get(name, None) for name in all_asset_names]
             df = pd.DataFrame(data, columns=["Asset", "Last Price", "Change", "Change (%)"])
             results_md = df.to_markdown(index=False)
             assests_str = results_md + "\n\n" + self._compute_spreads(df, currency_pair)
@@ -65,6 +70,46 @@ class RiskSentimentPipeline(ProcessPipeline):
             logger.error(f"Error preparaing asset data for {currency_pair} for risk sentiment synthetis: {e}")
             assests_str = f"Error preparaing asset data for {currency_pair}: {e}"
         return assests_str
+
+    async def _scrape_and_extract_asset_data(self) -> Dict[str, Dict[str, str]]:
+        """
+        Scrape data from Investing.com using JinaAI and extract asset data using OpenAI
+        """
+        asset_data: Dict[str, Dict[str, str]] = defaultdict(lambda: defaultdict(dict))
+        scrapper = JinaAIScrapper()
+        extractor = ExtractAssetAgent(model_name=self.extraction_model_name, temperature=self.temperature)
+
+        async with aiohttp.ClientSession() as session:
+            
+            async def work(category: str, asset_name: str, url: str):
+                try:
+                    raw: str = await scrapper.aget(session, url)
+                    assetdata: AssetData = await extractor.extract_asset_data(asset_name=asset_name, scrape_results=raw)
+                except Exception as e:
+                    logger.error(f"Error extracting asset data for {asset_name}: {e}")
+                    assetdata: AssetData = AssetData(
+                        last_price=0.0,
+                        change=0.0,
+                        change_percentage=0.0
+                    )
+                return category, asset_name, assetdata
+            
+            tasks = [
+                work(category, asset_name, url)
+                for category, category_dict in INVESTING_ASSETS.items()
+                for asset_name, url in category_dict.items()
+            ]
+
+            try: 
+                all_results = await asyncio.gather(*tasks)
+            except Exception as e:
+                logger.error(f"Error during gathering tasks: {e}")
+                raise
+
+        for category, asset_name, assetdata in all_results:
+            asset_data[asset_name] = assetdata.dict()
+            
+        return asset_data
 
     def _fetch_news_synthesis(self, currency_pair: str) -> Union[str, Dict[str, str]]:
         currency_pair = currency_pair.replace("/", "_").lower()
@@ -82,9 +127,11 @@ class RiskSentimentPipeline(ProcessPipeline):
     async def synthesize_sentiments(self) -> Dict[str, Dict[str, str]]:
         
         agent_map = {
-            pair: RiskSentimentAgent(currency_pair=pair, model_name=self.model_name, temperature=self.temperature)
+            pair: RiskSentimentAgent(currency_pair=pair, model_name=self.synthesis_model_name, temperature=self.temperature)
             for pair in CURRENCY_PAIRS
         }
+
+        all_assets = await self._scrape_and_extract_asset_data()
 
         tasks = []
 
@@ -102,7 +149,7 @@ class RiskSentimentPipeline(ProcessPipeline):
                             risk_sentiment="neutral")
 
         for pair in CURRENCY_PAIRS:
-            assets_data = self._fetch_assets_data(pair)
+            assets_data = self._prepare_assets_data(pair, all_assets)
             news_summary = self._fetch_news_synthesis(pair)
             tasks.append(safe_synthesize(pair, assets_data, news_summary))
         
@@ -126,5 +173,7 @@ class RiskSentimentPipeline(ProcessPipeline):
 
 if __name__ == "__main__":
     pipeline = RiskSentimentPipeline()
-    currency_pair = "USD/JPY"
-    asyncio.run(pipeline.synthesize_sentiments())
+    asset_data = asyncio.run(pipeline._scrape_and_extract_asset_data())
+    print(asset_data)
+
+    #asyncio.run(pipeline.synthesize_sentiments())

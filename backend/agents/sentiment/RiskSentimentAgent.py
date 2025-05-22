@@ -1,6 +1,6 @@
 from typing import List, Dict, Literal
 from backend.utils.llm_helper import OpenAIClient
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RiskSentimentAnalysis(BaseModel):
@@ -9,6 +9,11 @@ class RiskSentimentAnalysis(BaseModel):
     implications_for_trading: str
     conclusion: str
     risk_sentiment: Literal["risk-on", "slightly risk-on", "neutral", "slightly risk-off", "risk-off"]
+
+class AssetData(BaseModel):
+    close: float = Field(..., description="Closing price of the asset")
+    change: float = Field(..., description="Change in price")
+    change_percent: float = Field(..., description="Percentage change in price")
 
 
 class RiskSentimentAgent:
@@ -59,3 +64,32 @@ class RiskSentimentAgent:
         )
         
         return analysis
+
+class ExtractAssetAgent:
+
+    system_prompt_template = """You will be given scrape results from Investing.com for asset {asset_name}.
+    Your task is to extract the last price, change, and change percentage from the scrape results.
+    Make sure to extract the data accurately.
+    """
+
+    def __init__(self, model_name: str = "gpt-4.1-mini-2025-04-14", temperature: float = 0.2):
+        self.openai_client = OpenAIClient(model=model_name, temperature=temperature)
+    
+    async def extract_asset_data(self, asset_name: str, scrape_results: str) -> AssetData:
+        user_prompt = f"""
+         <scrape results>
+         {scrape_results}
+         </scrape results>
+         """
+
+        messages = [
+            {"role": "system", "content": self.system_prompt_template.format(asset_name=asset_name)},
+            {"role": "user", "content": user_prompt}
+        ]
+
+        asset_data = await self.openai_client.structured_chat_completion(
+            messages=messages,
+            response_format=AssetData
+        )
+        
+        return asset_data

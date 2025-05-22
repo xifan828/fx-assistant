@@ -59,8 +59,8 @@ class SeleniumScrapper:
 
         service = Service(
             executable_path=self.driver_path,
-            service_args = ["--verbose"],
-            log_output="chromedriver.log" 
+            # service_args = ["--verbose"],
+            # log_output="chromedriver.log" 
             )
         
 

@@ -21,10 +21,10 @@ async def main():
     _ = pipeline.fetch_all()
     logger.info(f"Finished scraping pipeline")
 
-    # logger.info("Starting the news pipeline")
-    # news_pipeline = NewsPipeline(k=7)
-    # await news_pipeline.run()
-    # logger.info("Finished the news pipeline")
+    logger.info("Starting the news pipeline")
+    news_pipeline = NewsPipeline(k=7)
+    await news_pipeline.run()
+    logger.info("Finished the news pipeline")
 
     # logger.info("Starting the risk sentiment, calender, fedwatch and fundamental pipeline")
     # risk_sentiment_pipeline = RiskSentimentPipeline()

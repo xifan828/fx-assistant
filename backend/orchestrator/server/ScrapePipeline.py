@@ -116,8 +116,8 @@ class ScrapePipeline:
             # economic indicators tasks
             futures[executor.submit(self._fetech_fundamental)] = "fundamental"
 
-            # # fed watch tasks
-            # futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
+            # fed watch tasks
+            futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
 
 
             for future in as_completed(futures):

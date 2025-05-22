@@ -100,13 +100,6 @@ class ScrapePipeline:
             
     def fetch_all(self) -> Dict: 
         results = {}
-        results["asset"] = {}
-
-        asset_dict = {
-            name: url
-            for subdict in INVESTING_ASSETS.values()
-            for name, url in subdict.items()
-        }
 
         with ThreadPoolExecutor(max_workers=1) as executor:
             futures = {}
@@ -120,8 +113,8 @@ class ScrapePipeline:
             # for name, url in asset_dict.items():
             #     futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
             
-            # # economic indicators tasks
-            # futures[executor.submit(self._fetech_fundamental)] = "fundamental"
+            # economic indicators tasks
+            futures[executor.submit(self._fetech_fundamental)] = "fundamental"
 
             # # fed watch tasks
             # futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"

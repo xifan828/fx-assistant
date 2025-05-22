@@ -65,10 +65,10 @@ class SeleniumScrapper:
         
 
         try:
-            logger.info(f"Thread {threading.get_ident()}: Attempting to start Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
+            #logger.info(f"Thread {threading.get_ident()}: Attempting to start Chrome with driver: {self.driver_path} and browser: {self.chrome_binary_path}")
             driver = webdriver.Chrome(service=service, options=opts)
             driver.set_page_load_timeout(60)
-            logger.info(f"Thread {threading.get_ident()}: WebDriver initialized successfully for this thread.")
+            #logger.info(f"Thread {threading.get_ident()}: WebDriver initialized successfully for this thread.")
             return driver
         except Exception as e:
             logger.error(f"Thread {threading.get_ident()}: Failed to initialize WebDriver: {e}", exc_info=True)

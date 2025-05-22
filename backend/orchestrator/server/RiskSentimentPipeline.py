@@ -102,6 +102,7 @@ class RiskSentimentPipeline(ProcessPipeline):
 
             try: 
                 all_results = await asyncio.gather(*tasks)
+                logger.info(f"Extracted asset data for {len(all_results)} assets")
             except Exception as e:
                 logger.error(f"Error during gathering tasks: {e}")
                 raise

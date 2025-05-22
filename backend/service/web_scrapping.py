@@ -71,7 +71,14 @@ class FedWatchScrapper(SeleniumScrapper):
         try:
             wait = WebDriverWait(self.driver, 20)
 
+            logger.info(f"Navigating to {FED_WATCH_WEBSITE}")
             self.driver.get(FED_WATCH_WEBSITE)
+            
+            logger.info("Attempting to close any initial popups/banners on the main page.")
+            self.close_ads() # Call close_ads on the main page
+            time.sleep(2) # G
+
+            logger.info("Waiting for and switching to iframe.cmeIframe")
             iframe = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "iframe.cmeIframe")))
             self.driver.switch_to.frame(iframe)
 

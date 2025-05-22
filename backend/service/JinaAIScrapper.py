@@ -4,12 +4,14 @@ import aiohttp
 import asyncio
 from typing import List, Dict
 from backend.utils.logger_config import get_logger
+from dotenv import load_dotenv
 
 logger = get_logger(__name__)
 
 class JinaAIScrapper:
 
     def __init__(self):
+        load_dotenv()
         self.prefix_url = "https://r.jina.ai/"
         self.jina_api_key = os.getenv("JINA_AI_API_KEY")
 

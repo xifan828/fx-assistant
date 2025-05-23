@@ -76,11 +76,13 @@ class TradingViewScrapper(SeleniumScrapper):
         for attempt in range(1, retry_attempts + 1):
             try:
                 self.driver.get(self.calender_url)
+
+                self.close_cookie_banner()
+
+                #self.close_ads()
+
                 self.driver.execute_script("window.scrollBy(0, 400);")
                 time.sleep(2)
-                
-                self.close_cookie_banner()
-                #self.close_ads()
                 
                 # Wait for the importance button to be clickable
                 wait = WebDriverWait(self.driver, 10)

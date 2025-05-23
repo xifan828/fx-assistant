@@ -10,16 +10,16 @@ import asyncio
 import os
 from dotenv import load_dotenv
 
-async def main():
+async def run_once():
     load_dotenv()
 
     logger = get_logger(__name__)
 
-    # logger.info("Starting the scraping pipeline")
-    # currency_pair = "EUR/USD"
-    # pipeline = ScrapePipeline(currency_pair)
-    # _ = pipeline.fetch_all()
-    # logger.info(f"Finished scraping pipeline")
+    logger.info("Starting the scraping pipeline")
+    currency_pair = "EUR/USD"
+    pipeline = ScrapePipeline(currency_pair)
+    await asyncio.to_thread(pipeline.fetch_all)
+    logger.info(f"Finished scraping pipeline")
 
     logger.info("Starting the news pipeline")
     news_pipeline = NewsPipeline(k=7)
@@ -44,4 +44,4 @@ async def main():
 
 if __name__ == "__main__":
     
-    asyncio.run(main())
+    asyncio.run(run_once())

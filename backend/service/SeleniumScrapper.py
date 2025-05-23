@@ -139,95 +139,37 @@ class SeleniumScrapper:
         ]
 
         logger.info("Attempting to close ads/popups/cookie banners...")
-        closed_something = False
-        for attempt in range(max_attempts):
-            action_taken_this_round = False
-            # Try cookie banners first
-            for sel in cookie_banners:
-                try:
-                    elements = self.driver.find_elements(By.XPATH, sel)
-                    for el in elements:
-                        if el.is_displayed() and el.is_enabled():
-                            logger.info(f"Found cookie banner element by: {sel}. Clicking...")
-                            # el.click() # Direct click
-                            self.driver.execute_script("arguments[0].click();", el) # JS click can be more robust
-                            logger.info("Clicked a cookie banner element.")
-                            time.sleep(1) # Wait for action to take effect
-                            closed_something = True
-                            action_taken_this_round = True
-                            break # Assume one click is enough for this selector type
-                    if action_taken_this_round: break
-                except Exception as e:
-                    logger.warning(f"Could not interact with cookie banner element {sel}: {e}")
-            if action_taken_this_round: continue # Re-evaluate if more banners appeared
+        while True:
+            clicked_any = False
 
-            # Then try general popups
             for sel in selectors:
-                if 'iframe' in sel: # Handle iframes
-                    try:
-                        iframes = self.driver.find_elements(By.XPATH, sel)
-                        for iframe in iframes:
-                            if iframe.is_displayed():
-                                logger.info(f"Switching to iframe: {sel}")
-                                self.driver.switch_to.frame(iframe)
-                                # Try to find a close button within the iframe
-                                close_buttons_in_iframe = [
-                                    "//button[contains(text(),'×') or translate(text(), 'CLOSE', 'close')='close' or @aria-label='Close']",
-                                    "//div[contains(@class,'close') or contains(@id,'close') or @aria-label='Close']"
-                                ]
-                                for iframe_sel in close_buttons_in_iframe:
-                                    try:
-                                        iframe_el = self.driver.find_element(By.XPATH, iframe_sel)
-                                        if iframe_el.is_displayed() and iframe_el.is_enabled():
-                                            logger.info(f"Found close element in iframe: {iframe_sel}. Clicking...")
-                                            self.driver.execute_script("arguments[0].click();", iframe_el)
-                                            logger.info("Clicked close element in iframe.")
-                                            self.driver.switch_to.default_content()
-                                            time.sleep(1)
-                                            closed_something = True
-                                            action_taken_this_round = True
-                                            break
-                                    except:
-                                        pass # Element not found in iframe
-                                if action_taken_this_round: break
-                                self.driver.switch_to.default_content() # Switch back if nothing done
-                        if action_taken_this_round: break
-                    except Exception as e:
-                        logger.warning(f"Error handling iframe {sel}: {e}")
-                        self.driver.switch_to.default_content() # Ensure we are back
-                    continue # Move to next selector
-
-                # Non-iframe selectors
                 try:
                     elements = self.driver.find_elements(By.XPATH, sel)
                     for el in elements:
                         if el.is_displayed() and el.is_enabled():
-                            logger.info(f"Found ad/popup element by: {sel}. Clicking...")
-                            # el.click()
+                            logger.info(f"Found popup via {sel}, clicking…")
                             self.driver.execute_script("arguments[0].click();", el)
-                            logger.info("Clicked an ad/popup element.")
-                            time.sleep(1)
-                            closed_something = True
-                            action_taken_this_round = True
+
+                            # Wait for that exact element to go away before continuing
+                            WebDriverWait(self.driver, 5).until(
+                                EC.staleness_of(el)
+                            )
+
+                            clicked_any = True
+                            # break out of inner loop to restart scanning selectors
                             break
-                    if action_taken_this_round: break
+                    if clicked_any:
+                        # One closed—there *might* be another
+                        break
                 except Exception as e:
-                    logger.warning(f"Could not interact with ad/popup element {sel}: {e}")
+                    logger.debug(f"Selector {sel} gave error or no match: {e}")
 
-            if not action_taken_this_round and attempt > 0: # If nothing was closed in this round (after the first)
-                logger.info("No more ads/popups found to close in this attempt.")
+            if not clicked_any:
+                # We ran through every selector and clicked nothing
+                logger.info("No more popups found.")
                 break
-            elif action_taken_this_round:
-                logger.info(f"Ads/popups closed in attempt {attempt + 1}. Re-checking...")
-                time.sleep(0.5) # Brief pause before re-checking
-            else:
-                logger.info(f"No ads/popups found in attempt {attempt + 1}.")
 
-
-        if closed_something:
-            logger.info("Finished attempting to close ads/popups.")
-        else:
-            logger.info("No ads/popups were closed.")
+        logger.info("Finished close_ads().")
 
     def quit_driver(self):
         if getattr(self._local, "driver", None):

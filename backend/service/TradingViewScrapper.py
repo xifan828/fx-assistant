@@ -80,7 +80,7 @@ class TradingViewScrapper(SeleniumScrapper):
                 time.sleep(2)
                 
                 self.close_cookie_banner()
-                self.close_ads()
+                #self.close_ads()
                 
                 # Wait for the importance button to be clickable
                 wait = WebDriverWait(self.driver, 10)
@@ -139,7 +139,7 @@ class TradingViewScrapper(SeleniumScrapper):
                 self.driver.get(self.news_root_url)
 
                 self.close_cookie_banner()
-                self.close_ads()
+                #self.close_ads()
 
                 self.driver.execute_script("window.scrollBy(0, 400);")
 

@@ -53,6 +53,15 @@ class SeleniumScrapper:
             "AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/136.0.7103.113 Safari/537.36" # Update this to your Chrome version
         )
+        opts.add_experimental_option("prefs", {
+            # Block notifications
+            "profile.default_content_setting_values.notifications": 2,
+            # Disable push and permission dialogs
+            "profile.default_content_setting_values.popups": 2,
+            "profile.content_settings.exceptions.automatic_downloads.*.setting": 1,
+        })
+        # Also you can disable cookies entirely if you don’t need them:
+        opts.add_argument("--disable-site-isolation-trials")
 
         # Explicitly set the binary location for Google Chrome
         opts.binary_location = self.chrome_binary_path
@@ -89,6 +98,26 @@ class SeleniumScrapper:
             return True # Indicate popup was found
         except Exception:
             logger.info("No popup indicator appeared within %s s.", timeout)
+            return False
+        
+    def close_cookie_banner(self, timeout=5):
+        try:
+            # Wait until a clear “Accept All” button appears
+            btn = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(
+                    (By.ID, "onetrust-accept-btn-handler")  # or another reliable locator
+                )
+            )
+            # Scroll into view & click
+            self.driver.execute_script("arguments[0].scrollIntoView(true);", btn)
+            btn.click()
+            logger.info("Cookie banner accepted.")
+            return True
+        except TimeoutException:
+            logger.info("No cookie banner found after %ss", timeout)
+            return False
+        except Exception as e:
+            logger.warning("Error clicking cookie banner: %s", e)
             return False
 
     def close_ads(self, max_attempts: int = 3):

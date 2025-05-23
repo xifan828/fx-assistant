@@ -30,6 +30,7 @@ class TradingViewScrapper(SeleniumScrapper):
 
     def get_technical_indicators(self):
         self.driver.get(self.indicator_url)
+        self.close_cookie_banner()
         self.close_ads()
         
         self.driver.execute_script("window.scrollBy(0, 550);")
@@ -78,6 +79,7 @@ class TradingViewScrapper(SeleniumScrapper):
                 self.driver.execute_script("window.scrollBy(0, 400);")
                 time.sleep(2)
                 
+                self.close_cookie_banner()
                 self.close_ads()
                 
                 # Wait for the importance button to be clickable
@@ -135,6 +137,9 @@ class TradingViewScrapper(SeleniumScrapper):
         while attempt < 2:
             try:
                 self.driver.get(self.news_root_url)
+
+                self.close_cookie_banner()
+                self.close_ads()
 
                 self.driver.execute_script("window.scrollBy(0, 400);")
 

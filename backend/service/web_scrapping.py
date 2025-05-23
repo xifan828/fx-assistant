@@ -75,6 +75,7 @@ class FedWatchScrapper(SeleniumScrapper):
             self.driver.get(FED_WATCH_WEBSITE)
             
             logger.info("Attempting to close any initial popups/banners on the main page.")
+            self.close_cookie_banner()
             self.close_ads() # Call close_ads on the main page
             time.sleep(2) # G
 

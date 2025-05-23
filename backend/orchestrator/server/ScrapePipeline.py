@@ -101,7 +101,7 @@ class ScrapePipeline:
     def fetch_all(self) -> Dict: 
         results = {}
 
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             futures = {}
             # tradingview tasks
             for currency_pair in CURRENCY_PAIRS:

@@ -57,7 +57,7 @@ async def start_background_scraper() -> None:
             except Exception:
                 log.exception("Background pipeline run failed")
             # Sleep *after* the run so the first run starts immediately
-            await asyncio.sleep(30 * 60)   # 30 minutes
+            await asyncio.sleep(10 * 60)   # 30 minutes
 
     global _background_task
     _background_task = asyncio.create_task(_loop())

@@ -5,12 +5,12 @@ from typing import List, Dict, Literal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from backend.models.data_model import TradingReasoning
-import os
 from backend.orchestrator.RiskSentimentPipeline import RiskSentimentPipeline
 from backend.orchestrator.NewsPipeline import NewsPipeline
 from backend.orchestrator.TechnicalAnalysisPipeline import TechnicalAnalysisPipeline
 from backend.utils.keep_time import time_it
 from backend.utils.format_response import basemodel_to_md_str
+import aiohttp
 
 class FXAgent():
     SYSTEM_MESSAGE = """Objective:
@@ -84,123 +84,71 @@ class FXAgent():
         )
         return response.choices[0].message.content
 
-class NaiveStrategyAgent:
-    def __init__(self, knowledge: dict, provider: Literal["openai", "google"] = "openai", model_name: str = "gpt-4o", temperature: float = 0.5, currency_pair: str = "EUR/USD"):
-        self.provider = provider
-        self.model_name = model_name
-        self.temperature = temperature
-        self.currency_pair = currency_pair
-        self.knowledege = knowledge
-#         self.system_message = f"""You are a seasoned daily self-employed Forex trader specializing in the {self.currency_pair} currency pair. Your excel in analyzing diverse information sources and developing profitable trading strategies. 
-# Your goal is to propose profitable trading strategy based on user provided information. Think step by step before you create the final strategy.
-# """     
-        self.system_message = f"""You are a highly experienced and methodical self-employed Forex trader specializing in the {self.currency_pair} currency pair. Your expertise lies in developing well-reasoned and profitable trading strategies based on a comprehensive analysis of technical indicators, recent news, and upcoming economic events.
 
-Your process involves a step-by-step analysis of the provided information to formulate a trading strategy. For each step, explicitly state the information you are considering and how it influences your understanding of the market.
-
-**Crucially, consider the following in your analysis:**
-
-* **Technical Analysis:** Identify key trends, support and resistance levels, and potential entry/exit points suggested by the technical analysis.
-* **Recent News:** Analyze the sentiment and potential impact of recent news articles on the {self.currency_pair}. Consider both bullish and bearish implications.
-* **Economic Events:**  Evaluate how upcoming or recent economic events might affect volatility and the direction of the {self.currency_pair}.
-
-**Your goal is to propose a specific trading strategy (buy, sell or wait) with clearly defined entry point, take profit, stop loss, and a confidence score reflecting your assessment of the strategy's potential.** Explain the rationale behind each element of your strategy.
-If the strategy is wait, fill entry point, take profit, stop loss and confidence score with None.
-
-Think carefully and methodically before finalizing your strategy. Ensure all aspects of the provided information are considered in your reasoning.
-"""
-        self.user_message = f"""Below is information collected for the {self.currency_pair} currency pair. Develop a detailed trading strategy based on this information.
-Recent news
-<Recent news>
-{knowledge["Technical News"]}
-</Recent news>
-
-Technical analysis
-<Technical analysis>
-{knowledge["Technical Analysis"]}
-</Technical analysis>
-
-Economic Events
-<Economic Events>
-{knowledge["Economic Events"]}
-</Economic Events>
-"""
-    def generate_strategy(self):
-        if self.provider == "openai":
-            load_dotenv()
-            client = OpenAI()
-        elif self.provider == "google":
-            client = OpenAI(
-                api_key=os.environ["GEMINI_API_KEY_CONG"],
-                base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-            )
-        messages = [
-            {"role": "system", "content": self.system_message},
-            {"role": "user", "content": self.user_message}
-        ]
-        completion = client.beta.chat.completions.parse(
-        model=self.model_name,
-        temperature=self.temperature,
-        messages=messages,
-        response_format=TradingReasoning,
-        )
-
-        strategy = completion.choices[0].message.parsed
-        return strategy
 
 class KnowledgeBase:
     def __init__(self, currency_pair: str):
+        load_dotenv()
         self.currency_pair = currency_pair
+        self.currency_pair_formatted = currency_pair.replace("/", "_").lower()
+        self.api_base_url = "http://3.107.188.19"
         
+    async def get_news_synthesis(self):
+        url = f"{self.api_base_url}/news_synthesis/{self.currency_pair_formatted}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise Exception(f"Failed to fetch news synthesis for {self.currency_pair}. Status code: {response.status}")
+
+    async def get_fedwatch_synthesis(self):
+        url = f"{self.api_base_url}/fedwatch_synthesis"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise Exception(f"Failed to fetch Fed watch synthesis for {self.currency_pair}. Status code: {response.status}")
     
-    def create_risk_sentiment_analysis(self, news: str):
-        pipeline = RiskSentimentPipeline(currency_pair=self.currency_pair)
-        risk_analysis = pipeline.run(news)
-        risk_analysis_md = basemodel_to_md_str(risk_analysis)
-        return risk_analysis_md
+    async def get_fundamental_synthesis(self):
+        url = f"{self.api_base_url}/fundamental_synthesis/{self.currency_pair_formatted}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise Exception(f"Failed to fetch fundamental synthesis for {self.currency_pair}. Status code: {response.status}")
     
-    def create_news_analysis(self, k: int = 5):
-        pipeline = NewsPipeline(currency_pair=self.currency_pair, k=k)
-        news_synthesis = pipeline.run()
-        news_synthesis_str = basemodel_to_md_str(news_synthesis)
-        return news_synthesis_str
-    
-    def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):
+    async def get_risk_sentiment_synthesis(self):
+        url = f"{self.api_base_url}/risk_sentiment_synthesis/{self.currency_pair_formatted}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise Exception(f"Failed to fetch risk sentiment synthesis for {self.currency_pair}. Status code: {response.status}")
+
+    async def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):
         pipeline = TechnicalAnalysisPipeline(currency_pair=self.currency_pair, interval=interval, size=size, analysis_types=analysis_types)
-        return asyncio.run(pipeline.run())
+        return await pipeline.run()
     
     @time_it
-    def create_all_analysis_parallel(self) -> Dict[str, str]:
-        news = self.create_news_analysis()
-
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_data = {
-                executor.submit(self.create_risk_sentiment_analysis, news): "Risk Sentiment",
-                executor.submit(self.create_technical_analysis): "Technical Analysis"
-            }
-            
-            results = {}
-            for future in as_completed(future_to_data):
-                data_name = future_to_data[future]
-                try:
-                    results[data_name] = future.result()
-                except Exception as exc:
-                    print(f'{data_name} generated an exception: {exc}')
-                    results[data_name] = None
-            
-            results["News Analysis"] = news
-
-            return results
-    
-    @time_it
-    def create_all_analysis(self):
-        risk_sentiment = self.create_risk_sentiment_analysis()
-        news_analysis = self.create_news_analysis()
-        technical_analysis = self.create_technical_analysis()
+    async def get_all_synthesis(self):
+        tasks = [
+            self.get_news_synthesis(),
+            self.get_risk_sentiment_synthesis(),
+            self.get_fedwatch_synthesis(),
+            self.get_fundamental_synthesis(),
+            self.create_technical_analysis()
+        ]
+        results = await asyncio.gather(*tasks)
         return {
-            "Risk Sentiment": risk_sentiment,
-            "News Analysis": news_analysis,
-            "Technical Analysis": technical_analysis
+            "News Analysis": results[0],
+            "Risk Sentiment": results[1],
+            "Fed Watch": results[2],
+            "Fundamental Analysis": results[3],
+            "Technical Analysis": results[4]
         }
 
 if __name__ == "__main__":
@@ -208,9 +156,11 @@ if __name__ == "__main__":
         #currency_pair="USD/JPY",
         currency_pair="GBP/USD"
     )
-    results = kb.create_all_analysis_parallel()
-    for k, v in results.items():
-        print(f"{k}: {v}")
+    # results = kb.create_all_analysis_parallel()
+    # for k, v in results.items():
+    #     print(f"{k}: {v}")
+
+    print(asyncio.run(kb.get_all_synthesis()))
 
 
 

@@ -18,7 +18,7 @@ class TechnicalCharts:
         self.chart_name = chart_name
         self.chart_root_path = "data/chart"
     
-    def plot_chart(self,
+    def plot_chart(self, return_binary: bool = True,
                EMA10: bool = False,
                EMA20: bool = False,
                EMA50: bool = False,
@@ -231,6 +231,17 @@ class TechnicalCharts:
 
         # Save and close the figure
         plt.tight_layout()
-        fig.savefig(os.path.join(self.chart_root_path, f"{self.chart_name}.png"))
-        plt.close(fig)
-        return data
+
+        if return_binary:
+            import io
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png')
+            buf.seek(0)
+            binary_data = buf.getvalue()
+            buf.close()
+            return data, binary_data
+
+        else:
+            fig.savefig(os.path.join(self.chart_root_path, f"{self.chart_name}.png"))
+            plt.close(fig)
+            return data, None

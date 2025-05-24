@@ -6,6 +6,7 @@ from PIL import Image
 import os
 import numpy as np
 from dotenv import load_dotenv
+import asyncio
 
 
 st.set_page_config(layout = "wide")
@@ -81,7 +82,7 @@ def main():
 
                 if "knowledge" not in st.session_state:
                     knowledge_base = KnowledgeBase(currency_pair=st.session_state["last_currency_pair"])
-                    knowledge = knowledge_base.create_all_analysis_parallel()
+                    knowledge = asyncio.run(knowledge_base.get_all_synthesis())
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:
@@ -92,6 +93,10 @@ def main():
                     #st.session_state["technical_analysis"] = "None"
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
+                if "fundamental_analysis" not in st.session_state:
+                    st.session_state["fundamental_analysis"] = st.session_state["knowledge"]["Fundamental Analysis"]
+                if "fed_watch" not in st.session_state:
+                    st.session_state["fed_watch"] = st.session_state["knowledge"]["Fed Watch"]
                     
             chart, chat = st.columns(2)
             with chart:
@@ -137,11 +142,14 @@ def main():
 
 
             with st.container():
-                tab1, tab2, tab3 = st.tabs(
+                tab1, tab2, tab3, tab4, tab5 = st.tabs(
                     [
                     "Risk sentiment",
                     "Technical Analysis",
-                    "Latest News"]
+                    "Latest News",
+                    "Fundamental Analysis",
+                    "Fed Watch"
+                    ]
                 )
 
                 with tab1:
@@ -150,6 +158,10 @@ def main():
                     st.write(st.session_state["technical_analysis"])
                 with tab3:
                     st.write(st.session_state["news"])
+                with tab4:
+                    st.write(st.session_state["fundamental_analysis"])
+                with tab5:
+                    st.write(st.session_state["fed_watch"])
 
         else:
             st.warning("Please authenticate to access the application.")

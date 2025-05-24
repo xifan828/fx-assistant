@@ -3,7 +3,8 @@ from backend.service.TradingViewScrapper import TradingViewScrapper
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from backend.utils.parameters import INVESTING_ASSETS, CURRENCY_PAIRS, ECONOMIC_INDICATORS_WEBSITES, CURRENCIES
 from backend.utils.logger_config import get_logger
-from backend.service.web_scrapping import TradingEconomicsScraper, FedWatchScrapper
+from backend.service.web_scrapping import TradingEconomicsScraper
+from backend.service.FedWatchScrapper import FedWatchScrapper
 import json
 import os
 from datetime import datetime
@@ -83,14 +84,8 @@ class ScrapePipeline:
         """
         try:
             scr = FedWatchScrapper()
-            df_rate_next, df_price_next, df_rate_end, df_price_end = scr.run()
-            results = {
-                "rate_next": df_rate_next.to_dict(orient="records"),
-                "price_next": df_price_next.to_dict(orient="records"),
-                "rate_end": df_rate_end.to_dict(orient="records"),
-                "price_end": df_price_end.to_dict(orient="records")
-            }
-            logger.info("Fetched Fed Watch data")
+            results = asyncio.run(scr.run())
+            results = results.model_dump()
 
             return results
         except Exception as e:
@@ -106,19 +101,14 @@ class ScrapePipeline:
             # tradingview tasks
             for currency_pair in CURRENCY_PAIRS:
                 currency_pair_formatted = currency_pair.replace("/", "_").lower()
-                futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
+                #futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
                 futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
-
-            # # investing tasks
-            # for name, url in asset_dict.items():
-            #     futures[executor.submit(self._fetch_inv_asset, name, url)] = f"asset_{name}"
             
             # economic indicators tasks
             futures[executor.submit(self._fetech_fundamental)] = "fundamental"
 
             # fed watch tasks
             futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
-
 
             for future in as_completed(futures):
                 task_name: str = futures[future]

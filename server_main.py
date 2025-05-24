@@ -3,7 +3,6 @@ from backend.utils.parameters import CURRENCY_PAIRS, PAIRS
 from backend.utils.logger_config import get_logger
 from backend.orchestrator.server.NewsPipeline import NewsPipeline
 from backend.orchestrator.server.RiskSentimentPipeline import RiskSentimentPipeline
-from backend.orchestrator.server.CalenderPipeline import CalenderPipeline
 from backend.orchestrator.server.FundamentalPipeline import FundamentalPipeline
 from backend.orchestrator.server.FedWatchPipeline import FedWatchPipeline
 import asyncio
@@ -26,14 +25,12 @@ async def run_once():
     await news_pipeline.run()
     logger.info("Finished the news pipeline")
 
-    logger.info("Starting the risk sentiment, calender, fedwatch and fundamental pipeline")
+    logger.info("Starting the risk sentiment, fedwatch and fundamental pipeline")
     risk_sentiment_pipeline = RiskSentimentPipeline()
-    calender_pipeline = CalenderPipeline()
     fund_pipeline = FundamentalPipeline()
     fed_watch_pipeline = FedWatchPipeline()
     tasks = [
         risk_sentiment_pipeline.run(),
-        calender_pipeline.run(),
         fund_pipeline.run(),
         fed_watch_pipeline.run()
     ]

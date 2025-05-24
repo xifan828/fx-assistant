@@ -29,27 +29,28 @@ class FedWatchPipeline(ProcessPipeline):
 
     def prepare_data(self) -> str:
 
-        rate_next = self.scrape_results_curr["fed_watch"]["rate_next"]
-        rate_next_md = pd.DataFrame(rate_next).to_markdown(index=False)
-        implied_rate_next = 100 - float(self.scrape_results_curr["fed_watch"]["price_next"][0]["MID PRICE"])
+        rates_next = self.scrape_results_curr["fed_watch"]["target_rates_probs"]
 
-        rate_eoy = self.scrape_results_curr["fed_watch"]["rate_end"]
-        rate_eoy_md = pd.DataFrame(rate_eoy).to_markdown(index=False)
-        implied_rate_eoy = 100 - float(self.scrape_results_curr["fed_watch"]["price_end"][0]["MID PRICE"])
+        current_rate = ""
+        for rate in rates_next:
+            if "Current" in rate["target_rate"]:
+                current_rate = rate["target_rate"]
+                break
+
+        implied_rate_next = 100 - float(self.scrape_results_curr["fed_watch"]["mid_price"])
 
         context = f"""
 # FedWatch data
 
 ## For the next FOMC meeting
+
+The current rate before the next FOMC meeting is {current_rate}.
+
 The current implied rate is {implied_rate_next:.2f}%.
-Market expectations are as follows:
-{rate_next_md}
 
-## For the end of the year
-The current implied rate is {implied_rate_eoy:.2f}%.
 Market expectations are as follows:
-{rate_eoy_md}"""
-
+{rates_next}
+"""
         return context
     
     async def analyze_fed(self) -> str:

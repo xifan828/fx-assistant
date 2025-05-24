@@ -39,7 +39,12 @@ class JinaAIScrapper:
                         raise Exception(f"Failed to fetch {url}: {response.status}")
                     else:
                         logger.info(f"Fetched {url}: {response.status}")
-                    return await response.text()
+
+                    if self.headers.get('X-Return-Format') in ['screenshot', 'pageshot']:
+                        return await response.read()
+                    else:
+                        return await response.text()
+                    
             except Exception as e:
                 logger.warning(f"Attempt {attempt + 1} failed for {url}: {e}")
                 if attempt < retries - 1:

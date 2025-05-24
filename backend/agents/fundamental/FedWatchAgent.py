@@ -1,4 +1,25 @@
 from backend.agents.GeminiChartAgent import GeminiChartAgent    
+from pydantic import BaseModel, Field
+from typing import List
+
+class TargetRate(BaseModel):
+    target_rate: str
+    probability_now: float
+    probablity_1_day_ago: float
+    probability_1_week_ago: float
+    probability_1_month_ago: float
+
+class FedWatchData(BaseModel):
+    target_rates_probs: List[TargetRate]
+    mid_price: float
+
+
+class FedWatchParser(GeminiChartAgent):
+
+    @property
+    def system_message(self):
+        return f"""Extact the Fed Watch data from the provided chart image. Be accurate and concise."""
+
 
 class FedWatchAgent(GeminiChartAgent):
 

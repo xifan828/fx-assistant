@@ -160,7 +160,12 @@ if __name__ == "__main__":
     # for k, v in results.items():
     #     print(f"{k}: {v}")
 
-    print(asyncio.run(kb.get_all_synthesis()))
+    result = asyncio.run(kb.get_all_synthesis())
+
+    for k, v in result.items():
+        print(k)
+        print(v)
+        print("\n" + "="*50 + "\n")
 
 
 

@@ -29,8 +29,10 @@ class TechnicalAnalysisPipeline:
             binary_data = data_pipeline.prepare_chart(self.df, self.size, analysis_type)
             charts_data[analysis_type] = binary_data
         
+        charts_data["normal"] = data_pipeline.prepare_chart(self.df, 100, "normal")
+
         self.charts_data = charts_data
-        return charts_data
+
 
     async def create_individual_analysis(self) -> Dict[str, str]:
         coroutines = {}
@@ -83,7 +85,7 @@ class TechnicalAnalysisPipeline:
         return agg_analysis
     
     async def run(self):
-        _ = self.prepare_technical_data()
+        self.prepare_technical_data()
         individual_analysis = await self.create_individual_analysis()
         formatted_analysis = self.format_individual_analysis(individual_analysis)
         print(formatted_analysis)

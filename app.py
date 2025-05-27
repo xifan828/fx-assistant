@@ -1,7 +1,7 @@
 import streamlit as st
 
 from backend.agent import FXAgent, KnowledgeBase
-from PIL import Image
+import io
 #from st.chat_message import message
 import os
 import numpy as np
@@ -91,6 +91,8 @@ def main():
                 if "technical_analysis" not in st.session_state:
                     st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
                     #st.session_state["technical_analysis"] = "None"
+                if "charts_data" not in st.session_state:
+                    st.session_state["charts_data"] = st.session_state["knowledge"]["Charts data"]
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
                 if "fundamental_analysis" not in st.session_state:
@@ -101,7 +103,7 @@ def main():
             chart, chat = st.columns(2)
             with chart:
                 with st.container(height=350, border=True):
-                    st.image("data/chart/1h_ema.png")
+                    st.image(io.BytesIO(st.session_state["charts_data"]["normal"]), caption=st.session_state["last_currency_pair"], use_column_width=True)
                     # tab1, tab2= st.tabs(["5 minutes", "1 Hour"])
                     # with tab1:
                     #     st.image("data/chart/5min.png")

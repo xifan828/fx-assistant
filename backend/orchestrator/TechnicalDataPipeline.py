@@ -60,6 +60,8 @@ class TechnicalDataPipeline:
             _, binary_data = chart.plot_chart(MACD=True)
         elif analysis_type == "atr":
             _, binary_data = chart.plot_chart(ATR14=True)
+        elif analysis_type == "normal":
+            _, binary_data = chart.plot_chart()
         else:
             raise ValueError("Invalid analysis type. Choose 'ema', 'rsi', 'macd', or 'atr'.")
         

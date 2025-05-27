@@ -91,74 +91,71 @@ class KnowledgeBase:
         load_dotenv()
         self.currency_pair = currency_pair
         self.currency_pair_formatted = currency_pair.replace("/", "_").lower()
-        self.api_base_url = "http://3.107.188.19"
+        self.api_base_url = "http://3.27.63.164"
         
-    async def get_news_synthesis(self):
+    async def get_news_synthesis(self, session: aiohttp.ClientSession):
         url = f"{self.api_base_url}/news_synthesis/{self.currency_pair_formatted}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    raise Exception(f"Failed to fetch news synthesis for {self.currency_pair}. Status code: {response.status}")
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f"Failed to fetch news synthesis for {self.currency_pair}. Status code: {response.status}")
 
-    async def get_fedwatch_synthesis(self):
+    async def get_fedwatch_synthesis(self, session: aiohttp.ClientSession):
         url = f"{self.api_base_url}/fedwatch_synthesis"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    raise Exception(f"Failed to fetch Fed watch synthesis for {self.currency_pair}. Status code: {response.status}")
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f"Failed to fetch Fed watch synthesis for {self.currency_pair}. Status code: {response.status}")
     
-    async def get_fundamental_synthesis(self):
+    async def get_fundamental_synthesis(self, session: aiohttp.ClientSession):
         url = f"{self.api_base_url}/fundamental_synthesis/{self.currency_pair_formatted}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    raise Exception(f"Failed to fetch fundamental synthesis for {self.currency_pair}. Status code: {response.status}")
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f"Failed to fetch fundamental synthesis for {self.currency_pair}. Status code: {response.status}")
     
-    async def get_risk_sentiment_synthesis(self):
+    async def get_risk_sentiment_synthesis(self, session: aiohttp.ClientSession):
         url = f"{self.api_base_url}/risk_sentiment_synthesis/{self.currency_pair_formatted}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    raise Exception(f"Failed to fetch risk sentiment synthesis for {self.currency_pair}. Status code: {response.status}")
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f"Failed to fetch risk sentiment synthesis for {self.currency_pair}. Status code: {response.status}")
 
     async def create_technical_analysis(self, interval: str = "1h", size: int = 48, analysis_types: List[str] = ["ema", "macd", "rsi", "atr"]):
         pipeline = TechnicalAnalysisPipeline(currency_pair=self.currency_pair, interval=interval, size=size, analysis_types=analysis_types)
-        return await pipeline.run()
+        result = await pipeline.run()
+        return result, pipeline.charts_data
     
     @time_it
     async def get_all_synthesis(self):
-        tasks = [
-            self.get_news_synthesis(),
-            self.get_risk_sentiment_synthesis(),
-            self.get_fedwatch_synthesis(),
-            self.get_fundamental_synthesis(),
-            self.create_technical_analysis()
-        ]
-        results = await asyncio.gather(*tasks)
+        async with aiohttp.ClientSession() as session:
+            tasks = [
+                self.get_news_synthesis(session),
+                self.get_risk_sentiment_synthesis(session),
+                self.get_fedwatch_synthesis(session),
+                self.get_fundamental_synthesis(session),
+                self.create_technical_analysis()
+            ]
+            results = await asyncio.gather(*tasks)
+
         return {
             "News Analysis": results[0],
             "Risk Sentiment": results[1],
             "Fed Watch": results[2],
             "Fundamental Analysis": results[3],
-            "Technical Analysis": results[4]
+            "Technical Analysis": results[4][0],
+            "Charts data": results[4][1]
         }
 
 if __name__ == "__main__":
     kb = KnowledgeBase(
         #currency_pair="USD/JPY",
-        currency_pair="GBP/USD"
+        currency_pair="EUR/USD"
     )
-    # results = kb.create_all_analysis_parallel()
-    # for k, v in results.items():
-    #     print(f"{k}: {v}")
 
     result = asyncio.run(kb.get_all_synthesis())
 
@@ -166,6 +163,8 @@ if __name__ == "__main__":
         print(k)
         print(v)
         print("\n" + "="*50 + "\n")
+
+    #print(asyncio.run(kb.get_news_synthesis()))
 
 
 

@@ -1,5 +1,4 @@
-from backend.service.InvestingScrapper import InvestingScrapper
-from backend.service.TradingViewScrapper import TradingViewScrapper
+from backend.service.TradingViewScrapper import TradingViewJinaScrapper
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from backend.utils.parameters import INVESTING_ASSETS, CURRENCY_PAIRS, ECONOMIC_INDICATORS_WEBSITES, CURRENCIES
 from backend.utils.logger_config import get_logger
@@ -10,6 +9,7 @@ import os
 from datetime import datetime
 from typing import List, Dict
 import asyncio
+import aiohttp
 
 logger = get_logger(__name__)
 
@@ -19,46 +19,20 @@ class ScrapePipeline:
         self.currency_pair = currency_pair
         self.dir_path = os.path.join("data", "scrape")
         os.makedirs(self.dir_path, exist_ok=True)
-
-    def _fetch_technicals(self, currency_pair: str):
-        scr = TradingViewScrapper(currency_pair)
-        try:
-            scr.get_technical_indicators()
-        finally:
-            scr.quit_driver()
-        
-    def _fetch_economic_calenders(self, currency_pair: str):
-        scr = TradingViewScrapper(currency_pair)
-        try:
-            scr.get_economic_calenders()
-            logger.info(f"Fetched economic calenders for {currency_pair}")
-        except Exception as e:
-            logger.error(f"Error fetching economic calenders for {currency_pair}: {e}")
-        finally:
-            scr.quit_driver()
     
-    def _fetch_tv_websites(self, currency_pair: str) -> List[str]:
-        scr = TradingViewScrapper(currency_pair)
+    async def _fetch_tv_websites(self, currency_pair: str, session: aiohttp.ClientSession) -> List[str]:
+        scr = TradingViewJinaScrapper(currency_pair=currency_pair)
         try:
             logger.info(f"Fetching news websites for {currency_pair}")
-            links = scr.get_news_websites()
+            links = await scr.get_news_websites(session=session)
             logger.info(f"Fetched news links for {currency_pair}")
             return links
         except Exception as e:
             logger.error(f"Error fetching news websites for {currency_pair}: {e}")
             return []
-        finally:
-            scr.quit_driver()
+
     
-    def _fetch_inv_asset(self, name: str, url: str) -> List[str]:
-        scr = InvestingScrapper(self.currency_pair)
-        try:
-            data = scr.get_asset(name, url)
-            return data
-        finally:
-            scr.quit_driver()
-    
-    def _fetech_fundamental(self) -> Dict:
+    async def _fetech_fundamental(self, session) -> Dict:
         """
         Fetch fundamental data from TradingEconomics
         """
@@ -69,7 +43,7 @@ class ScrapePipeline:
                 logger.info(f"Fetching fundamental data for {curr}")
                 url_dict = ECONOMIC_INDICATORS_WEBSITES[curr.upper()]
                 scr = TradingEconomicsScraper()
-                pair_results = asyncio.run(scr.scrape_websites(url_dict))
+                pair_results = await scr.scrape_websites(url_dict, session=session)
                 results[curr.lower()] = pair_results
                 logger.info(f"Fetched fundamental data for {curr}")
 
@@ -78,13 +52,13 @@ class ScrapePipeline:
             results = {}
         return results
     
-    def _fetech_fed_watch(self) -> Dict[str, Dict[str, str]]:
+    async def _fetech_fed_watch(self, session) -> Dict[str, Dict[str, str]]:
         """
         Fetch Fed Watch data from CME Group
         """
         try:
             scr = FedWatchScrapper()
-            results = asyncio.run(scr.run())
+            results = await scr.run(session=session)
             results = results.model_dump()
 
             return results
@@ -93,43 +67,25 @@ class ScrapePipeline:
             return {}
         
             
-    def fetch_all(self) -> Dict: 
-        results = {}
+    async def fetch_all(self) -> Dict: 
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            futures = {}
-            # tradingview tasks
-            for currency_pair in CURRENCY_PAIRS:
-                currency_pair_formatted = currency_pair.replace("/", "_").lower()
-                #futures[executor.submit(self._fetch_economic_calenders, currency_pair)] = f"{currency_pair_formatted}_calenders"
-                futures[executor.submit(self._fetch_tv_websites, currency_pair)] = f"{currency_pair_formatted}_news_websites"
-            
-            # economic indicators tasks
-            futures[executor.submit(self._fetech_fundamental)] = "fundamental"
+        async with aiohttp.ClientSession() as session:
+            tasks = [
+                self._fetch_tv_websites(currency_pair, session)
+                for currency_pair in CURRENCY_PAIRS
+            ]
+            tasks.append(self._fetech_fundamental(session))
+            tasks.append(self._fetech_fed_watch(session))
 
-            # fed watch tasks
-            futures[executor.submit(self._fetech_fed_watch)] = "fed_watch"
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            for future in as_completed(futures):
-                task_name: str = futures[future]
-                try:
-                    result = future.result()
-                    if result:
-                        if "asset_" in task_name:
-                            results["asset"][task_name.split("_")[1]] = result
-                        else:
-                            results[task_name] = result
-                    else:
-                        logger.warning(f"{task_name} returned None or empty result")
-                except Exception as e:
-                    logger.error(f"Error in task {task_name}: {e}")
         
-        dir_path = os.path.join("data", "scrape")
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
+        # dir_path = os.path.join("data", "scrape")
+        # if not os.path.exists(dir_path):
+        #     os.makedirs(dir_path)
 
-        self.save_to_json(results, filename=os.path.join(dir_path, "results.json"))
-        logger.info(f"Results saved to JSON file")
+        # self.save_to_json(results, filename=os.path.join(dir_path, "results.json"))
+        # logger.info(f"Results saved to JSON file")
 
         return results
     
@@ -140,7 +96,6 @@ class ScrapePipeline:
         else:
             records = []
         
-        # delete the first record if len of records is greater than 5
         if len(records) >= 5:
             records.pop(0)
             
@@ -163,7 +118,8 @@ if __name__ == "__main__":
     begin_time = time.time()
     currency_pair = "EUR/USD"
     pipeline = ScrapePipeline(currency_pair)
-    result = pipeline.fetch_all()
+    result = asyncio.run(pipeline.fetch_all())
+    print(result)
     #results = pipeline._fetech_fundamental()
     end_time = time.time()
     

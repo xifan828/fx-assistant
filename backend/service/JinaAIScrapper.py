@@ -10,14 +10,14 @@ logger = get_logger(__name__)
 
 class JinaAIScrapper:
 
-    def __init__(self):
+    def __init__(self, extra_headers: Dict = None):
         load_dotenv()
         self.prefix_url = "https://r.jina.ai/"
         self.jina_api_key = os.getenv("JINA_AI_API_KEY")
 
         self.headers = {
             'Authorization': f"Bearer {self.jina_api_key}",
-            'X-Return-Format': 'text'
+            **(extra_headers if extra_headers else {})
         }
     
     def get(self, url):

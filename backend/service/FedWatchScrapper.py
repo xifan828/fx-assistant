@@ -9,9 +9,6 @@ from PIL import Image
 
 logger = get_logger(__name__)
 
-
- 
-
 class FedWatchScrapper:
     """
     A class to scrape the FedWatch Tool data from the CME Group website.
@@ -22,26 +19,27 @@ class FedWatchScrapper:
         os.makedirs(self.dir_path, exist_ok=True)
         self.file_path = os.path.join(self.dir_path, "fed_watch.png")
 
-    async def fetch_screen_shot(self):
-        scr = JinaAIScrapper()
-        scr.headers["X-Return-Format"] = "pageshot"
-        scr.headers["X-No-Cache"] = "true"
-        scr.headers["DNT"] = "1"
+    async def fetch_screen_shot(self, session: aiohttp.ClientSession):
+        extract_headers = {
+            "X-Return-Format": "pageshot",
+            "X-No-Cache": "true",
+            "DNT": "1"
+        }
 
-        async with aiohttp.ClientSession() as session:
+        scr = JinaAIScrapper(extra_headers=extract_headers)
 
-            try:
-                url = FED_WATCH_WEBSITE
-                result = await scr.aget(session, url)
-                if result:
-                    
-                    img = Image.open(io.BytesIO(result))
-                    cropped_img = img.crop((0, 1000, img.width, img.height - 4600))  # Adjust crop as needed
-                    cropped_img.save(self.file_path)
-                    logger.info(f"FedWatch screenshot saved to {self.file_path}")
+        try:
+            url = FED_WATCH_WEBSITE
+            result = await scr.aget(session, url)
+            if result:
+                
+                img = Image.open(io.BytesIO(result))
+                cropped_img = img.crop((0, 1000, img.width, img.height - 4600))  # Adjust crop as needed
+                cropped_img.save(self.file_path)
+                logger.info(f"FedWatch screenshot saved to {self.file_path}")
 
-            except Exception as e:
-                logger.error(f"Error fetching FedWatch data: {e}")
+        except Exception as e:
+            logger.error(f"Error fetching FedWatch data: {e}")
         
     async def parse_screen_shot(self) -> FedWatchData:
 
@@ -60,11 +58,12 @@ class FedWatchScrapper:
         )
 
         result: FedWatchData = await agent.run()
+        logger.info(f"FedWatch data parsed")
 
         return result
     
-    async def run(self):
-        await self.fetch_screen_shot()
+    async def run(self, session):
+        await self.fetch_screen_shot(session=session)
         return await self.parse_screen_shot()
 
 

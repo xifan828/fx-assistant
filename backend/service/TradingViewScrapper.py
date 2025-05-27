@@ -1,6 +1,6 @@
 from backend.service.SeleniumScrapper import SeleniumScrapper
+from backend.service.JinaAIScrapper import JinaAIScrapper
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,6 +14,8 @@ from typing import List, Dict
 from backend.utils.logger_config import get_logger
 import shutil
 from glob import glob
+import aiohttp
+import re
 
 
 logger = get_logger(__name__)
@@ -197,8 +199,56 @@ class TradingViewScrapper(SeleniumScrapper):
         return news
 
 
+class TradingViewJinaScrapper:
+    def __init__(self, currency_pair: str):
+        self.currency_pair = currency_pair
+        self.news_root_url = NEWS_ROOT_WEBSITE[currency_pair]
+
+    def extract_links(self, content: str) -> List[Dict[str, str]]:
+        before, sep, after = content.partition("Links/Buttons:")
+        links_raw = after.split("\n")
+        matches = [i for i, s in enumerate(links_raw) if "More in News Flow" in s]
+        if matches:
+            start_idx = matches[0] + 1
+            links_raw = links_raw[start_idx: start_idx + 10] 
+            links = []
+            for link_str in links_raw:
+                title = re.search(r"\[(.*?)\]", link_str)
+                url = re.search(r"\((.*?)\)", link_str)
+                if title and url:
+                    links.append({
+                        "title": title.group(1).strip(),
+                        "url": url.group(1).strip()
+                    })
+        else:
+            links = []
+            
+        return links
+
+    async def get_news_websites(self, session) -> List[str]:
+        extra_headers = {
+            "DNT": "1",
+            "X-Engine": "browser",
+            "X-No-Cache": "true",
+            "X-With-Links-Summary": "true"
+        }
+        jina = JinaAIScrapper(extra_headers=extra_headers)
+
+        try:
+            response = await jina.aget(session, self.news_root_url)
+            if response:
+                
+                return self.extract_links(response)
+            else:
+                logger.error("No response received from Jina AI.")
+                return []
+        except Exception as e:
+            logger.error(f"Error fetching news websites for {self.currency_pair}: {e}")
+            return []
+
+
+
 if __name__ == "__main__":
-    scrapper = TradingViewScrapper("EUR/USD")
-    links = scrapper.get_news_websites()
-    print(links)
-    print(len(links))
+    scrapper = TradingViewJinaScrapper("EUR/USD")
+
+    print(asyncio.run(scrapper.get_news_websites()))

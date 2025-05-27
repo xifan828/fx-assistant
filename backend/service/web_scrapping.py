@@ -51,15 +51,14 @@ class TradingEconomicsScraper:
         except Exception as e:
             return name, f'An error occurred: {e}', None
 
-    async def scrape_websites(self, websites_dict: Dict[str, str]) -> Dict[str, Dict[str, str]]:
+    async def scrape_websites(self, websites_dict: Dict[str, str], session) -> Dict[str, Dict[str, str]]:
         results = {}
-        async with aiohttp.ClientSession() as session:
-            tasks = []
-            for name, url in websites_dict.items():
-                tasks.append(self.fetch_content(session, name, url))
-            results_list = await asyncio.gather(*tasks)
-            for name, desc, table in results_list:
-                results[name] = {"desc": desc, "table": table}
+        tasks = []
+        for name, url in websites_dict.items():
+            tasks.append(self.fetch_content(session, name, url))
+        results_list = await asyncio.gather(*tasks)
+        for name, desc, table in results_list:
+            results[name] = {"desc": desc, "table": table}
         return results
 
 class FedWatchScrapper(SeleniumScrapper):

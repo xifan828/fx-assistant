@@ -73,7 +73,7 @@ def main():
                 st.session_state["process_initialized"] = True
     
                 if "last_currency_pair" in st.session_state and st.session_state["last_currency_pair"] != currency_pair:
-                    clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages"])
+                    clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages", "charts_data", "fundamental_analysis", "fed_watch"])
                 st.session_state["last_currency_pair"] = currency_pair
 
                 if "last_model_choice" in st.session_state and st.session_state["last_model_choice"] != model_choice:

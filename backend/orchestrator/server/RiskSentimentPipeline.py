@@ -76,7 +76,12 @@ class RiskSentimentPipeline(ProcessPipeline):
         Scrape data from Investing.com using JinaAI and extract asset data using OpenAI
         """
         asset_data: Dict[str, Dict[str, str]] = defaultdict(lambda: defaultdict(dict))
-        scrapper = JinaAIScrapper()
+        extra_headers = {
+            "X-Return-Format": "text",
+            "X-No-Cache": "true",
+            "X-With-Links-Summary": "true"
+        }
+        scrapper = JinaAIScrapper(extra_headers)
         extractor = ExtractAssetAgent(model_name=self.extraction_model_name, temperature=self.temperature)
 
         async with aiohttp.ClientSession() as session:
@@ -109,7 +114,10 @@ class RiskSentimentPipeline(ProcessPipeline):
 
         for category, asset_name, assetdata in all_results:
             asset_data[asset_name] = assetdata.dict()
-            
+        
+        # save asset data
+        asset_data_file_path = os.path.join(self.dir_path, "asset_data.json")
+        self._save_results(data=asset_data, file_path=asset_data_file_path, truncate=True, limit=5)
         return asset_data
 
     def _fetch_news_synthesis(self, currency_pair: str) -> Union[str, Dict[str, str]]:
@@ -174,8 +182,6 @@ class RiskSentimentPipeline(ProcessPipeline):
 
 if __name__ == "__main__":
     pipeline = RiskSentimentPipeline()
-    asset_data = asyncio.run(pipeline._scrape_and_extract_asset_data())
-    print(asset_data)
-    print(pipeline._prepare_assets_data("EUR/USD", asset_data))
+    #asset_data = asyncio.run(pipeline._scrape_and_extract_asset_data())
 
-    #asyncio.run(pipeline.synthesize_sentiments())
+    asyncio.run(pipeline.synthesize_sentiments())

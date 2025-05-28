@@ -30,7 +30,13 @@ class JinaAIScrapper:
     
     async def aget(self, session: aiohttp.ClientSession, url: str, retries: int = 3, backoff_factor: float = 0.5):
         if "macenews" in url:
+            logger.info(f"Skipping macenews URL: {url}")
             return url
+        
+        if not url.startswith("http"):
+            logger.error(f"Invalid URL: {url}")
+            return f"Invalid URL: {url}"
+        
         for attempt in range(retries):
             try:
                 async with session.get(self.prefix_url + url, headers=self.headers) as response:

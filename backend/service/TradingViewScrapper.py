@@ -210,7 +210,7 @@ class TradingViewJinaScrapper:
         matches = [i for i, s in enumerate(links_raw) if "More in News Flow" in s]
         if matches:
             start_idx = matches[0] + 1
-            links_raw = links_raw[start_idx: start_idx + 10] 
+            links_raw = links_raw[start_idx: start_idx + 15] 
             links = []
             for link_str in links_raw:
                 title = re.search(r"\[(.*?)\]", link_str)
@@ -249,6 +249,12 @@ class TradingViewJinaScrapper:
 
 
 if __name__ == "__main__":
-    scrapper = TradingViewJinaScrapper("EUR/USD")
+    import aiohttp
 
-    print(asyncio.run(scrapper.get_news_websites()))
+    async def test():
+        async with aiohttp.ClientSession() as session:
+            scrapper = TradingViewJinaScrapper("EUR/USD")
+            links = await scrapper.get_news_websites(session)
+            print(links)
+        
+    asyncio.run(test())

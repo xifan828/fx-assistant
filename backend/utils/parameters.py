@@ -129,10 +129,10 @@ ECONOMIC_INDICATORS = {
 FED_WATCH_WEBSITE = "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html"
 
 NEWS_ROOT_WEBSITE = {
-    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/?exchange=FX",
-    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/?exchange=FX",
-    "GBP/USD": "https://www.tradingview.com/symbols/GBPUSD/news/?exchange=FX",
-    "USD/CNH": "https://www.tradingview.com/symbols/USDCNH/news/?exchange=FX",
+    "EUR/USD": "https://www.tradingview.com/symbols/EURUSD/news/",
+    "USD/JPY": "https://www.tradingview.com/symbols/USDJPY/news/",
+    "GBP/USD": "https://www.tradingview.com/symbols/GBPUSD/news/",
+    "USD/CNH": "https://www.tradingview.com/symbols/USDCNH/news/",
 }
 
 INVESTING_NEWS_ROOT_WEBSITE = {

@@ -33,13 +33,16 @@ class NewsPipeline(ProcessPipeline):
 
         if urls:
             for url in urls:
-                if "macenews" in url:
-                    mace_url += f"{url};" 
+                if "macenews" in url.lower() or "mace news" in url.lower():
+                    mace_url += f"{url};\n" 
                 else:
                     if mace_url != "":
                         new_urls.append(mace_url)
                         mace_url = ""
                     new_urls.append(url)
+
+            if mace_url != "":
+                new_urls.append(mace_url)
         
         return new_urls
     
@@ -47,7 +50,12 @@ class NewsPipeline(ProcessPipeline):
         news_urls = {}
 
         for currency_pair in PAIRS:
-            news_urls[currency_pair] = self._process_news_urls(self.scrape_results_curr.get(f"{currency_pair}_news_websites", []))[:self.k]
+            scrapped_urls = self.scrape_results_curr.get(f"{currency_pair}_news_websites", [])
+            if scrapped_urls:
+                scrapped_urls = [item["url"] for item in scrapped_urls]
+                # if currency_pair == "eur_usd":
+                #     print(scrapped_urls)
+            news_urls[currency_pair] = self._process_news_urls(scrapped_urls)
         
         return news_urls
     
@@ -86,7 +94,10 @@ class NewsPipeline(ProcessPipeline):
         return new_news_urls
     
     async def fetch_and_summarize(self) -> Dict[str, List[Dict[str, str]]]:
-        scrapper = JinaAIScrapper()
+        extra_headers = {
+            "X-Return-Format": "text"
+        }
+        scrapper = JinaAIScrapper(extra_headers)
         currency_urls = self.get_new_news_urls()
         agent_map: Dict[str, SummaryAgent]  = {
             pair: SummaryAgent(currency_pair=pair, model_name=self.summry_model, temperature=self.temperature)
@@ -194,4 +205,8 @@ if __name__ == "__main__":
 
     pipeline = NewsPipeline(k=7)
 
-    asyncio.run(pipeline.run())
+    results = pipeline.get_news_urls()
+
+    print(results["eur_usd"])
+
+    #asyncio.run(pipeline.get_news_urls())

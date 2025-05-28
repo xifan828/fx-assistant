@@ -17,7 +17,7 @@ async def run_once():
     logger.info("Starting the scraping pipeline")
     currency_pair = "EUR/USD"
     pipeline = ScrapePipeline(currency_pair)
-    await asyncio.to_thread(pipeline.fetch_all)
+    await pipeline.fetch_all()
     logger.info(f"Finished scraping pipeline")
 
     logger.info("Starting the news pipeline")

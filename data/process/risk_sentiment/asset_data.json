@@ -1,0 +1,338 @@
+[
+    {
+        "S&P 500": {
+            "close": 5888.56,
+            "change": -32.98,
+            "change_percent": -0.56
+        },
+        "Nasdaq": {
+            "close": 21318.17,
+            "change": -96.82,
+            "change_percent": -0.45
+        },
+        "STOXX50": {
+            "close": 5376.25,
+            "change": -39.2,
+            "change_percent": -0.72
+        },
+        "MSCI EM": {
+            "close": 1163.84,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "DXY": {
+            "close": 99.81,
+            "change": 0.385,
+            "change_percent": 0.39
+        },
+        "Gold": {
+            "close": 3312.2,
+            "change": -16.1,
+            "change_percent": -0.48
+        },
+        "Brent Oil": {
+            "close": 64.32,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "VIX": {
+            "close": 19.3,
+            "change": 0.34,
+            "change_percent": 1.79
+        },
+        "EUR/USD": {
+            "close": 1.1291,
+            "change": -0.0038,
+            "change_percent": -0.34
+        },
+        "Germany 2Y Yield": {
+            "close": 1.793,
+            "change": 0.007,
+            "change_percent": 0.39
+        },
+        "Germany 10Y Yield": {
+            "close": 2.547,
+            "change": 0.014,
+            "change_percent": 0.55
+        },
+        "US 2Y Yield": {
+            "close": 3.992,
+            "change": 0.043,
+            "change_percent": 1.09
+        },
+        "US 10Y Yield": {
+            "close": 4.48,
+            "change": 0.046,
+            "change_percent": 1.04
+        },
+        "USD/JPY": {
+            "close": 144.81,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "Japan 2Y Yield": {
+            "close": 0.753,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "Japan 10Y Yield": {
+            "close": 1.513,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "GBP/USD": {
+            "close": 1.3468,
+            "change": -0.004,
+            "change_percent": -0.3
+        },
+        "UK 2Y Yield": {
+            "close": 4.0715,
+            "change": 0.0585,
+            "change_percent": 1.46
+        },
+        "UK 10Y Yield": {
+            "close": 4.718,
+            "change": -0.01,
+            "change_percent": -0.21
+        },
+        "USD/CNH": {
+            "close": 7.1929,
+            "change": 0.002,
+            "change_percent": 0.03
+        },
+        "China 2Y Yield": {
+            "close": 1.475,
+            "change": 0.005,
+            "change_percent": 0.34
+        },
+        "China 10Y Yield": {
+            "close": 1.702,
+            "change": 0.017,
+            "change_percent": 1.01
+        }
+    },
+    {
+        "S&P 500": {
+            "close": 5888.56,
+            "change": -32.98,
+            "change_percent": -0.56
+        },
+        "Nasdaq": {
+            "close": 21318.17,
+            "change": -96.82,
+            "change_percent": -0.45
+        },
+        "STOXX50": {
+            "close": 5376.25,
+            "change": -39.2,
+            "change_percent": -0.72
+        },
+        "MSCI EM": {
+            "close": 1163.84,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "DXY": {
+            "close": 99.81,
+            "change": 0.385,
+            "change_percent": 0.39
+        },
+        "Gold": {
+            "close": 3312.2,
+            "change": -16.1,
+            "change_percent": -0.48
+        },
+        "Brent Oil": {
+            "close": 64.3,
+            "change": -0.02,
+            "change_percent": -0.03
+        },
+        "VIX": {
+            "close": 19.3,
+            "change": 0.34,
+            "change_percent": 1.79
+        },
+        "EUR/USD": {
+            "close": 1.1294,
+            "change": 0.0003,
+            "change_percent": 0.03
+        },
+        "Germany 2Y Yield": {
+            "close": 1.793,
+            "change": 0.007,
+            "change_percent": 0.39
+        },
+        "Germany 10Y Yield": {
+            "close": 2.547,
+            "change": 0.014,
+            "change_percent": 0.55
+        },
+        "US 2Y Yield": {
+            "close": 3.992,
+            "change": 0.043,
+            "change_percent": 1.09
+        },
+        "US 10Y Yield": {
+            "close": 4.48,
+            "change": 0.046,
+            "change_percent": 1.04
+        },
+        "USD/JPY": {
+            "close": 144.8,
+            "change": -0.01,
+            "change_percent": -0.01
+        },
+        "Japan 2Y Yield": {
+            "close": 0.753,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "Japan 10Y Yield": {
+            "close": 1.513,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "GBP/USD": {
+            "close": 1.347,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "UK 2Y Yield": {
+            "close": 4.0715,
+            "change": 0.0585,
+            "change_percent": 1.46
+        },
+        "UK 10Y Yield": {
+            "close": 4.718,
+            "change": -0.01,
+            "change_percent": -0.21
+        },
+        "USD/CNH": {
+            "close": 7.1922,
+            "change": 0.0002,
+            "change_percent": 0.0
+        },
+        "China 2Y Yield": {
+            "close": 1.475,
+            "change": 0.005,
+            "change_percent": 0.34
+        },
+        "China 10Y Yield": {
+            "close": 1.702,
+            "change": 0.017,
+            "change_percent": 1.01
+        }
+    },
+    {
+        "S&P 500": {
+            "close": 5888.56,
+            "change": -32.98,
+            "change_percent": -0.56
+        },
+        "Nasdaq": {
+            "close": 21318.17,
+            "change": -96.82,
+            "change_percent": -0.45
+        },
+        "STOXX50": {
+            "close": 5376.25,
+            "change": -39.2,
+            "change_percent": -0.72
+        },
+        "MSCI EM": {
+            "close": 1163.84,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "DXY": {
+            "close": 99.82,
+            "change": 0.39,
+            "change_percent": 0.39
+        },
+        "Gold": {
+            "close": 3312.2,
+            "change": -16.1,
+            "change_percent": -0.48
+        },
+        "Brent Oil": {
+            "close": 64.32,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "VIX": {
+            "close": 19.31,
+            "change": 0.35,
+            "change_percent": 1.85
+        },
+        "EUR/USD": {
+            "close": 1.1294,
+            "change": 0.0003,
+            "change_percent": 0.03
+        },
+        "Germany 2Y Yield": {
+            "close": 1.793,
+            "change": 0.007,
+            "change_percent": 0.39
+        },
+        "Germany 10Y Yield": {
+            "close": 2.547,
+            "change": 0.014,
+            "change_percent": 0.55
+        },
+        "US 2Y Yield": {
+            "close": 3.992,
+            "change": 0.043,
+            "change_percent": 1.09
+        },
+        "US 10Y Yield": {
+            "close": 4.475,
+            "change": 0.041,
+            "change_percent": 0.92
+        },
+        "USD/JPY": {
+            "close": 144.78,
+            "change": -0.03,
+            "change_percent": -0.02
+        },
+        "Japan 2Y Yield": {
+            "close": 0.753,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "Japan 10Y Yield": {
+            "close": 1.513,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "GBP/USD": {
+            "close": 1.347,
+            "change": 0.0,
+            "change_percent": 0.0
+        },
+        "UK 2Y Yield": {
+            "close": 4.0715,
+            "change": 0.0585,
+            "change_percent": 1.46
+        },
+        "UK 10Y Yield": {
+            "close": 4.718,
+            "change": -0.01,
+            "change_percent": -0.21
+        },
+        "USD/CNH": {
+            "close": 7.1922,
+            "change": 0.0002,
+            "change_percent": 0.0
+        },
+        "China 2Y Yield": {
+            "close": 1.475,
+            "change": 0.005,
+            "change_percent": 0.34
+        },
+        "China 10Y Yield": {
+            "close": 1.702,
+            "change": 0.017,
+            "change_percent": 1.01
+        }
+    }
+]

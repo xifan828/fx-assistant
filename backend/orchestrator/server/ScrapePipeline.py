@@ -79,15 +79,22 @@ class ScrapePipeline:
 
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
+        formated_results = {}
+        for i, currency_pair in enumerate(CURRENCY_PAIRS):
+            pair_formatted = currency_pair.replace("/", "_").lower()
+            formated_results[f"{pair_formatted}_news_websites"] = results[i]
         
-        # dir_path = os.path.join("data", "scrape")
-        # if not os.path.exists(dir_path):
-        #     os.makedirs(dir_path)
+        formated_results["fundamental"] = results[-2]
+        formated_results["fed_watch"] = results[-1]
+        
+        dir_path = os.path.join("data", "scrape")
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
 
-        # self.save_to_json(results, filename=os.path.join(dir_path, "results.json"))
-        # logger.info(f"Results saved to JSON file")
+        self.save_to_json(formated_results, filename=os.path.join(dir_path, "results.json"))
+        logger.info(f"Results saved to JSON file")
 
-        return results
+        return formated_results
     
     def save_to_json(self, data: dict, filename: str):
         if os.path.exists(filename):
@@ -119,7 +126,7 @@ if __name__ == "__main__":
     currency_pair = "EUR/USD"
     pipeline = ScrapePipeline(currency_pair)
     result = asyncio.run(pipeline.fetch_all())
-    print(result)
+    #print(result)
     #results = pipeline._fetech_fundamental()
     end_time = time.time()
     

@@ -72,10 +72,19 @@ class AsyncDataLoader:
     @catch_json_errors
     async def get_risk_sentiment_synthesis(self, currency_pair: Literal["eur_usd", "gbp_usd", "usd_jpy", "usd_cnh"]) -> Dict[str, str]:
         file_path = os.path.join(self.risk_sentiment_dir, "risk_sentiment.json")
+        asset_data_path = os.path.join(self.risk_sentiment_dir, "asset_data.json")
+
         risk_sentiment_analysis: List[Dict] = await self._load_json(file_path)
         risk_sentiment_analysis = risk_sentiment_analysis[-1]
+
+        asset_data: List[Dict] = await self._load_json(asset_data_path)
+        asset_data = asset_data[-1]
+    
         currency_pair_formatted = currency_pair.replace("_", "/").upper()
-        return risk_sentiment_analysis[currency_pair_formatted]
+        risk_sentiment_analysis = risk_sentiment_analysis[currency_pair_formatted]
+        risk_sentiment_analysis["data"] = asset_data
+
+        return risk_sentiment_analysis
     
 
 if __name__ == "__main__":

@@ -213,8 +213,10 @@ class TradingViewJinaScrapper:
             links_raw = links_raw[start_idx: start_idx + 15] 
             links = []
             for link_str in links_raw:
+                # Match the entire [...] content for the title
                 title = re.search(r"\[(.*?)\]", link_str)
-                url = re.search(r"\((.*?)\)", link_str)
+                # Match the URL pattern after the title: (...) at the end of the string or before whitespace
+                url = re.search(r"\]\s*\((.*?)\)(?:\s|$)", link_str)
                 if title and url:
                     links.append({
                         "title": title.group(1).strip(),
@@ -228,8 +230,8 @@ class TradingViewJinaScrapper:
     async def get_news_websites(self, session) -> List[str]:
         extra_headers = {
             "DNT": "1",
-            "X-Engine": "browser",
             "X-No-Cache": "true",
+            "X-Wait-For-Selector": "body, .class, #id, #js-category-content > div.js-symbol-page-tab-news-block > div > section > div > div.content-oFtCtY_t > div:nth-child(2) > div > div.listView-xqBQ1wm9 > div.list-iTt_Zp4a",
             "X-With-Links-Summary": "true"
         }
         jina = JinaAIScrapper(extra_headers=extra_headers)

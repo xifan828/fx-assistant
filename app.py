@@ -112,7 +112,6 @@ def main():
                 #     st.image("data/chart/5min.png")
                 # with tab2:
                 #     st.image("data/chart/1h.png")
-                st.write("Last updated: ", st.session_state["current_time"])
             st.divider()
     
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
@@ -167,6 +166,7 @@ def main():
             with st.container():
                 st.title("Market at a Glance")
                 st.write(st.session_state["news"])
+                st.write("Last updated: ", st.session_state["current_time"])
             st.divider()
             with st.container():
                 st.title("Strategy Highlight")
@@ -177,6 +177,7 @@ def main():
             st.divider()
             with st.container():
                     st.html("<div style='text-align: center; font-size: 35px'><b> Ask a question </b></div>")
+                    st.html("<div style='text-align: center'>Ask a question or generate a report - powered by AI.</div>")
                     msgs = st.container(height=200, border=False)
 
                     if prompt := st.chat_input():
@@ -192,6 +193,7 @@ def main():
                             #st.chat_message(response)
             st.divider()
             with st.container():
+                st.title("Risk Sentiment")
                 st.write(st.session_state["risk_sentiment"])
                 if "analysis" not in st.session_state:
                     if st.button("View Full Analysis", use_container_width=True):

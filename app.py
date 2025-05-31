@@ -1,12 +1,13 @@
 import streamlit as st
 
 from backend.agent import FXAgent, KnowledgeBase
-from PIL import Image
+import io
 #from st.chat_message import message
 import os
 import numpy as np
 from dotenv import load_dotenv
 import datetime
+import asyncio
 
 st.set_page_config(layout="centered")
 
@@ -76,7 +77,7 @@ def main():
                 st.session_state["current_time"] = datetime.datetime.now()
     
                 if "last_currency_pair" in st.session_state and st.session_state["last_currency_pair"] != currency_pair:
-                    clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages"])
+                    clear_session_states(["knowledge", "news", "technical_analysis", "risk_sentiment", "prefix_messages", "messages", "charts_data", "fundamental_analysis", "fed_watch"])
                 st.session_state["last_currency_pair"] = currency_pair
 
                 if "last_model_choice" in st.session_state and st.session_state["last_model_choice"] != model_choice:
@@ -85,7 +86,7 @@ def main():
 
                 if "knowledge" not in st.session_state:
                     knowledge_base = KnowledgeBase(currency_pair=st.session_state["last_currency_pair"])
-                    knowledge = knowledge_base.create_all_analysis_parallel()
+                    knowledge = asyncio.run(knowledge_base.get_all_synthesis())
                     st.session_state["knowledge"] = knowledge
 
                 if "news" not in st.session_state:
@@ -94,8 +95,14 @@ def main():
                 if "technical_analysis" not in st.session_state:
                     st.session_state["technical_analysis"] = st.session_state["knowledge"]["Technical Analysis"]
                     #st.session_state["technical_analysis"] = "None"
+                if "charts_data" not in st.session_state:
+                    st.session_state["charts_data"] = st.session_state["knowledge"]["Charts data"]
                 if "risk_sentiment" not in st.session_state:
                     st.session_state["risk_sentiment"] = st.session_state["knowledge"]["Risk Sentiment"]
+                if "fundamental_analysis" not in st.session_state:
+                    st.session_state["fundamental_analysis"] = st.session_state["knowledge"]["Fundamental Analysis"]
+                if "fed_watch" not in st.session_state:
+                    st.session_state["fed_watch"] = st.session_state["knowledge"]["Fed Watch"]
 
             with st.container():
                 st.title(currency_pair)
@@ -107,7 +114,7 @@ def main():
                 #     st.image("data/chart/1h.png")
                 st.write("Last updated: ", st.session_state["current_time"])
             st.divider()
-
+    
             agent = FXAgent(model_name=st.session_state["last_model_choice"], currency_pair=st.session_state["last_currency_pair"])
             if "prefix_messages" not in st.session_state:
                 st.session_state["prefix_messages"] = agent.formulate_first_round_messages(
@@ -189,6 +196,14 @@ def main():
                 if "analysis" not in st.session_state:
                     if st.button("View Full Analysis", use_container_width=True):
                         analysis()
+            st.divider()
+            with st.container():
+                st.title("Fundamental Analysis")
+                st.write(st.session_state["fundamental_analysis"])
+            st.divider()
+            with st.container():
+                st.title("Fed Watch")
+                st.write(st.session_state["fed_watch"])
 
         else:
             st.warning("Please authenticate to access the application.")

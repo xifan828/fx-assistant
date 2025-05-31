@@ -53,15 +53,19 @@ class TechnicalDataPipeline:
             chart_name=chart_name
         )
         if analysis_type == "ema":
-            chart.plot_chart(EMA20=True, EMA50=True, EMA100=True)
+            _, binary_data = chart.plot_chart(EMA20=True, EMA50=True, EMA100=True)
         elif analysis_type == "rsi":
-            chart.plot_chart(RSI14=True)
+            _, binary_data = chart.plot_chart(RSI14=True)
         elif analysis_type == "macd":
-            chart.plot_chart(MACD=True)
+            _, binary_data = chart.plot_chart(MACD=True)
         elif analysis_type == "atr":
-            chart.plot_chart(ATR14=True)
+            _, binary_data = chart.plot_chart(ATR14=True)
+        elif analysis_type == "normal":
+            _, binary_data = chart.plot_chart()
         else:
             raise ValueError("Invalid analysis type. Choose 'ema', 'rsi', 'macd', or 'atr'.")
+        
+        return binary_data
 
 
 if __name__ == "__main__":
@@ -71,11 +75,10 @@ if __name__ == "__main__":
     data = pipeline.prepare_data(data_source="TwelveData")
     print(data.head())
     print(data.tail())
-    pipeline.prepare_chart(data, size=48, analysis_type="ema")
+    binary_data = pipeline.prepare_chart(data, size=48, analysis_type="ema")
+    print(binary_data[:100]) 
+    print(type(binary_data))  
     
-    # data = pipeline.prepare_data(data_source="IBKR")
-    # pipeline.prepare_chart(data, size=20, analysis_type="rsi")
-
 
 
         

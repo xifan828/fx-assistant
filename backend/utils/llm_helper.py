@@ -84,7 +84,7 @@ class GeminiClient:
             return await f.read()
 
 
-    async def call_gemini_vision_api(self, user_message, history=[], image_path=None):
+    async def call_gemini_vision_api(self, user_message, history=[], image_path=None, image_data=None):
         try:
             chat_session = self.client.aio.chats.create(history=history,
                                                     model=self.model_name,
@@ -98,9 +98,12 @@ class GeminiClient:
                 
                 mime_type, _ = mimetypes.guess_type(image_path)
                 image_data = await self.read_file_async(image_path)
-                parts.append(
-                types.Part.from_bytes(data=image_data, mime_type=mime_type)
-                )
+            elif image_data:
+                mime_type = "image/png" 
+                
+            parts.append(
+            types.Part.from_bytes(data=image_data, mime_type=mime_type)
+            )
 
             response = await chat_session.send_message(parts)
             response_text = response.text
